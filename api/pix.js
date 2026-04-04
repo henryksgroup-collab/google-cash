@@ -86,6 +86,6 @@ module.exports = async (req, res) => {
 
   } catch (err) {
     console.error('[PIX] Error:', err);
-    return res.status(500).json({ error: 'Erro interno ao gerar PIX' });
+    return res.status(500).json({ error: 'Erro interno ao gerar PIX', _debug: err.message, _stack: err.stack?.split('\n').slice(0,3) });
   }
 };
