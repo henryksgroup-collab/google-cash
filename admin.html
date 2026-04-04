@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google Cash — Admin</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0f0f0f">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #242424;
+    --border: #2e2e2e;
+    --text: #f0f0f0;
+    --muted: #888;
+    --accent: #1a73e8;
+    --green: #34a853;
+    --red: #ea4335;
+    --yellow: #fbbc04;
+    --radius: 12px;
+    --font: 'DM Sans', system-ui, sans-serif;
+  }
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+    background: var(--bg);
+    background-image: linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .login-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 48px 40px; width: 380px;
+    box-shadow: 0 24px 80px rgba(0,0,0,.6);
+  }
+  .login-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+  .login-logo .g { font-size: 28px; font-weight: 700; }
+  .login-logo .g span:nth-child(1){color:#4285f4}
+  .login-logo .g span:nth-child(2){color:#ea4335}
+  .login-logo .g span:nth-child(3){color:#fbbc04}
+  .login-logo .g span:nth-child(4){color:#4285f4}
+  .login-logo .g span:nth-child(5){color:#34a853}
+  .login-logo .g span:nth-child(6){color:#ea4335}
+  .login-logo .badge { font-size: 11px; font-weight: 600; background: var(--surface2); color: var(--muted); padding: 3px 8px; border-radius: 6px; letter-spacing: .05em; }
+  .login-card h2 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .login-card p { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+  .login-input {
+    width: 100%; padding: 14px 16px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text); font-size: 15px; font-family: var(--font);
+    margin-bottom: 14px; outline: none;
+    transition: border-color .2s;
+  }
+  .login-input:focus { border-color: var(--accent); }
+  .login-btn {
+    width: 100%; padding: 14px; background: var(--accent);
+    border: none; border-radius: 10px; color: #fff;
+    font-size: 15px; font-weight: 600; font-family: var(--font);
+    cursor: pointer; transition: opacity .2s;
+  }
+  .login-btn:hover { opacity: .88; }
+  .login-error { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
+
+  /* ── APP SHELL ── */
+  #app { display: none; }
+  .layout { display: flex; height: 100vh; }
+
+  /* sidebar */
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--surface); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; padding: 24px 0;
+  }
+  .sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); }
+  .sidebar-logo .g { font-size: 22px; font-weight: 700; line-height: 1; }
+  .sidebar-logo .g span:nth-child(1){color:#4285f4}
+  .sidebar-logo .g span:nth-child(2){color:#ea4335}
+  .sidebar-logo .g span:nth-child(3){color:#fbbc04}
+  .sidebar-logo .g span:nth-child(4){color:#4285f4}
+  .sidebar-logo .g span:nth-child(5){color:#34a853}
+  .sidebar-logo .g span:nth-child(6){color:#ea4335}
+  .sidebar-logo small { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; letter-spacing: .06em; font-weight: 500; }
+  .nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    font-size: 14px; font-weight: 500; color: var(--muted);
+    transition: all .15s; border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: var(--surface2); color: var(--text); }
+  .nav-item.active { background: rgba(26,115,232,.15); color: var(--accent); }
+  .nav-item .icon { font-size: 18px; width: 22px; text-align: center; }
+  .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
+  .logout-btn {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    font-size: 14px; font-weight: 500; color: var(--muted);
+    transition: all .15s; border: none; background: none; width: 100%;
+  }
+  .logout-btn:hover { color: var(--red); }
+
+  /* main area */
+  .main { flex: 1; overflow-y: auto; }
+  .page { display: none; padding: 32px; max-width: 1200px; }
+  .page.active { display: block; }
+
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 { font-size: 24px; font-weight: 700; }
+  .page-header p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  /* kpi grid */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .kpi-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 22px;
+  }
+  .kpi-label { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
+  .kpi-value { font-size: 28px; font-weight: 700; line-height: 1; }
+  .kpi-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .kpi-card.green .kpi-value { color: var(--green); }
+  .kpi-card.blue .kpi-value { color: var(--accent); }
+
+  /* chart card */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px;
+    margin-bottom: 20px;
+  }
+  .card-title { font-size: 15px; font-weight: 600; margin-bottom: 18px; }
+
+  /* table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { color: var(--muted); font-weight: 600; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+  .badge {
+    display: inline-block; padding: 3px 8px; border-radius: 6px;
+    font-size: 11px; font-weight: 600; letter-spacing: .04em;
+  }
+  .badge-green { background: rgba(52,168,83,.15); color: var(--green); }
+  .badge-yellow { background: rgba(251,188,4,.15); color: var(--yellow); }
+  .badge-red { background: rgba(234,67,53,.15); color: var(--red); }
+  .badge-blue { background: rgba(26,115,232,.15); color: var(--accent); }
+
+  /* funnel */
+  .funnel-step {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .funnel-step:last-child { border-bottom: none; }
+  .funnel-label { width: 160px; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+  .funnel-bar-wrap { flex: 1; background: var(--surface2); border-radius: 6px; height: 10px; overflow: hidden; }
+  .funnel-bar { height: 100%; border-radius: 6px; background: var(--accent); transition: width .6s ease; }
+  .funnel-count { width: 70px; text-align: right; font-size: 13px; font-weight: 600; }
+  .funnel-pct { width: 55px; text-align: right; font-size: 12px; color: var(--muted); }
+  .funnel-drop { font-size: 11px; color: var(--red); }
+
+  /* config */
+  .config-section { margin-bottom: 28px; }
+  .config-section h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+  .config-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); }
+  .config-row:last-child { border-bottom: none; }
+  .config-info p { font-size: 14px; font-weight: 500; }
+  .config-info small { font-size: 12px; color: var(--muted); }
+  .toggle-btn {
+    padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; font-family: var(--font); transition: all .2s;
+  }
+  .toggle-btn.on { background: var(--green); color: #fff; }
+  .toggle-btn.off { background: var(--surface2); color: var(--muted); }
+  .install-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 20px; background: var(--accent); color: #fff;
+    border: none; border-radius: 10px; font-size: 14px; font-weight: 600;
+    font-family: var(--font); cursor: pointer; transition: opacity .2s;
+  }
+  .install-btn:hover { opacity: .88; }
+  #install-btn { display: none; }
+
+  /* alert toast */
+  #sale-toast {
+    position: fixed; top: 24px; right: 24px;
+    background: #1a2e1a; border: 1px solid var(--green);
+    border-radius: 14px; padding: 16px 20px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.5);
+    display: none; z-index: 9999; max-width: 320px;
+    animation: slideIn .3s ease;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
+  #sale-toast .toast-icon { font-size: 24px; margin-bottom: 6px; }
+  #sale-toast .toast-title { font-size: 15px; font-weight: 700; color: var(--green); }
+  #sale-toast .toast-body { font-size: 13px; color: var(--muted); margin-top: 3px; }
+
+  /* loading pulse */
+  .pulse { animation: pulse 1.5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  /* refresh indicator */
+  #refresh-dot {
+    display: inline-block; width: 7px; height: 7px;
+    border-radius: 50%; background: var(--green);
+    margin-left: 8px; vertical-align: middle;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .sidebar { width: 64px; }
+    .sidebar-logo small, .sidebar-logo .g, .nav-item span:not(.icon), .logout-btn span { display: none; }
+    .nav-item { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="g">
+        <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+        <span style="color:var(--text);font-weight:400"> Cash</span>
+      </div>
+      <div class="badge">ADMIN</div>
+    </div>
+    <h2>Acesso Restrito</h2>
+    <p>Insira a senha de administrador para continuar.</p>
+    <input class="login-input" type="password" id="pwd" placeholder="Senha" autocomplete="current-password">
+    <button class="login-btn" id="login-btn">Entrar</button>
+    <div class="login-error" id="login-error">Senha incorreta. Tente novamente.</div>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div id="app">
+  <div class="layout">
+
+    <!-- sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-logo">
+        <div class="g">
+          <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+          <span style="color:var(--text);font-weight:400"> Cash</span>
+        </div>
+        <small>PAINEL ADMIN</small>
+      </div>
+      <div class="nav">
+        <button class="nav-item active" data-page="dashboard">
+          <span class="icon">📊</span><span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="vendas">
+          <span class="icon">💳</span><span>Vendas</span>
+        </button>
+        <button class="nav-item" data-page="funil">
+          <span class="icon">🔻</span><span>Funil</span>
+        </button>
+        <button class="nav-item" data-page="config">
+          <span class="icon">⚙️</span><span>Configurações</span>
+        </button>
+      </div>
+      <div class="sidebar-footer">
+        <button class="logout-btn" id="logout-btn">
+          <span class="icon">🚪</span><span>Sair</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- main -->
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-header">
+          <h1>Dashboard <span id="refresh-dot"></span></h1>
+          <p>Atualiza automaticamente a cada 30 segundos</p>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card green">
+            <div class="kpi-label">Receita Total</div>
+            <div class="kpi-value" id="kpi-revenue">—</div>
+            <div class="kpi-sub">Vendas confirmadas</div>
+          </div>
+          <div class="kpi-card blue">
+            <div class="kpi-label">Vendas</div>
+            <div class="kpi-value" id="kpi-sales">—</div>
+            <div class="kpi-sub">Total de pedidos pagos</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Conversão</div>
+            <div class="kpi-value" id="kpi-conv">—</div>
+            <div class="kpi-sub">Visitas → Compras</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Ticket Médio</div>
+            <div class="kpi-value" id="kpi-ticket">—</div>
+            <div class="kpi-sub">Por pedido</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Vendas por Dia — Últimos 7 dias</div>
+          <canvas id="chart-daily" height="80"></canvas>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Vendas Recentes</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>E-mail</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody id="table-recent"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VENDAS -->
+      <section class="page" id="page-vendas">
+        <div class="page-header">
+          <h1>Vendas</h1>
+          <p>Histórico completo de transações</p>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Cliente</th>
+                  <th>E-mail</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody id="table-all"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- FUNIL -->
+      <section class="page" id="page-funil">
+        <div class="page-header">
+          <h1>Funil de Conversão</h1>
+          <p>Onde as pessoas entram e onde saem</p>
+        </div>
+        <div class="card">
+          <div class="card-title">Etapas do Funil</div>
+          <div id="funnel-steps"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Insights</div>
+          <div id="funnel-insights" style="font-size:14px;line-height:1.8;color:var(--muted)"></div>
+        </div>
+      </section>
+
+      <!-- CONFIG -->
+      <section class="page" id="page-config">
+        <div class="page-header">
+          <h1>Configurações</h1>
+          <p>Notificações, PWA e integrações</p>
+        </div>
+
+        <div class="card">
+          <div class="config-section">
+            <h3>Notificações Push</h3>
+            <div class="config-row">
+              <div class="config-info">
+                <p>Notificação de Nova Venda</p>
+                <small>Receba um alerta com som toda vez que houver uma compra confirmada</small>
+              </div>
+              <button class="toggle-btn off" id="push-toggle">Ativar</button>
+            </div>
+            <div class="config-row">
+              <div class="config-info">
+                <p>Testar Notificação</p>
+                <small>Dispara um alerta de teste no seu dispositivo agora</small>
+              </div>
+              <button class="toggle-btn off" id="test-push-btn" style="background:var(--surface2);color:var(--muted)">Testar</button>
+            </div>
+          </div>
+
+          <div class="config-section">
+            <h3>Instalar App (PWA)</h3>
+            <div class="config-row">
+              <div class="config-info">
+                <p>Baixar no Celular</p>
+                <small>Instale o painel como app — funciona offline e aparece na tela inicial</small>
+              </div>
+              <button class="install-btn" id="install-btn">
+                <span>📲</span> Instalar
+              </button>
+              <span id="install-done" style="font-size:13px;color:var(--green);display:none">✅ App instalado</span>
+            </div>
+          </div>
+
+          <div class="config-section">
+            <h3>VAPID — Chaves de Push</h3>
+            <div style="background:var(--surface2);border-radius:10px;padding:16px;font-size:13px;color:var(--muted);line-height:1.8">
+              Para ativar as notificações push no servidor, gere suas chaves VAPID e adicione ao Vercel:<br><br>
+              <code style="color:var(--accent)">npx web-push generate-vapid-keys</code><br><br>
+              Depois adicione ao Vercel (Settings → Environment Variables):<br>
+              <code style="color:var(--text)">VAPID_PUBLIC_KEY</code><br>
+              <code style="color:var(--text)">VAPID_PRIVATE_KEY</code><br>
+              <code style="color:var(--text)">VAPID_EMAIL</code>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Sale Toast -->
+<div id="sale-toast">
+  <div class="toast-icon">🤑</div>
+  <div class="toast-title" id="toast-title">Nova Venda!</div>
+  <div class="toast-body" id="toast-body">Alguém acabou de comprar.</div>
+</div>
+
+<script>
+/* ─────────────────────────────────────────────
+   STATE
+───────────────────────────────────────────── */
+let TOKEN = sessionStorage.getItem('gc_token') || '';
+let dailyChart = null;
+let pollTimer = null;
+let deferredInstall = null;
+let pushActive = false;
+let lastSaleCount = 0;
+
+/* ─────────────────────────────────────────────
+   CASH SOUND (Web Audio API — no external deps)
+───────────────────────────────────────────── */
+function playCashSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [523, 659, 784, 1047]; // C E G C
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      const t = ctx.currentTime + i * 0.12;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.25, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+      osc.start(t); osc.stop(t + 0.3);
+    });
+  } catch (e) { /* audio not available */ }
+}
+
+/* ─────────────────────────────────────────────
+   LOGIN
+───────────────────────────────────────────── */
+async function doLogin() {
+  const pwd = document.getElementById('pwd').value.trim();
+  if (!pwd) return;
+  document.getElementById('login-btn').textContent = 'Entrando…';
+  try {
+    const r = await fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pwd })
+    });
+    const d = await r.json();
+    if (d.ok) {
+      TOKEN = d.token;
+      sessionStorage.setItem('gc_token', TOKEN);
+      showApp();
+    } else {
+      showLoginError();
+    }
+  } catch {
+    showLoginError();
+  } finally {
+    document.getElementById('login-btn').textContent = 'Entrar';
+  }
+}
+
+function showLoginError() {
+  const el = document.getElementById('login-error');
+  el.style.display = 'block';
+  setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
+document.getElementById('login-btn').addEventListener('click', doLogin);
+document.getElementById('pwd').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+if (TOKEN) showApp();
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadData();
+  startPolling();
+  setupSW();
+  checkPushState();
+}
+
+/* ─────────────────────────────────────────────
+   NAVIGATION
+───────────────────────────────────────────── */
+document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('page-' + btn.dataset.page).classList.add('active');
+  });
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  sessionStorage.removeItem('gc_token');
+  TOKEN = '';
+  clearInterval(pollTimer);
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+});
+
+/* ─────────────────────────────────────────────
+   DATA LOADING
+───────────────────────────────────────────── */
+async function loadData() {
+  try {
+    const r = await fetch('/api/sales', { headers: { 'x-admin-token': TOKEN } });
+    if (r.status === 403) { sessionStorage.removeItem('gc_token'); location.reload(); return; }
+    const d = await r.json();
+    updateKPIs(d.stats, d.funnel);
+    updateDailyChart(d.dailySales);
+    renderRecentSales(d.transactions.slice(0, 8));
+    renderAllSales(d.transactions);
+    renderFunnel(d.funnel);
+    renderInsights(d.funnel);
+    // detect new sale
+    const completed = d.transactions.filter(t => t.status === 'COMPLETED').length;
+    if (lastSaleCount > 0 && completed > lastSaleCount) {
+      const newest = d.transactions.find(t => t.status === 'COMPLETED');
+      if (newest) showSaleAlert(newest);
+    }
+    lastSaleCount = completed;
+  } catch (e) { console.warn('[admin] loadData error', e); }
+}
+
+function startPolling() {
+  clearInterval(pollTimer);
+  pollTimer = setInterval(loadData, 30000);
+}
+
+/* ─────────────────────────────────────────────
+   KPI CARDS (safe text injection)
+───────────────────────────────────────────── */
+function updateKPIs(stats, funnel) {
+  const revenue = stats.totalRevenue || 0;
+  const sales = stats.totalSales || 0;
+  const views = parseInt(funnel.PageView) || 1;
+  const conv = sales > 0 ? ((sales / views) * 100).toFixed(1) : '0.0';
+  const ticket = stats.avgTicket || 117;
+
+  document.getElementById('kpi-revenue').textContent =
+    'R$ ' + revenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+  document.getElementById('kpi-sales').textContent = sales;
+  document.getElementById('kpi-conv').textContent = conv + '%';
+  document.getElementById('kpi-ticket').textContent =
+    'R$ ' + Number(ticket).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+}
+
+/* ─────────────────────────────────────────────
+   DAILY CHART
+───────────────────────────────────────────── */
+function updateDailyChart(dailySales) {
+  if (!dailySales || !dailySales.length) return;
+  const labels = dailySales.map(d => d.label);
+  const values = dailySales.map(d => d.count);
+  const ctx = document.getElementById('chart-daily').getContext('2d');
+  if (dailyChart) {
+    dailyChart.data.labels = labels;
+    dailyChart.data.datasets[0].data = values;
+    dailyChart.update();
+    return;
+  }
+  dailyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Vendas',
+        data: values,
+        backgroundColor: 'rgba(26,115,232,.6)',
+        borderColor: '#1a73e8',
+        borderWidth: 2,
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,.06)' }, ticks: { color: '#888' } },
+        y: { grid: { color: 'rgba(255,255,255,.06)' }, ticks: { color: '#888', stepSize: 1 }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+/* ─────────────────────────────────────────────
+   TABLE HELPERS (safe DOM creation)
+───────────────────────────────────────────── */
+function formatDate(ts) {
+  if (!ts) return '—';
+  const d = new Date(parseInt(ts));
+  if (isNaN(d)) return '—';
+  return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatMoney(v) {
+  return 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+}
+
+function makeStatusBadge(status) {
+  const span = document.createElement('span');
+  span.className = 'badge ' +
+    (status === 'COMPLETED' ? 'badge-green' :
+     status === 'PENDING'   ? 'badge-yellow' :
+     status === 'FAILED'    ? 'badge-red' : 'badge-blue');
+  span.textContent =
+    status === 'COMPLETED' ? '✅ Pago' :
+    status === 'PENDING'   ? '⏳ Pendente' :
+    status === 'FAILED'    ? '❌ Falhou' : status || '—';
+  return span;
+}
+
+function makeCell(text) {
+  const td = document.createElement('td');
+  td.textContent = text ?? '—';
+  return td;
+}
+
+function renderRecentSales(transactions) {
+  const tbody = document.getElementById('table-recent');
+  tbody.replaceChildren();
+  if (!transactions.length) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 5; td.textContent = 'Nenhuma venda ainda.';
+    td.style.cssText = 'color:var(--muted);text-align:center;padding:24px';
+    tr.appendChild(td); tbody.appendChild(tr);
+    return;
+  }
+  transactions.forEach(tx => {
+    const tr = document.createElement('tr');
+    tr.appendChild(makeCell(tx.name));
+    tr.appendChild(makeCell(tx.email));
+    tr.appendChild(makeCell(formatMoney(tx.amount)));
+    const statusTd = document.createElement('td');
+    statusTd.appendChild(makeStatusBadge(tx.status));
+    tr.appendChild(statusTd);
+    tr.appendChild(makeCell(formatDate(tx.paidAt || tx.createdAt)));
+    tbody.appendChild(tr);
+  });
+}
+
+function renderAllSales(transactions) {
+  const tbody = document.getElementById('table-all');
+  tbody.replaceChildren();
+  if (!transactions.length) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 6; td.textContent = 'Nenhuma venda ainda.';
+    td.style.cssText = 'color:var(--muted);text-align:center;padding:24px';
+    tr.appendChild(td); tbody.appendChild(tr);
+    return;
+  }
+  transactions.forEach(tx => {
+    const tr = document.createElement('tr');
+    const idTd = document.createElement('td');
+    const code = document.createElement('code');
+    code.style.cssText = 'font-size:11px;color:var(--muted)';
+    code.textContent = String(tx.id || '').substring(0, 16) + '…';
+    idTd.appendChild(code);
+    tr.appendChild(idTd);
+    tr.appendChild(makeCell(tx.name));
+    tr.appendChild(makeCell(tx.email));
+    tr.appendChild(makeCell(formatMoney(tx.amount)));
+    const statusTd = document.createElement('td');
+    statusTd.appendChild(makeStatusBadge(tx.status));
+    tr.appendChild(statusTd);
+    tr.appendChild(makeCell(formatDate(tx.paidAt || tx.createdAt)));
+    tbody.appendChild(tr);
+  });
+}
+
+/* ─────────────────────────────────────────────
+   FUNNEL (safe DOM creation)
+───────────────────────────────────────────── */
+const FUNNEL_LABELS = {
+  PageView:        'Visitou a Página',
+  QuizStarted:     'Iniciou o Quiz',
+  QuizCompleted:   'Completou o Quiz',
+  SimulatorStarted:'Viu o Simulador',
+  VSL60Seconds:    'Assistiu 60s da VSL',
+  CheckoutStarted: 'Abriu o Checkout',
+  CheckoutClicked: 'Comprou'
+};
+
+function renderFunnel(funnel) {
+  const container = document.getElementById('funnel-steps');
+  container.replaceChildren();
+  const keys = Object.keys(FUNNEL_LABELS);
+  const topVal = parseInt(funnel[keys[0]]) || 1;
+
+  keys.forEach((key, i) => {
+    const count = parseInt(funnel[key]) || 0;
+    const pct = ((count / topVal) * 100).toFixed(1);
+    const prevCount = i > 0 ? (parseInt(funnel[keys[i - 1]]) || 0) : count;
+    const drop = i > 0 && prevCount > 0 ? (((prevCount - count) / prevCount) * 100).toFixed(0) : null;
+
+    const step = document.createElement('div');
+    step.className = 'funnel-step';
+
+    const label = document.createElement('div');
+    label.className = 'funnel-label';
+    label.textContent = FUNNEL_LABELS[key];
+
+    const barWrap = document.createElement('div');
+    barWrap.className = 'funnel-bar-wrap';
+    const bar = document.createElement('div');
+    bar.className = 'funnel-bar';
+    bar.style.width = pct + '%';
+    barWrap.appendChild(bar);
+
+    const countEl = document.createElement('div');
+    countEl.className = 'funnel-count';
+    countEl.textContent = count.toLocaleString('pt-BR');
+
+    const pctEl = document.createElement('div');
+    pctEl.className = 'funnel-pct';
+    pctEl.textContent = pct + '%';
+
+    step.appendChild(label);
+    step.appendChild(barWrap);
+    step.appendChild(countEl);
+    step.appendChild(pctEl);
+
+    if (drop !== null && Number(drop) > 20) {
+      const dropEl = document.createElement('div');
+      dropEl.className = 'funnel-drop';
+      dropEl.textContent = '−' + drop + '%';
+      step.appendChild(dropEl);
+    }
+
+    container.appendChild(step);
+  });
+}
+
+function renderInsights(funnel) {
+  const container = document.getElementById('funnel-insights');
+  container.replaceChildren();
+
+  const insights = [];
+  const views = parseInt(funnel.PageView) || 0;
+  const quizS = parseInt(funnel.QuizStarted) || 0;
+  const quizC = parseInt(funnel.QuizCompleted) || 0;
+  const vsl60 = parseInt(funnel.VSL60Seconds) || 0;
+  const ckS = parseInt(funnel.CheckoutStarted) || 0;
+  const ckC = parseInt(funnel.CheckoutClicked) || 0;
+
+  if (views > 0) {
+    const engRate = ((quizS / views) * 100).toFixed(0);
+    insights.push(engRate >= 50
+      ? `✅ ${engRate}% dos visitantes iniciam o quiz — bom engajamento!`
+      : `⚠️ Apenas ${engRate}% dos visitantes iniciam o quiz. Revise o hero da página.`);
+  }
+  if (quizS > 0) {
+    const complRate = ((quizC / quizS) * 100).toFixed(0);
+    insights.push(complRate >= 70
+      ? `✅ ${complRate}% completam o quiz — fluxo bem otimizado.`
+      : `⚠️ ${complRate}% completam o quiz. Reduza as etapas ou mude as perguntas.`);
+  }
+  if (quizC > 0 && vsl60 > 0) {
+    const retRate = ((vsl60 / quizC) * 100).toFixed(0);
+    insights.push(retRate >= 60
+      ? `✅ ${retRate}% assistem à VSL por 60s — VSL engajando bem.`
+      : `⚠️ Apenas ${retRate}% chegam a 60s na VSL. Melhore a abertura do vídeo.`);
+  }
+  if (ckS > 0 && ckC > 0) {
+    const convRate = ((ckC / ckS) * 100).toFixed(0);
+    insights.push(convRate >= 30
+      ? `✅ ${convRate}% convertem no checkout — excelente!`
+      : `⚠️ Apenas ${convRate}% convertem no checkout. Teste preço, urgência e prova social.`);
+  }
+  if (!insights.length) {
+    const p = document.createElement('p');
+    p.textContent = 'Dados insuficientes. Assim que houver tráfego os insights aparecerão aqui.';
+    container.appendChild(p);
+    return;
+  }
+  insights.forEach(txt => {
+    const p = document.createElement('p');
+    p.textContent = txt;
+    container.appendChild(p);
+  });
+}
+
+/* ─────────────────────────────────────────────
+   SALE ALERT TOAST (safe text)
+───────────────────────────────────────────── */
+function showSaleAlert(tx) {
+  playCashSound();
+  const toast = document.getElementById('sale-toast');
+  const title = document.getElementById('toast-title');
+  const body = document.getElementById('toast-body');
+  title.textContent = '🤑 Nova Venda — ' + formatMoney(tx.amount);
+  body.textContent = (tx.name || 'Alguém') + ' acabou de comprar o Google Cash!';
+  toast.style.display = 'block';
+  setTimeout(() => { toast.style.display = 'none'; }, 6000);
+}
+
+/* ─────────────────────────────────────────────
+   SERVICE WORKER + PUSH
+───────────────────────────────────────────── */
+function setupSW() {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('/sw.js').then(reg => {
+    console.log('[admin] SW registered');
+  });
+  // listen for NEW_SALE message from SW push handler
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data && e.data.type === 'NEW_SALE') {
+      playCashSound();
+      loadData();
+      const sale = e.data.payload || {};
+      showSaleAlert({ name: sale.buyer, amount: sale.amount });
+    }
+  });
+}
+
+function checkPushState() {
+  if (!('Notification' in window)) return;
+  const btn = document.getElementById('push-toggle');
+  if (Notification.permission === 'granted') {
+    pushActive = true;
+    btn.textContent = 'Desativar';
+    btn.className = 'toggle-btn on';
+  }
+}
+
+document.getElementById('push-toggle').addEventListener('click', async () => {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    alert('Seu navegador não suporta notificações push. Use Chrome ou Edge.');
+    return;
+  }
+  if (pushActive) {
+    await unsubscribePush();
+  } else {
+    await subscribePush();
+  }
+});
+
+document.getElementById('test-push-btn').addEventListener('click', () => {
+  if (Notification.permission !== 'granted') {
+    alert('Ative as notificações primeiro.');
+    return;
+  }
+  new Notification('🤑 Teste — Google Cash', {
+    body: 'Notificação funcionando! Você receberá alertas de venda assim.',
+    icon: '/assets/icon.svg'
+  });
+  playCashSound();
+});
+
+async function subscribePush() {
+  const btn = document.getElementById('push-toggle');
+  btn.textContent = 'Ativando…';
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { btn.textContent = 'Ativar'; btn.className = 'toggle-btn off'; return; }
+    const reg = await navigator.serviceWorker.ready;
+    // fetch public VAPID key from meta (injected by server) or use placeholder
+    const vapidMeta = document.querySelector('meta[name="vapid-public-key"]');
+    const vapidKey = vapidMeta ? vapidMeta.content : null;
+    if (!vapidKey || vapidKey === 'YOUR_VAPID_PUBLIC_KEY') {
+      alert('Configure o VAPID_PUBLIC_KEY nas variáveis de ambiente do Vercel para ativar push no servidor.');
+      pushActive = true;
+      btn.textContent = 'Ativo (local)'; btn.className = 'toggle-btn on';
+      return;
+    }
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(vapidKey)
+    });
+    await fetch('/api/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN },
+      body: JSON.stringify(sub)
+    });
+    pushActive = true;
+    btn.textContent = 'Desativar'; btn.className = 'toggle-btn on';
+  } catch (e) {
+    console.error('[push] subscribe error', e);
+    btn.textContent = 'Ativar'; btn.className = 'toggle-btn off';
+  }
+}
+
+async function unsubscribePush() {
+  const btn = document.getElementById('push-toggle');
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      await fetch('/api/subscribe', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN },
+        body: JSON.stringify(sub)
+      });
+      await sub.unsubscribe();
+    }
+    pushActive = false;
+    btn.textContent = 'Ativar'; btn.className = 'toggle-btn off';
+  } catch (e) { console.error('[push] unsubscribe error', e); }
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return new Uint8Array([...raw].map(c => c.charCodeAt(0)));
+}
+
+/* ─────────────────────────────────────────────
+   PWA INSTALL
+───────────────────────────────────────────── */
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstall = e;
+  document.getElementById('install-btn').style.display = 'flex';
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-btn').style.display = 'none';
+  document.getElementById('install-done').style.display = 'block';
+});
+document.getElementById('install-btn').addEventListener('click', async () => {
+  if (!deferredInstall) return;
+  deferredInstall.prompt();
+  const { outcome } = await deferredInstall.userChoice;
+  if (outcome === 'accepted') {
+    document.getElementById('install-btn').style.display = 'none';
+    document.getElementById('install-done').style.display = 'block';
+  }
+  deferredInstall = null;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<meta name="theme-color" content="#1a73e8">
+<link rel="manifest" href="/manifest.json">
+<title>Google Cash – Trabalhe com o Google</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+:root{--bl:#1a73e8;--rd:#ea4335;--yl:#fbbc05;--gn:#34a853;--dk:#202124;--bg:#f8f9fa;--card:#fff;--text:#3c4043;--sub:#5f6368;--bdr:#e0e0e0;--radius:16px;--sh:0 2px 12px rgba(0,0,0,.1)}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);max-width:480px;margin:0 auto;min-height:100vh}
+.screen{display:none;min-height:100vh;padding-bottom:100px}
+.screen.active{display:block}
+.logo{font-size:26px;font-weight:700;letter-spacing:-1px;display:inline-block}
+.g1{color:#1a73e8}.g2{color:#ea4335}.g3{color:#fbbc05}.g4{color:#1a73e8}.g5{color:#34a853}.g6{color:#ea4335}.cash{color:#202124}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--sh);padding:20px;margin:12px 16px}
+.btn{display:block;width:calc(100% - 32px);margin:0 16px;padding:16px;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.btn:active{transform:scale(.97)}
+.btn-blue{background:var(--bl);color:#fff;box-shadow:0 4px 15px rgba(26,115,232,.35)}
+.btn-green{background:var(--gn);color:#fff;box-shadow:0 4px 15px rgba(52,168,83,.35)}
+.btn-dark{background:var(--dk);color:#fff}
+.ic{width:20px;height:20px;display:inline-block;vertical-align:middle;flex-shrink:0}
+.ic-sm{width:16px;height:16px;display:inline-block;flex-shrink:0}
+.ic-lg{width:28px;height:28px;display:inline-block;flex-shrink:0}
+/* LANDING */
+#s-landing{background:linear-gradient(180deg,#fff 0%,#f0f7ff 100%)}
+.hero{padding:32px 20px 16px;text-align:center}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#e8f0fe;color:var(--bl);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;margin-bottom:18px}
+.hero h1{font-size:24px;font-weight:800;line-height:1.3;margin-bottom:12px;color:var(--dk)}
+.hero h1 .hi{color:var(--bl)}
+.hero p{font-size:14px;color:var(--sub);line-height:1.7;margin-bottom:20px}
+.social-proof{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px}
+.faces{display:flex}
+.face-img{width:32px;height:32px;border-radius:50%;border:2px solid #fff;margin-right:-8px;object-fit:cover;flex-shrink:0}
+.sp-text{font-size:13px;color:var(--sub)}.sp-text strong{color:var(--dk)}
+.trust-row{display:flex;justify-content:space-around;padding:4px 0}
+.trust-item{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;color:var(--sub);font-weight:600}
+/* QUIZ */
+.qheader{padding:20px 16px 0}
+.qprogress{background:#e0e0e0;height:6px;border-radius:3px;margin:10px 0}
+.qpbar{height:100%;border-radius:3px;background:var(--bl);transition:width .4s ease}
+.qstep-num{font-size:12px;color:var(--sub)}
+.quiz-q{font-size:17px;font-weight:700;color:var(--dk);padding:16px;line-height:1.4}
+.qopt{background:#fff;border:2px solid var(--bdr);border-radius:12px;padding:14px 16px;margin:0 16px 10px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s,background .2s;font-size:15px}
+.qopt.selected{border-color:var(--bl);background:#e8f0fe}
+.qletter{width:28px;height:28px;border-radius:50%;background:#f1f3f4;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--sub);flex-shrink:0}
+.qopt.selected .qletter{background:var(--bl);color:#fff}
+/* TUTORIAL */
+#s-tutorial{background:#fff}
+.tut-header{text-align:center;padding:32px 20px 16px}
+.tut-icon-wrap{width:72px;height:72px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.tut-steps{margin:0 16px 16px}
+.tut-step{display:flex;gap:14px;align-items:flex-start;padding:14px;background:#f8f9fa;border-radius:12px;margin-bottom:10px}
+.tut-num{width:32px;height:32px;border-radius:50%;background:var(--bl);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+.tut-text h3{font-size:14px;font-weight:700;color:var(--dk);margin-bottom:3px}
+.tut-text p{font-size:13px;color:var(--sub);line-height:1.5}
+.consent-box{margin:0 16px 16px;padding:16px;border:2px solid var(--bdr);border-radius:12px}
+.consent-check{display:flex;align-items:center;gap:12px;cursor:pointer;font-size:14px;color:var(--text)}
+.consent-check input{width:20px;height:20px;accent-color:var(--bl);flex-shrink:0}
+/* SIMULATOR */
+.revenue-bar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-bottom:1px solid var(--bdr);padding:12px 16px;z-index:100;display:none;align-items:center;justify-content:space-between}
+.revenue-bar.visible{display:flex}
+.rev-label{font-size:11px;color:var(--sub)}
+.rev-amount{font-size:17px;font-weight:800;color:var(--gn)}
+.progress-wrap{flex:1;margin:0 12px;background:#e0e0e0;height:6px;border-radius:3px}
+.progress-fill{height:100%;border-radius:3px;background:var(--gn);transition:width .6s ease}
+.company-card{background:#fff;border-radius:20px;box-shadow:var(--sh);margin:10px 16px;overflow:hidden;border:2px solid transparent;transition:border-color .3s}
+.company-card.done{border-color:var(--gn)}
+.company-header{display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer}
+/* Company logos */
+.clogo{width:52px;height:52px;border-radius:14px;overflow:hidden;flex-shrink:0;position:relative}
+.clogo img{width:52px;height:52px;object-fit:cover;border-radius:12px;display:block}
+.clogo .clogo-fb{display:none;width:52px;height:52px;border-radius:12px;align-items:center;justify-content:center;flex-shrink:0}
+.clogo.no-img img{display:none}
+.clogo.no-img .clogo-fb{display:flex}
+.company-info h3{font-size:15px;font-weight:700;color:var(--dk)}
+.company-info p{font-size:12px;color:var(--sub)}
+.company-status{margin-left:auto;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;white-space:nowrap}
+.status-pending{background:#fff3e0;color:#e65100}
+.status-done{background:#e8f5e9;color:#1b5e20}
+.company-body{padding:0 16px 16px;display:none}
+.company-body.open{display:block}
+/* Owner message */
+.owner-msg{background:#f0f9eb;border-radius:0 14px 14px 14px;padding:13px 15px;margin-bottom:16px;border-left:3px solid var(--gn)}
+.owner-msg-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.owner-msg-head .om-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.owner-msg-head .om-name{font-size:13px;font-weight:700;color:var(--dk)}
+.owner-msg-head .om-role{font-size:11px;color:var(--sub)}
+.owner-msg p{font-size:13px;color:var(--text);line-height:1.6;font-style:italic}
+/* Simulator tasks — selection based */
+.sim-task{background:#fff;border:1.5px solid var(--bdr);border-radius:14px;padding:14px;margin-bottom:10px;transition:border-color .3s}
+.sim-task.tr-done{border-color:var(--gn)}
+.sim-task-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.sim-task-num{width:26px;height:26px;border-radius:50%;background:#e8f0fe;color:var(--bl);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .3s,color .3s}
+.sim-task.tr-done .sim-task-num{background:var(--gn);color:#fff}
+.sim-task-label{flex:1;font-size:13px;font-weight:700;color:var(--dk)}
+.tr-ck{width:22px;height:22px;border-radius:50%;border:2px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;transition:all .3s}
+.sim-task.tr-done .tr-ck{background:var(--gn);border-color:var(--gn)}
+.sc-group{display:flex;flex-direction:column;gap:8px}
+.sc{background:#f8f9fa;border:1.5px solid var(--bdr);border-radius:10px;padding:12px 14px;font-size:13px;color:var(--text);cursor:pointer;transition:all .2s;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.sc:active{transform:scale(.98);background:#f1f3f4}
+.sc.sc-sel{border-color:var(--gn);background:#e8f5e9;color:var(--dk);font-weight:600}
+.review-mini{background:#f8f9fa;border-radius:10px;padding:11px 13px;margin-bottom:10px;border-left:3px solid var(--yl)}
+.rm-user{font-size:12px;font-weight:700;color:var(--dk);margin-bottom:2px}
+.rm-stars{color:var(--yl);font-size:11px;margin-bottom:3px}
+.rm-text{font-size:12px;color:var(--sub);line-height:1.5;font-style:italic}
+.sim-submit{margin:14px 0 0;padding:14px;background:var(--gn);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;width:100%;transition:opacity .3s,transform .15s}
+.sim-submit:active{transform:scale(.97)}
+.sim-submit:disabled{opacity:.35;cursor:not-allowed}
+/* RESULTS */
+#s-results{background:linear-gradient(180deg,#e8f0fe 0%,#f0f7f0 100%)}
+.result-hero{text-align:center;padding:40px 20px 20px}
+.result-total{font-size:52px;font-weight:800;color:var(--gn);line-height:1}
+.result-label{font-size:15px;color:var(--sub);margin-top:8px}
+.result-breakdown{margin:0 16px 16px}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#fff;border-radius:10px;margin-bottom:8px}
+.breakdown-name{font-size:14px;font-weight:600;color:var(--dk)}
+.breakdown-val{font-size:16px;font-weight:800;color:var(--gn)}
+/* VSL — LIGHT GOOGLE THEME */
+#s-vsl{background-color:#fff;background-image:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(0,0,0,.045) 23px,rgba(0,0,0,.045) 24px),repeating-linear-gradient(90deg,transparent,transparent 23px,rgba(0,0,0,.045) 23px,rgba(0,0,0,.045) 24px);position:relative;overflow:hidden}
+.vsl-screens-bg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:0}
+.sc-float{position:absolute;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.sc-float:nth-child(1){top:-20px;right:-40px;width:120px;height:200px;transform:rotate(8deg);opacity:.07}
+.sc-float:nth-child(2){bottom:60px;left:-50px;width:110px;height:190px;transform:rotate(-6deg);opacity:.06}
+.sc-float:nth-child(3){top:40%;right:-60px;width:100px;height:180px;transform:rotate(5deg);opacity:.05}
+.sc-body{background:linear-gradient(135deg,#1a73e8,#0d47a1);width:100%;height:100%}
+.vsl-content{position:relative;z-index:1}
+.vsl-top{padding:24px 16px 16px;text-align:center}
+.vsl-badge{display:inline-flex;align-items:center;gap:6px;background:#e8f0fe;border:1px solid rgba(26,115,232,.25);color:var(--bl);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;margin-bottom:14px}
+.vsl-top h2{font-size:18px;font-weight:800;color:var(--dk);margin-bottom:8px;line-height:1.4}
+.vsl-top .vsl-sub{font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.6}
+.vsl-wrap{margin:0 16px;border-radius:16px;overflow:hidden;background:#f1f3f4;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--bdr)}
+.play-btn{width:68px;height:68px;background:rgba(26,115,232,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(26,115,232,.35)}
+.play-arrow{width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:24px solid #fff;margin-left:5px}
+.vsl-timer{text-align:center;padding:14px;color:var(--sub);font-size:13px}
+.vagas-badge{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--bdr);border-radius:12px;padding:10px 16px;margin:0 16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.vagas-dot{width:8px;height:8px;border-radius:50%;background:#ea4335;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
+.vagas-text{font-size:13px;color:var(--text)}
+.vagas-text strong{color:var(--dk);font-weight:800}
+.vsl-cta{margin:14px 16px;display:none}
+.vsl-cta.visible{display:block}
+/* VSL Benefits */
+.vsl-benefits{margin:20px 16px 0;background:#fff;border-radius:16px;padding:16px;border:1px solid var(--bdr);box-shadow:var(--sh)}
+.vbl-title{font-size:15px;font-weight:800;color:var(--dk);margin-bottom:14px;text-align:center}
+.benefit-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bdr)}
+.benefit-row:last-child{border-bottom:0}
+.bic{width:28px;height:28px;border-radius:8px;background:#e8f0fe;border:1px solid rgba(26,115,232,.2);display:flex;align-items:center;justify-content:center;color:var(--bl);flex-shrink:0}
+.btext{flex:1;font-size:13px;color:var(--text)}
+.bprice{text-align:right;flex-shrink:0}
+.bprice .from{font-size:11px;color:var(--rd);text-decoration:line-through;display:block}
+.bprice .bonus-lbl{font-size:10px;color:var(--gn);font-weight:700;display:block;white-space:nowrap}
+/* Google Reviews */
+.grev-section{margin:20px 16px 0;padding-bottom:20px}
+.grev-section h3{font-size:15px;font-weight:700;color:var(--dk);margin-bottom:8px}
+.grev-summary{display:flex;align-items:center;gap:12px;margin-bottom:14px;background:#f8f9fa;border-radius:12px;padding:12px;border:1px solid var(--bdr)}
+.grev-score{font-size:36px;font-weight:800;color:var(--dk);line-height:1}
+.grev-right .gstars{color:var(--yl);font-size:18px}
+.grev-right .gcnt{font-size:12px;color:var(--sub);margin-top:2px}
+.grev-card{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid var(--bdr);box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.grev-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.grev-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.grev-name{font-size:14px;font-weight:700;color:var(--dk)}
+.grev-meta{display:flex;align-items:center;gap:8px;margin-top:2px}
+.grev-stars{color:var(--yl);font-size:13px}
+.grev-time{font-size:11px;color:var(--sub)}
+.grev-text{font-size:13px;color:var(--text);line-height:1.6;margin-bottom:8px}
+.grev-reply{background:#f8f9fa;border-radius:8px;padding:10px;border-left:3px solid var(--bl)}
+.grev-reply-label{font-size:11px;font-weight:700;color:var(--bl);margin-bottom:4px}
+.grev-reply p{font-size:12px;color:var(--sub);line-height:1.5}
+.show-more-btn{width:100%;padding:12px;background:#fff;border:1px solid var(--bdr);border-radius:10px;color:var(--bl);font-size:13px;font-weight:600;cursor:pointer;margin-top:4px}
+.more-reviews{display:none}
+.more-reviews.visible{display:block}
+/* OFFER */
+#s-offer{background-color:#fff;background-image:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(0,0,0,.04) 23px,rgba(0,0,0,.04) 24px),repeating-linear-gradient(90deg,transparent,transparent 23px,rgba(0,0,0,.04) 23px,rgba(0,0,0,.04) 24px);}
+.offer-header{text-align:center;padding:28px 16px 16px}
+.offer-header h1{font-size:22px;font-weight:800;color:var(--dk);margin-bottom:8px;line-height:1.3}
+.vaga-tag{display:inline-flex;align-items:center;gap:6px;background:#fff3e0;color:#e65100;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;margin-bottom:12px}
+.countdown{display:flex;gap:8px;justify-content:center;margin-bottom:16px}
+.cd-unit{text-align:center;background:var(--dk);color:#fff;border-radius:8px;padding:8px 12px;min-width:52px}
+.cd-num{font-size:24px;font-weight:800;line-height:1}
+.cd-label{font-size:10px;color:#aaa;margin-top:2px}
+.price-box{margin:0 16px 14px;background:#fff;border-radius:16px;box-shadow:var(--sh);padding:24px 20px;text-align:center}
+.price-from{text-decoration:line-through;color:#aaa;font-size:14px;margin-bottom:4px}
+.price-main{font-size:44px;font-weight:800;color:var(--dk);line-height:1}
+.price-sub{font-size:13px;color:var(--sub);margin-top:4px}
+.price-tag{display:inline-block;background:#34a853;color:#fff;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:700;margin-top:12px}
+.what-you-get{margin:0 16px 14px}
+.wyg-title{font-size:16px;font-weight:800;color:var(--dk);margin-bottom:12px}
+.wyg-item{display:flex;align-items:center;gap:12px;padding:11px 14px;background:#fff;border-radius:10px;margin-bottom:8px;box-shadow:0 1px 5px rgba(0,0,0,.07)}
+.wyg-icon{width:32px;height:32px;border-radius:8px;background:#e8f0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--bl)}
+.wyg-info{flex:1}
+.wyg-name{font-size:13px;font-weight:700;color:var(--dk)}
+.wyg-price{font-size:11px;color:var(--sub);margin-top:1px}
+.wyg-price .stk{color:var(--rd);text-decoration:line-through;margin-right:4px}
+.wyg-price .incluso{color:var(--bl);font-weight:700}
+.wyg-price .bonus-gc{color:var(--gn);font-weight:700}
+.guarantee-box{margin:0 16px 14px;padding:18px;background:#fff;border-radius:16px;border:2px solid var(--gn);display:flex;gap:14px;align-items:flex-start}
+.guarantee-icon{flex-shrink:0;color:var(--gn)}
+.guarantee-text h3{font-size:15px;font-weight:700;color:var(--dk);margin-bottom:4px}
+.guarantee-text p{font-size:13px;color:var(--sub);line-height:1.5}
+/* Reclame Aqui */
+.ra-badge{margin:0 16px 14px;padding:14px 16px;background:#fff;border-radius:14px;border:1.5px solid var(--bdr);display:flex;align-items:center;gap:14px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.ra-logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#f5a623,#e67e22);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;letter-spacing:-1px;flex-shrink:0}
+.ra-info{flex:1}
+.ra-score{font-size:14px;font-weight:800;color:var(--dk)}
+.ra-stars-row{color:#f5a623;font-size:13px;line-height:1.2}
+.ra-sub{font-size:11px;color:var(--sub);margin-top:1px}
+.faq{margin:0 16px 16px}
+.faq h3{font-size:16px;font-weight:700;color:var(--dk);margin-bottom:10px}
+.faq-item{background:#fff;border-radius:10px;margin-bottom:8px;overflow:hidden}
+.faq-q{padding:14px 16px;font-size:14px;font-weight:600;color:var(--dk);cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+.faq-a{padding:0 16px;font-size:13px;color:var(--sub);line-height:1.6;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s}
+.faq-item.open .faq-a{max-height:200px;padding:0 16px 14px}
+.sticky-cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;padding:12px 16px;background:#fff;border-top:1px solid var(--bdr);z-index:100}
+#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--dk);color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;transition:transform .3s;z-index:999;white-space:nowrap;pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0)}
+.mt16{margin-top:16px}.mb16{margin-bottom:16px}.tc{text-align:center}.fw7{font-weight:700}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.tag-green{background:#e8f5e9;color:var(--gn)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- ===== SCREEN 1: LANDING ===== -->
+<div id="s-landing" class="screen active">
+  <div class="hero">
+    <div class="hero-badge">
+      <svg class="ic-sm" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Mais de 4.200 pessoas já trabalham com Google Cash
+    </div>
+    <div class="logo mb16"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span> <span class="cash">Cash</span></div>
+    <h1>Trabalhe com o Google e<br>Ganhe <span class="hi">mais de R$2.300/mês</span></h1>
+    <p>Uma oportunidade real de trabalho gerenciando perfis do Google Meu Negócio para empresas locais — com estrutura completa, aplicativo próprio e <strong>Certificado Oficial Google Cash</strong>.</p>
+    <div class="social-proof">
+      <div class="faces">
+        <img class="face-img" src="assets/faces/face-sp1.jpg" alt="">
+        <img class="face-img" src="assets/faces/face-sp2.jpg" alt="">
+        <img class="face-img" src="assets/faces/face-sp3.jpg" alt="">
+        <img class="face-img" src="assets/faces/face-sp4.jpg" alt="">
+        <img class="face-img" src="assets/faces/face-sp5.jpg" alt="">
+      </div>
+      <span class="sp-text"><strong>4.200+</strong> pessoas já estão ganhando</span>
+    </div>
+  </div>
+  <div class="card tc mb16">
+    <span class="tag tag-green">Renda Real • Comprovada</span>
+    <div id="lp-breakdown" style="margin-top:12px"></div>
+  </div>
+  <button class="btn btn-blue" onclick="goQuiz()">Quero Trabalhar com Google Cash</button>
+  <p class="tc mt16" style="font-size:12px;color:var(--sub);padding:0 16px 8px">Responda 6 perguntas rápidas para começar a gerar renda ajudando empresas locais a aparecer no Google</p>
+  <div class="card mt16">
+    <div class="trust-row">
+      <div class="trust-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2"><rect x="3" y="3" width="12" height="9" rx="1"/><path d="M19 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M13 18l3 3 3-3M13 21v-6"/></svg>
+        <span>Certificado Oficial</span>
+      </div>
+      <div class="trust-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+        <span>App Incluído</span>
+      </div>
+      <div class="trust-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        <span>Comunidade</span>
+      </div>
+      <div class="trust-item">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Garantia 7 Dias</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: QUIZ ===== -->
+<div id="s-quiz" class="screen">
+  <div class="qheader">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="logo" style="font-size:20px"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span> <span class="cash">Cash</span></div>
+      <span id="qcounter" class="qstep-num">Pergunta 1 de 6</span>
+    </div>
+    <div class="qprogress"><div class="qpbar" id="qbar" style="width:16%"></div></div>
+  </div>
+  <div class="quiz-step" id="q1">
+    <p class="quiz-q">Você tem acesso à internet pelo celular ou computador?</p>
+    <div class="qopt" onclick="selectQ(1,'sim',this)"><div class="qletter">A</div><span>Sim, tenho acesso todo dia</span></div>
+    <div class="qopt" onclick="selectQ(1,'as-vezes',this)"><div class="qletter">B</div><span>Às vezes, quando tenho Wi-Fi</span></div>
+    <div class="qopt" onclick="selectQ(1,'nao',this)"><div class="qletter">C</div><span>Tenho dificuldades de acesso</span></div>
+  </div>
+  <div class="quiz-step" id="q2" style="display:none">
+    <p class="quiz-q">Quantas horas por dia você poderia dedicar?</p>
+    <div class="qopt" onclick="selectQ(2,'1h',this)"><div class="qletter">A</div><span>1 hora por dia</span></div>
+    <div class="qopt" onclick="selectQ(2,'2h',this)"><div class="qletter">B</div><span>2 horas por dia</span></div>
+    <div class="qopt" onclick="selectQ(2,'3h',this)"><div class="qletter">C</div><span>3+ horas por dia</span></div>
+  </div>
+  <div class="quiz-step" id="q3" style="display:none">
+    <p class="quiz-q">Você já usou o Google Meu Negócio?</p>
+    <div class="qopt" onclick="selectQ(3,'sim',this)"><div class="qletter">A</div><span>Sim, já conheço bem</span></div>
+    <div class="qopt" onclick="selectQ(3,'pouco',this)"><div class="qletter">B</div><span>Ouvi falar, mas nunca usei</span></div>
+    <div class="qopt" onclick="selectQ(3,'nao',this)"><div class="qletter">C</div><span>Nunca ouvi falar</span></div>
+  </div>
+  <div class="quiz-step" id="q4" style="display:none">
+    <p class="quiz-q">Qual é sua situação financeira atual?</p>
+    <div class="qopt" onclick="selectQ(4,'empregado',this)"><div class="qletter">A</div><span>Tenho emprego fixo</span></div>
+    <div class="qopt" onclick="selectQ(4,'freelancer',this)"><div class="qletter">B</div><span>Trabalho como freelancer</span></div>
+    <div class="qopt" onclick="selectQ(4,'desempregado',this)"><div class="qletter">C</div><span>Estou desempregado(a)</span></div>
+  </div>
+  <div class="quiz-step" id="q5" style="display:none">
+    <p class="quiz-q">Qual renda extra você quer gerar por mês?</p>
+    <div class="qopt" onclick="selectQ(5,'500',this)"><div class="qletter">A</div><span>R$ 500 a R$ 1.000</span></div>
+    <div class="qopt" onclick="selectQ(5,'2000',this)"><div class="qletter">B</div><span>R$ 1.000 a R$ 2.000</span></div>
+    <div class="qopt" onclick="selectQ(5,'5000',this)"><div class="qletter">C</div><span>R$ 2.000 a R$ 5.000</span></div>
+    <div class="qopt" onclick="selectQ(5,'10000',this)"><div class="qletter">D</div><span>Mais de R$ 10.000</span></div>
+  </div>
+  <div class="quiz-step" id="q6" style="display:none">
+    <p class="quiz-q">Você está disposto(a) a aprender e aplicar um método comprovado?</p>
+    <div class="qopt" onclick="selectQ(6,'sim',this)"><div class="qletter">A</div><span>Sim, estou comprometido(a)</span></div>
+    <div class="qopt" onclick="selectQ(6,'talvez',this)"><div class="qletter">B</div><span>Talvez, preciso ver mais</span></div>
+    <div class="qopt" onclick="selectQ(6,'nao',this)"><div class="qletter">C</div><span>Ainda tenho dúvidas</span></div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 3: TUTORIAL ===== -->
+<div id="s-tutorial" class="screen">
+  <div class="tut-header">
+    <div class="logo mb16"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span> <span class="cash">Cash</span></div>
+    <div class="tut-icon-wrap">
+      <svg class="ic-lg" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M12 12v4M10 14h4"/></svg>
+    </div>
+    <h2 style="font-size:20px;font-weight:800;margin-bottom:8px;color:var(--dk)">Como funciona o Google Cash</h2>
+    <p style="font-size:14px;color:var(--sub);line-height:1.6">Você vai gerenciar perfis do Google Meu Negócio para empresas locais com estrutura completa e certificado oficial</p>
+  </div>
+  <div class="tut-steps">
+    <div class="tut-step"><div class="tut-num">1</div><div class="tut-text"><h3>Encontre Empresas</h3><p>Identifique negócios locais com perfis abandonados no Google</p></div></div>
+    <div class="tut-step"><div class="tut-num">2</div><div class="tut-text"><h3>Ofereça o Serviço</h3><p>Use nosso script comprovado e feche clientes mensais</p></div></div>
+    <div class="tut-step"><div class="tut-num">3</div><div class="tut-text"><h3>Gerencie com o App</h3><p>Execute tarefas com o aplicativo Google Cash e nossa estrutura</p></div></div>
+    <div class="tut-step"><div class="tut-num">4</div><div class="tut-text"><h3>Receba e Escale</h3><p>R$280 a R$870 por cliente — e escale para agência própria</p></div></div>
+  </div>
+  <div class="consent-box">
+    <label class="consent-check">
+      <input type="checkbox" id="consent-chk" onchange="checkConsent()">
+      <span>Entendo o método e aceito participar da simulação de renda personalizada</span>
+    </label>
+  </div>
+  <button class="btn btn-blue" id="tut-btn" onclick="goSimulator()" disabled style="opacity:.5">Ver Minha Simulação</button>
+</div>
+
+<!-- ===== SCREEN 4: SIMULATOR ===== -->
+<div id="s-simulator" class="screen" style="padding-top:70px">
+  <div class="revenue-bar" id="rev-bar">
+    <div><div class="rev-label">Renda Mensal</div><div class="rev-amount" id="rev-display">R$ 0</div></div>
+    <div class="progress-wrap"><div class="progress-fill" id="sim-progress" style="width:0%"></div></div>
+    <div style="font-size:12px;color:var(--sub)" id="comp-counter">0/4</div>
+  </div>
+  <div style="text-align:center;padding:18px 16px 8px">
+    <div class="logo" style="font-size:22px;margin-bottom:8px"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span> <span class="cash">Cash</span></div>
+    <h2 style="font-size:18px;font-weight:800;color:var(--dk);margin-bottom:4px">Simulação de Clientes</h2>
+    <p style="font-size:13px;color:var(--sub)">Selecione as opções corretas para otimizar cada perfil</p>
+  </div>
+
+  <!-- COMPANY 1: CAFÉ CENTRAL -->
+  <div class="company-card" id="cc1" data-tasks="3">
+    <div class="company-header" onclick="toggleCompany(1)">
+      <div class="clogo" id="cl1">
+        <img src="assets/logos/cafe-central.jpg" alt="Café Central" onerror="document.getElementById('cl1').classList.add('no-img')">
+        <div class="clogo-fb" style="background:linear-gradient(135deg,#6d4c41,#4e342e)">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg>
+        </div>
+      </div>
+      <div class="company-info"><h3>Café Central</h3><p>Cafeteria • R$ 280/mês</p></div>
+      <div class="company-status status-pending" id="cs1">Pendente</div>
+    </div>
+    <div class="company-body" id="ct1">
+      <div class="owner-msg">
+        <div class="owner-msg-head">
+          <div class="om-av" style="background:#fff3e0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#795548" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg></div>
+          <div><div class="om-name">João — Café Central</div><div class="om-role">Proprietário</div></div>
+        </div>
+        <p>"Olá! Sou dono do Café Central, uma cafeteria tradicional desde 1985. Nunca configurei direito o Google Meu Negócio. Precisamos de ajuda urgente — o horário e a localização estão errados!"</p>
+      </div>
+
+      <!-- TASK 1: LOCALIZAÇÃO -->
+      <div class="sim-task" id="tr1_1">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">1</div>
+          <div class="sim-task-label">Onde fica o Café Central?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(1,1,this)">Savassi, Belo Horizonte – MG</div>
+          <div class="sc" onclick="pick(1,1,this)">Centro, São Paulo – SP</div>
+          <div class="sc" onclick="pick(1,1,this)">Congonhas, São Paulo – SP</div>
+        </div>
+      </div>
+
+      <!-- TASK 2: HORÁRIO -->
+      <div class="sim-task" id="tr1_2">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">2</div>
+          <div class="sim-task-label">Qual o horário correto de funcionamento?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(1,2,this)">Seg–Sex: 08h–17h (fechado no sábado)</div>
+          <div class="sc" onclick="pick(1,2,this)">Seg–Sáb: 07h–20h | Dom: 08h–14h</div>
+          <div class="sc" onclick="pick(1,2,this)">Todos os dias: 24 horas</div>
+        </div>
+      </div>
+
+      <!-- TASK 3: RESPOSTA DE AVALIAÇÃO -->
+      <div class="sim-task" id="tr1_3">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">3</div>
+          <div class="sim-task-label">Qual a melhor resposta para esta avaliação?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="review-mini">
+          <div class="rm-user">Maria C.</div>
+          <div class="rm-stars">★★★★★</div>
+          <div class="rm-text">"Melhor café do centro! Atendimento nota 10, sempre fresquinho."</div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(1,3,this)">Obrigado!</div>
+          <div class="sc" onclick="pick(1,3,this)">Agradecemos o feedback, volte sempre.</div>
+          <div class="sc" onclick="pick(1,3,this)">Muito obrigado, Maria! É uma honra receber seu elogio. Estamos sempre renovando o cardápio para surpreender. Te esperamos amanhã!</div>
+        </div>
+      </div>
+
+      <button class="sim-submit" id="sub1" onclick="submitCompany(1,280)" disabled>Enviar e Receber R$ 280</button>
+    </div>
+  </div>
+
+  <!-- COMPANY 2: CLÍNICA SORRISO -->
+  <div class="company-card" id="cc2" data-tasks="3">
+    <div class="company-header" onclick="toggleCompany(2)">
+      <div class="clogo" id="cl2">
+        <img src="assets/logos/clinica-sorriso.jpg" alt="Clínica Sorriso" onerror="document.getElementById('cl2').classList.add('no-img')">
+        <div class="clogo-fb" style="background:linear-gradient(135deg,#26c6da,#1565c0)">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M12 2a7 7 0 00-7 7c0 3.5 2.5 6.5 5.5 7.5V19h3v-2.5C16.5 15.5 19 12.5 19 9a7 7 0 00-7-7z"/><circle cx="9" cy="9" r="1" fill="#fff"/><circle cx="15" cy="9" r="1" fill="#fff"/></svg>
+        </div>
+      </div>
+      <div class="company-info"><h3>Clínica Sorriso</h3><p>Odontologia • R$ 870/mês</p></div>
+      <div class="company-status status-pending" id="cs2">Pendente</div>
+    </div>
+    <div class="company-body" id="ct2">
+      <div class="owner-msg">
+        <div class="owner-msg-head">
+          <div class="om-av" style="background:#e3f2fd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2"><path d="M12 2a7 7 0 00-7 7c0 3.5 2.5 6.5 5.5 7.5V19h3v-2.5C16.5 15.5 19 12.5 19 9a7 7 0 00-7-7z"/></svg></div>
+          <div><div class="om-name">Dra. Carla — Clínica Sorriso</div><div class="om-role">Proprietária</div></div>
+        </div>
+        <p>"Olá! Minha clínica está crescendo mas o perfil no Google está desatualizado. O horário está errado e tenho perguntas de pacientes sem resposta. Precisamos corrigir urgente!"</p>
+      </div>
+
+      <!-- TASK 1: LOCALIZAÇÃO -->
+      <div class="sim-task" id="tr2_1">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">1</div>
+          <div class="sim-task-label">Em qual bairro fica a Clínica Sorriso?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(2,1,this)">Campinas, SP</div>
+          <div class="sc" onclick="pick(2,1,this)">Consolação, São Paulo – SP</div>
+          <div class="sc" onclick="pick(2,1,this)">Santo André, SP</div>
+        </div>
+      </div>
+
+      <!-- TASK 2: HORÁRIO -->
+      <div class="sim-task" id="tr2_2">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">2</div>
+          <div class="sim-task-label">Qual o horário correto da clínica?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(2,2,this)">Todos os dias: 09h–21h</div>
+          <div class="sc" onclick="pick(2,2,this)">Seg–Sex: 08h–18h | Sáb: 08h–12h</div>
+          <div class="sc" onclick="pick(2,2,this)">Seg–Dom: 07h–19h (plantão 24h)</div>
+        </div>
+      </div>
+
+      <!-- TASK 3: RESPOSTA FAQ -->
+      <div class="sim-task" id="tr2_3">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">3</div>
+          <div class="sim-task-label">Paciente perguntou sobre convênio. Qual a melhor resposta?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="review-mini">
+          <div class="rm-user">Pedro A.</div>
+          <div class="rm-stars">★★★★★</div>
+          <div class="rm-text">"Vocês aceitam convênio? Qual o valor da consulta de avaliação?"</div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(2,3,this)">Sim, aceitamos convênio.</div>
+          <div class="sc" onclick="pick(2,3,this)">Aceitamos convênio. Ligue para mais informações.</div>
+          <div class="sc" onclick="pick(2,3,this)">Olá Pedro! Consulta de avaliação gratuita. Aceitamos Unimed, Bradesco e Amil. Mande mensagem no WhatsApp para agendar. Aguardamos você!</div>
+        </div>
+      </div>
+
+      <button class="sim-submit" id="sub2" onclick="submitCompany(2,870)" disabled>Enviar e Receber R$ 870</button>
+    </div>
+  </div>
+
+  <!-- COMPANY 3: ACADEMIA POWERFIT -->
+  <div class="company-card" id="cc3" data-tasks="3">
+    <div class="company-header" onclick="toggleCompany(3)">
+      <div class="clogo" id="cl3">
+        <img src="assets/logos/academia-powerfit.jpg" alt="Academia PowerFit" onerror="document.getElementById('cl3').classList.add('no-img')">
+        <div class="clogo-fb" style="background:linear-gradient(135deg,#e64a19,#1a237e)">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M6 4v16M18 4v16M6 12h12M2 7h4M18 7h4M2 17h4M18 17h4"/></svg>
+        </div>
+      </div>
+      <div class="company-info"><h3>Academia PowerFit</h3><p>Academia • R$ 530/mês</p></div>
+      <div class="company-status status-pending" id="cs3">Pendente</div>
+    </div>
+    <div class="company-body" id="ct3">
+      <div class="owner-msg">
+        <div class="owner-msg-head">
+          <div class="om-av" style="background:#fff3e0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e65100" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12M2 7h4M18 7h4"/></svg></div>
+          <div><div class="om-name">Roberto — Academia PowerFit</div><div class="om-role">Proprietário</div></div>
+        </div>
+        <p>"Salve! Nossa academia tem musculação, spinning e funcional. Tem uma avaliação negativa sem resposta que está prejudicando muito. Preciso de ajuda para responder e configurar o perfil!"</p>
+      </div>
+
+      <!-- TASK 1: CATEGORIA -->
+      <div class="sim-task" id="tr3_1">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">1</div>
+          <div class="sim-task-label">Qual a categoria correta da PowerFit?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(3,1,this)">Estúdio de Yoga</div>
+          <div class="sc" onclick="pick(3,1,this)">Academia de Ginástica</div>
+          <div class="sc" onclick="pick(3,1,this)">Centro de Pilates</div>
+        </div>
+      </div>
+
+      <!-- TASK 2: HORÁRIO -->
+      <div class="sim-task" id="tr3_2">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">2</div>
+          <div class="sim-task-label">Qual o horário de funcionamento?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(3,2,this)">Seg–Sex: 09h–18h</div>
+          <div class="sc" onclick="pick(3,2,this)">Somente fins de semana: 08h–16h</div>
+          <div class="sc" onclick="pick(3,2,this)">Seg–Sex: 06h–22h | Sáb: 07h–16h | Dom: 08h–12h</div>
+        </div>
+      </div>
+
+      <!-- TASK 3: RESPOSTA AVALIAÇÃO NEGATIVA -->
+      <div class="sim-task" id="tr3_3">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">3</div>
+          <div class="sim-task-label">Como responder esta avaliação negativa?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="review-mini">
+          <div class="rm-user">Márcia S.</div>
+          <div class="rm-stars" style="color:#ea4335">★★★☆☆</div>
+          <div class="rm-text">"Equipamentos antigos e academia muito cheia no horário nobre. Falta manutenção."</div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(3,3,this)">Pedimos desculpas pelo ocorrido.</div>
+          <div class="sc" onclick="pick(3,3,this)">Lamentamos o inconveniente. Estamos melhorando.</div>
+          <div class="sc" onclick="pick(3,3,this)">Olá Márcia! Obrigado pelo feedback. Investimos em novos equipamentos recentemente e ampliamos o espaço. Venha conhecer as melhorias — tenho certeza que vai surpreender!</div>
+        </div>
+      </div>
+
+      <button class="sim-submit" id="sub3" onclick="submitCompany(3,530)" disabled>Enviar e Receber R$ 530</button>
+    </div>
+  </div>
+
+  <!-- COMPANY 4: PETCARE CENTER -->
+  <div class="company-card" id="cc4" data-tasks="3">
+    <div class="company-header" onclick="toggleCompany(4)">
+      <div class="clogo" id="cl4">
+        <img src="assets/logos/petcare.jpg" alt="PetCare Center" onerror="document.getElementById('cl4').classList.add('no-img')">
+        <div class="clogo-fb" style="background:linear-gradient(135deg,#00897b,#f4a261)">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </div>
+      </div>
+      <div class="company-info"><h3>PetCare Center</h3><p>Pet Shop • R$ 620/mês</p></div>
+      <div class="company-status status-pending" id="cs4">Pendente</div>
+    </div>
+    <div class="company-body" id="ct4">
+      <div class="owner-msg">
+        <div class="owner-msg-head">
+          <div class="om-av" style="background:#e0f2f1"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00695c" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div><div class="om-name">Ana — PetCare Center</div><div class="om-role">Proprietária</div></div>
+        </div>
+        <p>"Olá! Temos pet shop com banho, tosa e veterinário. Recebo avaliações mas nunca respondo. Meu perfil está quase vazio. Precisaria muito de ajuda!"</p>
+      </div>
+
+      <!-- TASK 1: LOCALIZAÇÃO -->
+      <div class="sim-task" id="tr4_1">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">1</div>
+          <div class="sim-task-label">Onde fica o PetCare Center?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(4,1,this)">Pinheiros, São Paulo – SP</div>
+          <div class="sc" onclick="pick(4,1,this)">Itaquera, São Paulo – SP</div>
+          <div class="sc" onclick="pick(4,1,this)">Bela Vista, São Paulo – SP</div>
+        </div>
+      </div>
+
+      <!-- TASK 2: SERVIÇO PRINCIPAL -->
+      <div class="sim-task" id="tr4_2">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">2</div>
+          <div class="sim-task-label">Qual o serviço principal do PetCare?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(4,2,this)">Venda de rações online</div>
+          <div class="sc" onclick="pick(4,2,this)">Passeio e adestramento de pets</div>
+          <div class="sc" onclick="pick(4,2,this)">Banho, Tosa e Consultório Veterinário</div>
+        </div>
+      </div>
+
+      <!-- TASK 3: RESPOSTA AVALIAÇÃO POSITIVA -->
+      <div class="sim-task" id="tr4_3">
+        <div class="sim-task-hd">
+          <div class="sim-task-num">3</div>
+          <div class="sim-task-label">Qual a melhor resposta para esta avaliação?</div>
+          <div class="tr-ck"></div>
+        </div>
+        <div class="review-mini">
+          <div class="rm-user">Fernanda R.</div>
+          <div class="rm-stars">★★★★★</div>
+          <div class="rm-text">"Adorei! Minha gatinha saiu linda do banho. Equipe super atenciosa!"</div>
+        </div>
+        <div class="sc-group">
+          <div class="sc" onclick="pick(4,3,this)">Que bom!</div>
+          <div class="sc" onclick="pick(4,3,this)">Obrigada Fernanda! Esperamos vocês de volta.</div>
+          <div class="sc" onclick="pick(4,3,this)">Que fofo, Fernanda! Ficamos felizes que a gatinha adorou o banho. Nossa equipe trata cada bichinho com todo carinho. Esperamos vocês na próxima sessão!</div>
+        </div>
+      </div>
+
+      <button class="sim-submit" id="sub4" onclick="submitCompany(4,620)" disabled>Enviar e Receber R$ 620</button>
+    </div>
+  </div>
+  <div style="height:20px"></div>
+</div>
+
+<!-- ===== SCREEN 5: RESULTS ===== -->
+<div id="s-results" class="screen">
+  <div class="result-hero">
+    <div class="logo mb16"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span> <span class="cash">Cash</span></div>
+    <p style="font-size:14px;color:var(--sub);margin-bottom:14px">Sua projeção de renda mensal</p>
+    <div class="result-total" id="result-counter">R$ 0</div>
+    <div class="result-label">por mês com 4 clientes</div>
+  </div>
+  <div class="result-breakdown">
+    <div class="breakdown-row"><span class="breakdown-name">Café Central</span><span class="breakdown-val">R$ 280</span></div>
+    <div class="breakdown-row"><span class="breakdown-name">Clínica Sorriso</span><span class="breakdown-val">R$ 870</span></div>
+    <div class="breakdown-row"><span class="breakdown-name">Academia PowerFit</span><span class="breakdown-val">R$ 530</span></div>
+    <div class="breakdown-row"><span class="breakdown-name">PetCare Center</span><span class="breakdown-val">R$ 620</span></div>
+  </div>
+  <div class="card" style="text-align:center;background:linear-gradient(135deg,#1a73e8,#0d47a1);color:#fff;margin-bottom:12px">
+    <p style="font-size:13px;opacity:.8;margin-bottom:6px">Com 10 clientes você pode faturar</p>
+    <div style="font-size:36px;font-weight:800">R$ 5.750/mês</div>
+    <p style="font-size:12px;opacity:.7;margin-top:6px">E com agência própria: R$10K–R$100K/mês</p>
+  </div>
+  <button class="btn btn-green mt16" onclick="goVSL()">Ver Como Funciona + Vagas Disponíveis</button>
+</div>
+
+<!-- ===== SCREEN 6: VSL — TEMA BRANCO GOOGLE ===== -->
+<div id="s-vsl" class="screen">
+  <div class="vsl-screens-bg">
+    <div class="sc-float"><div class="sc-body"></div></div>
+    <div class="sc-float"><div class="sc-body" style="background:linear-gradient(135deg,#34a853,#1b5e20)"></div></div>
+    <div class="sc-float"><div class="sc-body" style="background:linear-gradient(135deg,#fbbc05,#f57f17)"></div></div>
+  </div>
+  <div class="vsl-content">
+    <div class="vsl-top">
+      <div class="logo mb16" style="font-size:24px"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span> <span class="cash">Cash</span></div>
+      <div class="vsl-badge">
+        <svg class="ic-sm" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Certificado Oficial Google Cash
+      </div>
+      <h2>Trabalhe com Estrutura Profissional<br>no Google Cash</h2>
+      <p class="vsl-sub">Não é curso. É uma vaga de trabalho real com aplicativo, scripts prontos, certificado e comunidade. Assista para desbloquear a sua vaga.</p>
+    </div>
+    <div class="vsl-wrap" id="vsl-box" onclick="startVideo()">
+      <div class="play-btn" id="play-btn"><div class="play-arrow"></div></div>
+    </div>
+    <div class="vsl-timer" id="vsl-timer">Assista ao vídeo para liberar a Vaga no Google Cash</div>
+    <div class="vagas-badge" id="vagas-badge" style="display:none">
+      <div class="vagas-dot"></div>
+      <div class="vagas-text">Apenas <strong id="vagas-num">11</strong> vagas desbloqueadas agora</div>
+    </div>
+    <div class="vsl-cta" id="vsl-cta">
+      <button class="btn btn-green" onclick="goOffer()">Começar com Google Cash</button>
+    </div>
+    <!-- Benefits -->
+    <div class="vsl-benefits">
+      <div class="vbl-title">O que está incluso no Google Cash:</div>
+      <div class="benefit-row">
+        <div class="bic"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+        <div class="btext">Aplicativo Google Cash + Estrutura Completa</div>
+        <div class="bprice"><span class="from">R$497</span><span class="bonus-lbl">Bônus Google Cash</span></div>
+      </div>
+      <div class="benefit-row">
+        <div class="bic"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="12" height="9" rx="1"/><path d="M19 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M13 18l3 3 3-3M13 21v-6"/></svg></div>
+        <div class="btext">Certificado Oficial Google Cash</div>
+        <div class="bprice"><span class="from">R$297</span><span class="bonus-lbl">Bônus Google Cash</span></div>
+      </div>
+      <div class="benefit-row">
+        <div class="bic"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8"/></svg></div>
+        <div class="btext">Scripts Prontos para Vender</div>
+        <div class="bprice"><span class="from">R$197</span><span class="bonus-lbl">Bônus Google Cash</span></div>
+      </div>
+      <div class="benefit-row">
+        <div class="bic"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="btext">Comunidade Google Cash</div>
+        <div class="bprice"><span class="from">R$97/mês</span><span class="bonus-lbl">Bônus Google Cash</span></div>
+      </div>
+      <div class="benefit-row">
+        <div class="bic"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="btext">Google Ads + Facebook &amp; Meta Ads</div>
+        <div class="bprice"><span class="from">R$794</span><span class="bonus-lbl">Bônus Google Cash</span></div>
+      </div>
+      <div class="benefit-row">
+        <div class="bic"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+        <div class="btext">Marketing no Instagram + Edição com IA</div>
+        <div class="bprice"><span class="from">R$394</span><span class="bonus-lbl">Bônus Google Cash</span></div>
+      </div>
+      <div class="benefit-row">
+        <div class="bic"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="btext">Comunidade Privada — Agência Própria (+R$10K)</div>
+        <div class="bprice"><span class="from">R$997/mês</span><span class="bonus-lbl">Bônus Google Cash</span></div>
+      </div>
+    </div>
+    <!-- Google Reviews -->
+    <div class="grev-section">
+      <h3>Avaliações do Google</h3>
+      <div class="grev-summary">
+        <div class="grev-score">4.9</div>
+        <div class="grev-right">
+          <div class="gstars">★★★★★</div>
+          <div class="gcnt">Baseado em 1.284 avaliações</div>
+        </div>
+      </div>
+      <div class="grev-card">
+        <div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev1.jpg" alt=""><div><div class="grev-name">Ana Paula M.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">agora mesmo</span></div></div></div>
+        <div class="grev-text">"Comecei sem saber nada de Google. Em 3 semanas fechei meus primeiros 3 clientes. Hoje faturando R$2.800/mês do celular. O aplicativo facilita tudo!"</div>
+        <div class="grev-reply"><div class="grev-reply-label">Resposta do proprietário</div><p>Que incrível, Ana Paula! Continue aplicando o método e logo você vai superar os R$5K mensais!</p></div>
+      </div>
+      <div class="grev-card">
+        <div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev3.jpg" alt=""><div><div class="grev-name">Carlos R.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">2 minutos atrás</span></div></div></div>
+        <div class="grev-text">"R$1.800 no primeiro mês! O certificado oficial deu credibilidade na hora de fechar clientes. Recomendo 1000%!"</div>
+      </div>
+      <div class="grev-card">
+        <div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev5.jpg" alt=""><div><div class="grev-name">Mariana S.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">1 hora atrás</span></div></div></div>
+        <div class="grev-text">"6 clientes fixos e trabalho quando quero. A comunidade no WhatsApp ajuda demais quando tenho dúvidas."</div>
+        <div class="grev-reply"><div class="grev-reply-label">Resposta do proprietário</div><p>Mariana, você é um exemplo! 6 clientes em pouco tempo mostra que você aplicou tudo certinho.</p></div>
+      </div>
+      <button class="show-more-btn" onclick="showMoreReviews()">Mostrar mais avaliações (281)</button>
+      <div class="more-reviews" id="more-revs">
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev0.jpg" alt=""><div><div class="grev-name">Beatriz T.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">3 horas atrás</span></div></div></div><div class="grev-text">"Comecei sem experiência e já tenho 4 clientes fixos. Método simples e que realmente funciona!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev4.jpg" alt=""><div><div class="grev-name">Lucas M.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">5 horas atrás</span></div></div></div><div class="grev-text">"Scripts de vendas são ouro. Fechei meu 1º cliente no 2º dia de aplicação. Muito bem estruturado!"</div><div class="grev-reply"><div class="grev-reply-label">Resposta do proprietário</div><p>Lucas, isso é incrível! Você aplicou o método exatamente como ensinamos. Parabéns!</p></div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev6.jpg" alt=""><div><div class="grev-name">Thiago P.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">8 horas atrás</span></div></div></div><div class="grev-text">"Saí do desemprego em 60 dias. Hoje R$2.100/mês e ainda crescendo. Melhor decisão que tomei!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev7.jpg" alt=""><div><div class="grev-name">Fernando L.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">1 dia atrás</span></div></div></div><div class="grev-text">"Em 2 meses já paguei o investimento várias vezes. Os scripts de vendas são excelentes!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev8.jpg" alt=""><div><div class="grev-name">Aline C.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">1 dia atrás</span></div></div></div><div class="grev-text">"Trabalho meio período e ganho mais que no meu antigo emprego integral. O app facilita tudo!"</div><div class="grev-reply"><div class="grev-reply-label">Resposta do proprietário</div><p>Aline, você é a prova viva de que o método funciona! Continue crescendo!</p></div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev9.jpg" alt=""><div><div class="grev-name">Juliana C.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">2 dias atrás</span></div></div></div><div class="grev-text">"Estava desempregada quando entrei. Hoje tenho renda recorrente todo mês. O certificado foi fundamental!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev10.jpg" alt=""><div><div class="grev-name">Rafael O.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">2 dias atrás</span></div></div></div><div class="grev-text">"Minha dica: comece já. Cada semana de espera é dinheiro deixando na mesa. Vale muito a pena!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev11.jpg" alt=""><div><div class="grev-name">Roberto A.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">3 dias atrás</span></div></div></div><div class="grev-text">"R$1.200 extra no começo, agora R$3.400. Estou planejando sair do emprego CLT em breve!"</div><div class="grev-reply"><div class="grev-reply-label">Resposta do proprietário</div><p>Roberto, que jornada incrível! Estamos aqui pra te apoiar até você ter a sua agência própria!</p></div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev12.jpg" alt=""><div><div class="grev-name">Vanessa L.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">4 dias atrás</span></div></div></div><div class="grev-text">"Nunca imaginei ganhar dinheiro assim tão rápido. O app é profissional e facilita demais a gestão!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev13.jpg" alt=""><div><div class="grev-name">Patricia M.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">5 dias atrás</span></div></div></div><div class="grev-text">"Suporte da comunidade é incrível. Sempre tem alguém pra ajudar quando tenho dúvida."</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev14.jpg" alt=""><div><div class="grev-name">Eduardo S.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">6 dias atrás</span></div></div></div><div class="grev-text">"Fechei 2 clientes na primeira semana. Os scripts de abordagem são simplesmente certeiros!"</div><div class="grev-reply"><div class="grev-reply-label">Resposta do proprietário</div><p>Eduardo, 2 clientes na 1ª semana é excepcional! Continue assim!</p></div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev15.jpg" alt=""><div><div class="grev-name">Diego F.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">1 semana atrás</span></div></div></div><div class="grev-text">"Metodologia sólida. Fechei meu primeiro cliente no segundo dia de aplicação. Surpreendente!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev16.jpg" alt=""><div><div class="grev-name">Renata K.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">1 semana atrás</span></div></div></div><div class="grev-text">"Trabalho de casa cuidando dos filhos e ainda faturando R$1.900/mês. Inacreditável!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev17.jpg" alt=""><div><div class="grev-name">Bruno M.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">10 dias atrás</span></div></div></div><div class="grev-text">"5 clientes em 6 semanas. O app é essencial para organizar tudo. Recomendo muito!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev18.jpg" alt=""><div><div class="grev-name">Larissa V.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">2 semanas atrás</span></div></div></div><div class="grev-text">"Entrei cética mas o resultado me surpreendeu. R$1.600 já no segundo mês de trabalho!"</div><div class="grev-reply"><div class="grev-reply-label">Resposta do proprietário</div><p>Larissa, que alegria! Sua dedicação fez toda a diferença. Continue crescendo!</p></div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev19.jpg" alt=""><div><div class="grev-name">Marcos A.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">3 semanas atrás</span></div></div></div><div class="grev-text">"O certificado abre muitas portas. Apresento para os clientes e a credibilidade aumenta muito!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev20.jpg" alt=""><div><div class="grev-name">Daniela R.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">1 mês atrás</span></div></div></div><div class="grev-text">"Comecei com 1 cliente, hoje tenho 7. O crescimento é real quando você aplica o método!"</div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev21.jpg" alt=""><div><div class="grev-name">Felipe T.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">1 mês atrás</span></div></div></div><div class="grev-text">"Para quem está em dúvida: faz, funciona! 1º mês R$840, 2º R$1.560, 3º R$2.300!"</div><div class="grev-reply"><div class="grev-reply-label">Resposta do proprietário</div><p>Felipe, essa progressão é exatamente o que esperamos de quem aplica o método com consistência!</p></div></div>
+        <div class="grev-card"><div class="grev-head"><img class="grev-avatar" src="assets/faces/face-rev2.jpg" alt=""><div><div class="grev-name">Camila N.</div><div class="grev-meta"><div class="grev-stars">★★★★★</div><span class="grev-time">1 mês atrás</span></div></div></div><div class="grev-text">"8 clientes em 4 meses. Minha agência está crescendo. O certificado e o app fizeram toda diferença!"</div></div>
+      </div>
+    </div>
+    <div style="height:20px"></div>
+  </div>
+</div>
+
+<!-- ===== SCREEN 7: OFFER ===== -->
+<div id="s-offer" class="screen">
+  <div class="offer-header">
+    <div class="logo mb16"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span> <span class="cash">Cash</span></div>
+    <div class="vaga-tag">
+      <svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="#e65100" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Vagas disponíveis agora
+    </div>
+    <h1>Trabalhe com o Google Cash<br>de Onde Você Estiver</h1>
+    <p style="font-size:13px;color:var(--sub);margin-bottom:20px">Aplicativo + Certificação Oficial + Scripts + Comunidade.<br>Tudo para você começar a gerar renda gerenciando perfis Google.</p>
+  </div>
+  <div class="price-box">
+    <div style="font-size:12px;color:var(--sub);margin-bottom:4px">Acesso completo — App + Certificação + Comunidade</div>
+    <div style="font-size:13px;color:var(--sub);margin-bottom:8px;margin-top:6px">pagamento único</div>
+    <div class="price-main">R$ 117</div>
+    <div class="price-sub">acesso vitalício • sem mensalidade</div>
+    <div class="price-tag" style="background:var(--bl);margin-top:14px">Certificação Oficial Inclusa</div>
+  </div>
+  <button class="btn btn-green" onclick="checkout()" style="margin-bottom:14px">Acessar o Google Cash por R$ 117</button>
+  <div class="what-you-get" style="margin:0 16px 14px">
+    <div class="wyg-title">O que está incluso no Google Cash:</div>
+    <div class="wyg-item">
+      <div class="wyg-icon"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></div>
+      <div class="wyg-info"><div class="wyg-name">Aplicativo Google Cash + Estrutura</div><div class="wyg-price"><span class="stk">R$497</span><span class="incluso">INCLUSO</span></div></div>
+    </div>
+    <div class="wyg-item">
+      <div class="wyg-icon"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="12" height="9" rx="1"/><path d="M19 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M13 18l3 3 3-3M13 21v-6"/></svg></div>
+      <div class="wyg-info"><div class="wyg-name">Certificado Oficial Google Cash</div><div class="wyg-price"><span class="stk">R$297</span><span class="incluso">INCLUSO</span></div></div>
+    </div>
+    <div class="wyg-item">
+      <div class="wyg-icon"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8"/></svg></div>
+      <div class="wyg-info"><div class="wyg-name">Scripts Prontos para Vender</div><div class="wyg-price"><span class="stk">R$197</span><span class="bonus-gc">Bônus Google Cash</span></div></div>
+    </div>
+    <div class="wyg-item">
+      <div class="wyg-icon"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+      <div class="wyg-info"><div class="wyg-name">Comunidade Google Cash</div><div class="wyg-price"><span class="stk">R$97/mês</span><span class="bonus-gc">Bônus Google Cash</span></div></div>
+    </div>
+    <div class="wyg-item">
+      <div class="wyg-icon"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="wyg-info"><div class="wyg-name">Google Ads + Facebook Ads</div><div class="wyg-price"><span class="stk">R$794</span><span class="bonus-gc">Bônus Google Cash</span></div></div>
+    </div>
+    <div class="wyg-item">
+      <div class="wyg-icon"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></div>
+      <div class="wyg-info"><div class="wyg-name">Instagram + Edição com IA</div><div class="wyg-price"><span class="stk">R$394</span><span class="bonus-gc">Bônus Google Cash</span></div></div>
+    </div>
+    <div class="wyg-item" style="border:1px solid var(--gn)">
+      <div class="wyg-icon" style="background:#e8f5e9"><svg class="ic-sm" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div class="wyg-info"><div class="wyg-name" style="color:var(--gn)">Comunidade Privada — Agência R$10K+</div><div class="wyg-price"><span class="stk">R$997/mês</span><span class="bonus-gc">Bônus Google Cash</span></div></div>
+    </div>
+  </div>
+  <div class="guarantee-box">
+    <div class="guarantee-icon"><svg class="ic-lg" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+    <div class="guarantee-text"><h3>Garantia de Segurança</h3><p>O Google Cash é um método real, com estrutura real e clientes reais. Se você não conseguir aplicar por qualquer problema do nosso lado, resolvemos. Você tem nossa palavra.</p></div>
+  </div>
+  <div class="ra-badge">
+    <div class="ra-logo">RA</div>
+    <div class="ra-info">
+      <div class="ra-score">Excelente no Reclame Aqui</div>
+      <div class="ra-stars-row">★★★★★</div>
+      <div class="ra-sub">Reputação verificada pelos nossos clientes</div>
+    </div>
+  </div>
+  <div class="faq">
+    <h3>Perguntas Frequentes</h3>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Isso é um curso?<span>+</span></div><div class="faq-a">Não é curso. É o acesso completo ao Google Cash: o aplicativo para gestão dos seus clientes, a certificação oficial que você apresenta para fechar contratos, os scripts de abordagem e a comunidade de profissionais que já trabalham nessa área.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Preciso de experiência prévia?<span>+</span></div><div class="faq-a">Não. A estrutura foi construída para quem está começando do zero. O aplicativo guia cada passo e a comunidade está sempre disponível para dúvidas.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">O que é a Comunidade Privada?<span>+</span></div><div class="faq-a">É o grupo avançado do Google Cash — para quem já tem clientes e quer escalar para uma agência própria (R$10K–R$100K/mês). O acesso é liberado conforme você avança.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Para que serve o certificado?<span>+</span></div><div class="faq-a">O Certificado Oficial Google Cash é o que você apresenta para as empresas na hora de fechar o contrato. Ele dá credibilidade real ao seu trabalho — é a diferença entre uma venda fechada e uma porta na cara.</div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">E se eu tiver algum problema?<span>+</span></div><div class="faq-a">A gente resolve. O Google Cash tem garantia de segurança: se algo não funcionar do nosso lado, você não fica no prejuízo. Nossa reputação no Reclame Aqui é pública e fala por si.</div></div>
+  </div>
+  <div style="height:100px"></div>
+  <div class="sticky-cta">
+    <button class="btn btn-green" onclick="checkout()">Acessar o Google Cash por R$ 117</button>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+var currentRev=0,companiesDone=0,quizAnswers={};
+var vslStarted=false,vslSecs=0,vslIv=null;
+var cDone={1:0,2:0,3:0,4:0};
+var taskSel={};
+
+// ===== AUDIO =====
+var AC=null;
+function getAC(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}return AC;}
+function pt(freq,type,dur,vol,delay){var ac=getAC();if(!ac)return;var o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.type=type||'sine';o.frequency.value=freq;var t=ac.currentTime+(delay||0);g.gain.setValueAtTime(vol||0.15,t);g.gain.exponentialRampToValueAtTime(0.001,t+dur);o.start(t);o.stop(t+dur);}
+var SFX={
+  click:function(){pt(440,'sine',.08,.1);},
+  select:function(){pt(600,'sine',.1,.12);pt(800,'sine',.1,.08,.08);},
+  success:function(){pt(523,'sine',.15,.15);pt(659,'sine',.15,.15,.15);pt(784,'sine',.2,.15,.3);},
+  levelUp:function(){[523,659,784,1047].forEach(function(f,i){pt(f,'sine',.15,.15,i*.12);});},
+  coin:function(){pt(880,'triangle',.1,.12);pt(1100,'triangle',.1,.12,.08);},
+  unlock:function(){[440,554,659,880].forEach(function(f,i){pt(f,'sine',.2,.15,i*.1);}); }
+};
+
+// ===== NAVIGATION =====
+function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');s.style.display='none';});var s=document.getElementById(id);if(s){s.style.display='block';s.classList.add('active');window.scrollTo(0,0);}}
+function goQuiz(){SFX.click();track('QuizStarted');showScreen('s-quiz');}
+function goTutorial(){SFX.success();track('QuizCompleted',quizAnswers);showScreen('s-tutorial');}
+function goSimulator(){if(!document.getElementById('consent-chk').checked)return;SFX.levelUp();track('SimulatorStarted');showScreen('s-simulator');document.getElementById('rev-bar').classList.add('visible');}
+function goResults(){SFX.levelUp();showScreen('s-results');animateResult();}
+function goVSL(){SFX.click();showScreen('s-vsl');}
+function goOffer(){SFX.click();showScreen('s-offer');startCountdown();}
+
+// ===== QUIZ =====
+function selectQ(step,val,el){
+  SFX.select();
+  quizAnswers['q'+step]=val;
+  document.getElementById('q'+step).querySelectorAll('.qopt').forEach(function(o){o.classList.remove('selected');});
+  el.classList.add('selected');
+  setTimeout(function(){advanceQ(step);},350);
+}
+function advanceQ(step){
+  document.getElementById('q'+step).style.display='none';
+  document.getElementById('qbar').style.width=Math.round((step/6)*100)+'%';
+  var c=document.getElementById('qcounter');
+  if(step<6){document.getElementById('q'+(step+1)).style.display='block';c.textContent='Pergunta '+(step+1)+' de 6';}
+  else{c.textContent='Concluído!';setTimeout(goTutorial,400);}
+}
+
+// ===== TUTORIAL =====
+function checkConsent(){var ok=document.getElementById('consent-chk').checked;var btn=document.getElementById('tut-btn');btn.disabled=!ok;btn.style.opacity=ok?'1':'0.5';}
+
+// ===== SIMULATOR =====
+function toggleCompany(n){
+  SFX.click();
+  var el=document.getElementById('ct'+n);
+  var wasOpen=el.classList.contains('open');
+  document.querySelectorAll('.company-body').forEach(function(t){t.classList.remove('open');});
+  if(!wasOpen)el.classList.add('open');
+}
+function pick(n,tid,el){
+  SFX.select();
+  var grp=el.parentElement;
+  grp.querySelectorAll('.sc').forEach(function(c){c.classList.remove('sc-sel');});
+  el.classList.add('sc-sel');
+  var key=n+'_'+tid;
+  if(!taskSel[key]){
+    taskSel[key]=true;
+    cDone[n]++;
+    var trow=document.getElementById('tr'+n+'_'+tid);
+    if(trow){
+      trow.classList.add('tr-done');
+      var ck=trow.querySelector('.tr-ck');
+      if(ck)ck.textContent='✓';
+    }
+    var card=document.getElementById('cc'+n);
+    var needed=card?parseInt(card.getAttribute('data-tasks')||3):3;
+    var btn=document.getElementById('sub'+n);
+    if(btn&&cDone[n]>=needed){btn.disabled=false;btn.style.opacity='1';}
+    SFX.success();
+  }
+}
+function submitCompany(n,amount){
+  SFX.levelUp();
+  var cs=document.getElementById('cs'+n);
+  cs.textContent='Concluído';
+  cs.className='company-status status-done';
+  document.getElementById('cc'+n).classList.add('done');
+  document.getElementById('ct'+n).classList.remove('open');
+  var btn=document.getElementById('sub'+n);
+  btn.disabled=true;
+  btn.textContent='Perfil Otimizado!';
+  btn.style.background='#34a853';
+  addRevenue(amount);
+  companiesDone++;
+  var cc=document.getElementById('comp-counter');
+  if(cc)cc.textContent=companiesDone+'/4';
+  track('CompanyDone',{n:n,amount:amount});
+  showToast('Perfil otimizado! +R$'+amount+' adicionados!');
+  if(companiesDone>=4)setTimeout(goResults,1200);
+}
+function addRevenue(amount){
+  var start=currentRev;currentRev+=amount;
+  var end=currentRev,el=document.getElementById('rev-display'),pg=document.getElementById('sim-progress'),t0=null;
+  function anim(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/600,1);var v=Math.round(start+(end-start)*p);if(el)el.textContent='R$ '+v.toLocaleString('pt-BR');if(pg)pg.style.width=Math.round((currentRev/2300)*100)+'%';if(p<1)requestAnimationFrame(anim);else{if(el)el.textContent='R$ '+currentRev.toLocaleString('pt-BR');SFX.coin();}}
+  requestAnimationFrame(anim);
+}
+
+// ===== RESULTS =====
+function animateResult(){
+  var el=document.getElementById('result-counter'),t0=null;
+  function anim(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/1800,1),ease=1-Math.pow(1-p,3);var v=Math.round(2300*ease);if(el)el.textContent='R$ '+v.toLocaleString('pt-BR');if(p<1)requestAnimationFrame(anim);else{if(el)el.textContent='R$ 2.300';SFX.levelUp();}}
+  requestAnimationFrame(anim);
+}
+
+// ===== VSL + VAGAS =====
+function getVagas(){
+  try{
+    var stored=JSON.parse(localStorage.getItem('gc_vagas')||'null');
+    var now=Date.now();
+    if(!stored||!stored.count){stored={count:11,lastDecay:now};}
+    else{var elapsed=now-stored.lastDecay;var decays=Math.floor(elapsed/(4*60*1000));if(decays>0){stored.count=Math.max(2,stored.count-decays);stored.lastDecay=stored.lastDecay+decays*4*60*1000;}}
+    localStorage.setItem('gc_vagas',JSON.stringify(stored));
+    return stored.count;
+  }catch(e){return 9;}
+}
+function startVideo(){
+  var pb=document.getElementById('play-btn');if(pb)pb.style.display='none';
+  var box=document.getElementById('vsl-box');if(box)box.style.cursor='default';
+  if(!vslStarted){vslStarted=true;startVSLTimer();}
+}
+function startVSLTimer(){
+  var timerEl=document.getElementById('vsl-timer');
+  vslIv=setInterval(function(){
+    vslSecs++;var rem=60-vslSecs;
+    if(timerEl&&rem>0)timerEl.textContent='Liberando vaga em '+rem+'s...';
+    if(vslSecs>=60){clearInterval(vslIv);unlockCTA();}
+  },1000);
+}
+function unlockCTA(){
+  SFX.unlock();track('VSL60Seconds');
+  var count=getVagas();
+  var vb=document.getElementById('vagas-badge');if(vb)vb.style.display='flex';
+  var vn=document.getElementById('vagas-num');if(vn)vn.textContent=count;
+  var cta=document.getElementById('vsl-cta');if(cta)cta.classList.add('visible');
+  var t=document.getElementById('vsl-timer');if(t)t.textContent='Vaga desbloqueada! Reserve a sua agora.';
+  var iv=setInterval(function(){count=getVagas();if(vn)vn.textContent=count;},30000);
+}
+function showMoreReviews(){
+  SFX.click();
+  var el=document.getElementById('more-revs');if(el)el.classList.add('visible');
+  var btn=document.querySelector('.show-more-btn');if(btn)btn.style.display='none';
+}
+
+// ===== OFFER =====
+function startCountdown(){}
+function checkout(){
+  SFX.click();track('CheckoutClicked');
+  window.location.href='/checkout.html';
+}
+function toggleFaq(el){
+  SFX.click();var item=el.parentElement,isOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(function(i){i.classList.remove('open');var sp=i.querySelector('.faq-q span');if(sp)sp.textContent='+';});
+  if(!isOpen){item.classList.add('open');var sp=el.querySelector('span');if(sp)sp.textContent='-';}
+}
+
+// ===== UTILS =====
+function showToast(msg){var t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2500);}
+function track(event,data){
+  try{var log=JSON.parse(localStorage.getItem('gc_events')||'[]');log.push({event:event,data:data||{},ts:Date.now()});localStorage.setItem('gc_events',JSON.stringify(log));}catch(e){}
+  try{fetch('/api/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:event}),keepalive:true});}catch(e){}
+}
+
+// ===== INIT =====
+(function(){
+  var bp=document.getElementById('lp-breakdown');
+  if(bp){
+    var items=[['Café Central','R$ 280'],['Clínica Sorriso','R$ 870'],['Academia PowerFit','R$ 530'],['PetCare Center','R$ 620']];
+    items.forEach(function(item){
+      var row=document.createElement('div');row.className='breakdown-row';
+      var n=document.createElement('span');n.className='breakdown-name';n.textContent=item[0];
+      var v=document.createElement('span');v.className='breakdown-val';v.textContent=item[1];
+      row.appendChild(n);row.appendChild(v);bp.appendChild(row);
+    });
+  }
+  if(window.self!==window.top)document.body.style.display='none';
+  track('PageView');
+  // Service Worker registration
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('/sw.js').catch(function(){});
+  }
+})();
+</script>
+</body></html>

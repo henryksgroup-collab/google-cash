@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<title>Checkout — Google Cash</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1a73e8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+:root{--bl:#1a73e8;--gn:#34a853;--rd:#ea4335;--yl:#fbbc05;--dk:#202124;--sub:#5f6368;--bdr:#e0e0e0;--bg:#f8f9fa;--sh:0 2px 16px rgba(0,0,0,.1)}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--dk);min-height:100vh;background-image:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(0,0,0,.04) 23px,rgba(0,0,0,.04) 24px),repeating-linear-gradient(90deg,transparent,transparent 23px,rgba(0,0,0,.04) 23px,rgba(0,0,0,.04) 24px)}
+
+/* Layout */
+.wrap{max-width:480px;margin:0 auto;padding:24px 16px 40px}
+.logo{text-align:center;margin-bottom:20px}
+.logo span{font-size:24px;font-weight:800}
+.g1{color:#1a73e8}.g2{color:#ea4335}.g3{color:#fbbc05}.g4{color:#1a73e8}.g5{color:#34a853}.g6{color:#ea4335}.cash{color:#202124}
+
+/* Progress */
+.progress-steps{display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:24px}
+.step{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#aaa}
+.step.active{color:var(--bl)}
+.step.done{color:var(--gn)}
+.step-num{width:24px;height:24px;border-radius:50%;background:#e0e0e0;color:#888;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;transition:all .3s}
+.step.active .step-num{background:var(--bl);color:#fff}
+.step.done .step-num{background:var(--gn);color:#fff}
+.step-line{width:32px;height:2px;background:#e0e0e0;margin:0 4px}
+.step-line.done{background:var(--gn)}
+
+/* Product summary */
+.product-card{background:#fff;border-radius:16px;box-shadow:var(--sh);padding:16px;margin-bottom:20px;display:flex;gap:14px;align-items:center;border-left:4px solid var(--bl)}
+.product-icon{width:48px;height:48px;border-radius:12px;background:#e8f0fe;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.product-name{font-size:14px;font-weight:700;color:var(--dk)}
+.product-desc{font-size:12px;color:var(--sub);margin-top:2px}
+.product-price{margin-left:auto;text-align:right;flex-shrink:0}
+.product-price .amount{font-size:22px;font-weight:800;color:var(--dk)}
+.product-price .label{font-size:11px;color:var(--sub)}
+
+/* Form */
+.card{background:#fff;border-radius:16px;box-shadow:var(--sh);padding:20px;margin-bottom:16px}
+.card-title{font-size:15px;font-weight:700;color:var(--dk);margin-bottom:16px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--sub);margin-bottom:5px}
+.field input{width:100%;padding:13px 14px;border:1.5px solid var(--bdr);border-radius:10px;font-size:15px;font-family:inherit;color:var(--dk);outline:none;transition:border-color .2s;background:#fff}
+.field input:focus{border-color:var(--bl)}
+.field input.error{border-color:var(--rd)}
+.field-hint{font-size:11px;color:var(--sub);margin-top:4px}
+.field-error{font-size:11px;color:var(--rd);margin-top:4px;display:none}
+.field input.error + .field-error{display:block}
+
+/* Buttons */
+.btn{display:block;width:100%;padding:16px;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:transform .15s,box-shadow .15s;text-align:center}
+.btn:active{transform:scale(.97)}
+.btn-blue{background:var(--bl);color:#fff;box-shadow:0 4px 15px rgba(26,115,232,.35)}
+.btn-green{background:var(--gn);color:#fff;box-shadow:0 4px 15px rgba(52,168,83,.35)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Security badges */
+.security-row{display:flex;justify-content:center;gap:16px;margin-top:14px;flex-wrap:wrap}
+.sec-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--sub)}
+
+/* === STEP 2: PIX === */
+.pix-amount{text-align:center;margin-bottom:20px}
+.pix-amount .val{font-size:40px;font-weight:800;color:var(--dk)}
+.pix-amount .lbl{font-size:13px;color:var(--sub);margin-top:2px}
+.qr-wrap{text-align:center;margin-bottom:16px}
+.qr-wrap canvas{border-radius:12px;padding:10px;background:#fff;box-shadow:var(--sh)}
+.pix-code-box{background:#f8f9fa;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 14px;margin-bottom:14px;position:relative}
+.pix-code-label{font-size:11px;font-weight:600;color:var(--sub);margin-bottom:6px}
+.pix-code-text{font-size:11px;color:var(--dk);word-break:break-all;line-height:1.5;font-family:monospace;max-height:48px;overflow:hidden}
+.copy-btn{position:absolute;top:10px;right:10px;background:var(--bl);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.copy-btn.copied{background:var(--gn)}
+.pix-status{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-radius:12px;border:1.5px solid var(--bdr);margin-bottom:14px}
+.pix-dot{width:10px;height:10px;border-radius:50%;background:#fbbc05;animation:blink 1.2s ease-in-out infinite;flex-shrink:0}
+.pix-dot.paid{background:var(--gn);animation:none}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.pix-status-text{font-size:13px;font-weight:600;color:var(--dk)}
+.pix-timer{text-align:center;font-size:12px;color:var(--sub);margin-bottom:14px}
+.pix-timer span{font-weight:700;color:var(--dk)}
+.pix-how{background:#e8f0fe;border-radius:12px;padding:12px 14px;margin-bottom:4px}
+.pix-how p{font-size:12px;color:#1a5296;line-height:1.6}
+
+/* === STEP 3: SUCCESS === */
+.success-wrap{text-align:center;padding:16px 0}
+.success-icon{width:80px;height:80px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;animation:pop .5s ease}
+@keyframes pop{0%{transform:scale(.5);opacity:0}80%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+.success-title{font-size:22px;font-weight:800;color:var(--dk);margin-bottom:8px}
+.success-sub{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:20px}
+.next-steps{text-align:left;background:#f8f9fa;border-radius:12px;padding:16px}
+.next-steps h4{font-size:13px;font-weight:700;color:var(--dk);margin-bottom:10px}
+.next-step-item{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;font-size:13px;color:var(--sub);line-height:1.5}
+.ns-num{width:22px;height:22px;border-radius:50%;background:var(--bl);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dk);color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:999;transition:transform .3s;white-space:nowrap;pointer-events:none}
+#toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<div class="wrap">
+  <!-- Logo -->
+  <div class="logo">
+    <span><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span> <span class="cash">Cash</span></span>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-steps" id="progress">
+    <div class="step active" id="ps1"><div class="step-num">1</div><span>Dados</span></div>
+    <div class="step-line" id="pl1"></div>
+    <div class="step" id="ps2"><div class="step-num">2</div><span>Pagamento</span></div>
+    <div class="step-line" id="pl2"></div>
+    <div class="step" id="ps3"><div class="step-num">3</div><span>Acesso</span></div>
+  </div>
+
+  <!-- Product summary (always visible) -->
+  <div class="product-card">
+    <div class="product-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+    </div>
+    <div>
+      <div class="product-name">Google Cash — Acesso Completo</div>
+      <div class="product-desc">App + Certificação + Scripts + Comunidade</div>
+    </div>
+    <div class="product-price">
+      <div class="amount">R$ 117</div>
+      <div class="label">pagamento único</div>
+    </div>
+  </div>
+
+  <!-- ======== STEP 1: FORM ======== -->
+  <div id="step1">
+    <div class="card">
+      <div class="card-title">Seus dados para o acesso</div>
+      <div class="field">
+        <label>Nome completo *</label>
+        <input type="text" id="f-name" placeholder="João Silva" autocomplete="name">
+        <div class="field-error">Preencha seu nome</div>
+      </div>
+      <div class="field">
+        <label>E-mail *</label>
+        <input type="email" id="f-email" placeholder="joao@email.com" autocomplete="email">
+        <div class="field-error">E-mail inválido</div>
+      </div>
+      <div class="field">
+        <label>CPF *</label>
+        <input type="text" id="f-cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric">
+        <div class="field-error">CPF inválido</div>
+      </div>
+      <div class="field">
+        <label>Telefone (opcional)</label>
+        <input type="tel" id="f-phone" placeholder="(11) 99999-9999" autocomplete="tel" maxlength="15">
+        <div class="field-hint">Para receber confirmação por WhatsApp</div>
+      </div>
+      <button class="btn btn-blue" id="btn-pay" onclick="submitForm()">Gerar PIX — R$ 117</button>
+      <div class="security-row">
+        <span class="sec-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Pagamento seguro
+        </span>
+        <span class="sec-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          PIX instantâneo
+        </span>
+        <span class="sec-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          Acesso imediato
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== STEP 2: PIX ======== -->
+  <div id="step2" style="display:none">
+    <div class="card">
+      <div class="pix-amount">
+        <div class="val">R$ 117,00</div>
+        <div class="lbl">Pix — válido por 30 minutos</div>
+      </div>
+
+      <div class="qr-wrap">
+        <canvas id="qr-canvas"></canvas>
+      </div>
+
+      <div class="pix-code-box">
+        <div class="pix-code-label">Copia e Cola PIX</div>
+        <div class="pix-code-text" id="pix-code">Gerando...</div>
+        <button class="copy-btn" id="copy-btn" onclick="copyPix()">Copiar</button>
+      </div>
+
+      <div class="pix-status" id="pix-status">
+        <div class="pix-dot" id="pix-dot"></div>
+        <div class="pix-status-text" id="pix-status-text">Aguardando pagamento...</div>
+      </div>
+
+      <div class="pix-timer">Expira em: <span id="timer-display">30:00</span></div>
+
+      <div class="pix-how">
+        <p><strong>Como pagar:</strong><br>
+        1. Abra o app do seu banco<br>
+        2. Vá em PIX → Copia e Cola (ou escaneie o QR)<br>
+        3. Cole o código e confirme o pagamento</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== STEP 3: SUCCESS ======== -->
+  <div id="step3" style="display:none">
+    <div class="card">
+      <div class="success-wrap">
+        <div class="success-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="success-title">Pagamento confirmado! 🎉</div>
+        <div class="success-sub">Seu acesso ao Google Cash está sendo liberado.<br>Verifique seu e-mail: <strong id="confirm-email"></strong></div>
+        <div class="next-steps">
+          <h4>Próximos passos:</h4>
+          <div class="next-step-item"><div class="ns-num">1</div><span>Confira sua caixa de entrada — o link de acesso chegará em até 5 minutos</span></div>
+          <div class="next-step-item"><div class="ns-num">2</div><span>Baixe o aplicativo Google Cash pelo link enviado no e-mail</span></div>
+          <div class="next-step-item"><div class="ns-num">3</div><span>Entre na comunidade e comece a trabalhar ainda hoje</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var txId = null;
+var pixCode = null;
+var pollInterval = null;
+var timerInterval = null;
+var expiresAt = null;
+
+// ── CPF mask ──
+document.getElementById('f-cpf').addEventListener('input', function(e) {
+  var v = e.target.value.replace(/\D/g, '').substring(0, 11);
+  v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4');
+  e.target.value = v;
+});
+// ── Phone mask ──
+document.getElementById('f-phone').addEventListener('input', function(e) {
+  var v = e.target.value.replace(/\D/g, '').substring(0, 11);
+  v = v.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d{4})/, '$1-$2');
+  e.target.value = v;
+});
+
+function setStep(n) {
+  document.getElementById('step1').style.display = n === 1 ? 'block' : 'none';
+  document.getElementById('step2').style.display = n === 2 ? 'block' : 'none';
+  document.getElementById('step3').style.display = n === 3 ? 'block' : 'none';
+  ['ps1','ps2','ps3'].forEach(function(id, i) {
+    var el = document.getElementById(id);
+    el.className = 'step' + (i + 1 < n ? ' done' : i + 1 === n ? ' active' : '');
+  });
+  ['pl1','pl2'].forEach(function(id, i) {
+    document.getElementById(id).className = 'step-line' + (i + 1 < n ? ' done' : '');
+  });
+  window.scrollTo(0, 0);
+}
+
+function validate() {
+  var ok = true;
+  var name = document.getElementById('f-name');
+  var email = document.getElementById('f-email');
+  var cpf = document.getElementById('f-cpf');
+  if (!name.value.trim() || name.value.trim().length < 3) { name.classList.add('error'); ok = false; } else name.classList.remove('error');
+  if (!email.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { email.classList.add('error'); ok = false; } else email.classList.remove('error');
+  var cpfNum = cpf.value.replace(/\D/g,'');
+  if (cpfNum.length !== 11) { cpf.classList.add('error'); ok = false; } else cpf.classList.remove('error');
+  return ok;
+}
+
+async function submitForm() {
+  if (!validate()) { toast('Preencha os campos obrigatórios'); return; }
+  var btn = document.getElementById('btn-pay');
+  btn.disabled = true; btn.textContent = 'Gerando PIX...';
+
+  try {
+    var res = await fetch('/api/pix', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: document.getElementById('f-name').value.trim(),
+        email: document.getElementById('f-email').value.trim(),
+        document: document.getElementById('f-cpf').value,
+        phone: document.getElementById('f-phone').value
+      })
+    });
+    var data = await res.json();
+
+    if (!res.ok) { toast(data.error || 'Erro ao gerar PIX. Tente novamente.'); btn.disabled = false; btn.textContent = 'Gerar PIX — R$ 117'; return; }
+
+    txId = data.transactionId;
+    pixCode = data.pix && data.pix.code;
+
+    // Render QR
+    if (pixCode) {
+      QRCode.toCanvas(document.getElementById('qr-canvas'), pixCode, { width: 200, margin: 1 }, function(){});
+      document.getElementById('pix-code').textContent = pixCode;
+    }
+
+    document.getElementById('confirm-email').textContent = document.getElementById('f-email').value.trim();
+
+    setStep(2);
+    startTimer(30 * 60);
+    startPolling();
+
+  } catch (err) {
+    toast('Erro de conexão. Verifique sua internet.');
+    btn.disabled = false; btn.textContent = 'Gerar PIX — R$ 117';
+  }
+}
+
+function copyPix() {
+  if (!pixCode) return;
+  navigator.clipboard.writeText(pixCode).then(function() {
+    var btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copiado ✓'; btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+  }).catch(function() {
+    // fallback
+    var ta = document.createElement('textarea');
+    ta.value = pixCode; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('Código copiado!');
+  });
+}
+
+function startPolling() {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(checkStatus, 4000);
+}
+
+async function checkStatus() {
+  if (!txId) return;
+  try {
+    var res = await fetch('/api/check?id=' + txId);
+    var data = await res.json();
+    if (data.status === 'COMPLETED') {
+      clearInterval(pollInterval); clearInterval(timerInterval);
+      onPaymentConfirmed();
+    }
+  } catch {}
+}
+
+function onPaymentConfirmed() {
+  var dot = document.getElementById('pix-dot'); dot.classList.add('paid');
+  document.getElementById('pix-status-text').textContent = 'Pagamento confirmado!';
+  setTimeout(function() { setStep(3); }, 1000);
+}
+
+function startTimer(seconds) {
+  expiresAt = Date.now() + seconds * 1000;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(function() {
+    var rem = Math.max(0, Math.round((expiresAt - Date.now()) / 1000));
+    var m = Math.floor(rem / 60), s = rem % 60;
+    document.getElementById('timer-display').textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    if (rem <= 0) { clearInterval(timerInterval); clearInterval(pollInterval); }
+  }, 1000);
+}
+
+function toast(msg) {
+  var el = document.getElementById('toast'); el.textContent = msg;
+  el.classList.add('show'); setTimeout(function() { el.classList.remove('show'); }, 2800);
+}
+</script>
+</body>
+</html>

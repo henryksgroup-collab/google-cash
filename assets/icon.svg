@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="38" fill="#fff"/>
+  <text x="18" y="106" font-family="Arial,Helvetica,sans-serif" font-size="68" font-weight="900" letter-spacing="-2">
+    <tspan fill="#4285F4">G</tspan><tspan fill="#EA4335">o</tspan><tspan fill="#FBBC05">o</tspan><tspan fill="#4285F4">g</tspan><tspan fill="#34A853">l</tspan><tspan fill="#EA4335">e</tspan>
+  </text>
+  <text x="18" y="158" font-family="Arial,Helvetica,sans-serif" font-size="48" font-weight="900" fill="#202124" letter-spacing="-1">Cash</text>
+</svg>
