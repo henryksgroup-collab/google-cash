@@ -6,6 +6,8 @@
 <title>Google Cash — Admin</title>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0f0f0f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
@@ -22,9 +24,16 @@
     --radius: 12px;
     --font: 'DM Sans', system-ui, sans-serif;
   }
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
+  .material-symbols-rounded {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal; font-style: normal; line-height: 1;
+    letter-spacing: normal; text-transform: none; display: inline-block;
+    white-space: nowrap; direction: ltr;
+    -webkit-font-feature-settings: 'liga'; font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased; vertical-align: middle;
+  }
 
   /* ── LOGIN ── */
   #login-screen {
@@ -77,6 +86,7 @@
     width: 220px; flex-shrink: 0;
     background: var(--surface); border-right: 1px solid var(--border);
     display: flex; flex-direction: column; padding: 24px 0;
+    transition: width .2s;
   }
   .sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); }
   .sidebar-logo .g { font-size: 22px; font-weight: 700; line-height: 1; }
@@ -96,7 +106,7 @@
   }
   .nav-item:hover { background: var(--surface2); color: var(--text); }
   .nav-item.active { background: rgba(26,115,232,.15); color: var(--accent); }
-  .nav-item .icon { font-size: 18px; width: 22px; text-align: center; }
+  .nav-item .icon { font-size: 20px; width: 22px; text-align: center; flex-shrink: 0; }
   .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
   .logout-btn {
     display: flex; align-items: center; gap: 10px;
@@ -105,6 +115,7 @@
     transition: all .15s; border: none; background: none; width: 100%;
   }
   .logout-btn:hover { color: var(--red); }
+  .logout-btn .icon { font-size: 20px; width: 22px; text-align: center; flex-shrink: 0; }
 
   /* main area */
   .main { flex: 1; overflow-y: auto; }
@@ -143,9 +154,11 @@
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: rgba(255,255,255,.02); }
   .badge {
-    display: inline-block; padding: 3px 8px; border-radius: 6px;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 6px;
     font-size: 11px; font-weight: 600; letter-spacing: .04em;
   }
+  .badge .material-symbols-rounded { font-size: 13px; }
   .badge-green { background: rgba(52,168,83,.15); color: var(--green); }
   .badge-yellow { background: rgba(251,188,4,.15); color: var(--yellow); }
   .badge-red { background: rgba(234,67,53,.15); color: var(--red); }
@@ -186,19 +199,36 @@
   .install-btn:hover { opacity: .88; }
   #install-btn { display: none; }
 
-  /* alert toast */
+  /* ── SALE TOAST (gateway style) ── */
   #sale-toast {
     position: fixed; top: 24px; right: 24px;
-    background: #1a2e1a; border: 1px solid var(--green);
-    border-radius: 14px; padding: 16px 20px;
-    box-shadow: 0 8px 32px rgba(0,0,0,.5);
-    display: none; z-index: 9999; max-width: 320px;
-    animation: slideIn .3s ease;
+    background: linear-gradient(145deg, #162b16, #1e3a1e);
+    border: 1px solid rgba(52,168,83,.5);
+    border-radius: 16px; padding: 18px 20px;
+    box-shadow: 0 12px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(52,168,83,.1);
+    display: none; z-index: 9999; min-width: 280px; max-width: 320px;
+    animation: toastSlideIn .35s cubic-bezier(.34,1.56,.64,1);
   }
-  @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: none; } }
-  #sale-toast .toast-icon { font-size: 24px; margin-bottom: 6px; }
-  #sale-toast .toast-title { font-size: 15px; font-weight: 700; color: var(--green); }
-  #sale-toast .toast-body { font-size: 13px; color: var(--muted); margin-top: 3px; }
+  @keyframes toastSlideIn {
+    from { opacity: 0; transform: translateX(24px) scale(.95); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+  }
+  .toast-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .toast-logo { font-size: 16px; font-weight: 800; line-height: 1; }
+  .toast-logo .tg1{color:#4285f4}.toast-logo .tg2{color:#ea4335}
+  .toast-logo .tg3{color:#fbbc04}.toast-logo .tg4{color:#4285f4}
+  .toast-logo .tg5{color:#34a853}.toast-logo .tg6{color:#ea4335}
+  .toast-logo .tgc{color:#fff}
+  .toast-check { color: var(--green); font-size: 22px; }
+  .toast-label {
+    font-size: 10px; font-weight: 700; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--green); margin-bottom: 4px;
+  }
+  .toast-amount { font-size: 30px; font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 4px; }
+  .toast-buyer { font-size: 13px; color: rgba(255,255,255,.55); }
 
   /* loading pulse */
   .pulse { animation: pulse 1.5s ease-in-out infinite; }
@@ -212,11 +242,21 @@
     animation: pulse 2s ease-in-out infinite;
   }
 
+  /* mobile */
   @media (max-width: 900px) {
     .kpi-grid { grid-template-columns: repeat(2, 1fr); }
     .sidebar { width: 64px; }
-    .sidebar-logo small, .sidebar-logo .g, .nav-item span:not(.icon), .logout-btn span { display: none; }
-    .nav-item { justify-content: center; }
+    .sidebar-logo small, .sidebar-logo .g, .nav-item span:not(.icon), .logout-btn span:not(.icon) { display: none; }
+    .nav-item, .logout-btn { justify-content: center; }
+    .page { padding: 20px 16px; }
+  }
+  @media (max-width: 600px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .kpi-card { padding: 14px 16px; }
+    .kpi-value { font-size: 22px; }
+    .page { padding: 16px 12px; }
+    .page-header h1 { font-size: 20px; }
+    #sale-toast { right: 12px; top: 12px; min-width: 260px; }
   }
 </style>
 </head>
@@ -255,21 +295,21 @@
       </div>
       <div class="nav">
         <button class="nav-item active" data-page="dashboard">
-          <span class="icon">📊</span><span>Dashboard</span>
+          <span class="icon material-symbols-rounded">dashboard</span><span>Dashboard</span>
         </button>
         <button class="nav-item" data-page="vendas">
-          <span class="icon">💳</span><span>Vendas</span>
+          <span class="icon material-symbols-rounded">payments</span><span>Vendas</span>
         </button>
         <button class="nav-item" data-page="funil">
-          <span class="icon">🔻</span><span>Funil</span>
+          <span class="icon material-symbols-rounded">filter_alt</span><span>Funil</span>
         </button>
         <button class="nav-item" data-page="config">
-          <span class="icon">⚙️</span><span>Configurações</span>
+          <span class="icon material-symbols-rounded">settings</span><span>Configurações</span>
         </button>
       </div>
       <div class="sidebar-footer">
         <button class="logout-btn" id="logout-btn">
-          <span class="icon">🚪</span><span>Sair</span>
+          <span class="icon material-symbols-rounded">logout</span><span>Sair</span>
         </button>
       </div>
     </nav>
@@ -406,9 +446,9 @@
                 <small>Instale o painel como app — funciona offline e aparece na tela inicial</small>
               </div>
               <button class="install-btn" id="install-btn">
-                <span>📲</span> Instalar
+                <span class="material-symbols-rounded">install_mobile</span> Instalar
               </button>
-              <span id="install-done" style="font-size:13px;color:var(--green);display:none">✅ App instalado</span>
+              <span id="install-done" style="font-size:13px;color:var(--green);display:none">App instalado</span>
             </div>
           </div>
 
@@ -431,11 +471,17 @@
   </div>
 </div>
 
-<!-- Sale Toast -->
+<!-- Sale Toast (gateway style) -->
 <div id="sale-toast">
-  <div class="toast-icon">🤑</div>
-  <div class="toast-title" id="toast-title">Nova Venda!</div>
-  <div class="toast-body" id="toast-body">Alguém acabou de comprar.</div>
+  <div class="toast-header">
+    <div class="toast-logo">
+      <span class="tg1">G</span><span class="tg2">o</span><span class="tg3">o</span><span class="tg4">g</span><span class="tg5">l</span><span class="tg6">e</span><span class="tgc"> Cash</span>
+    </div>
+    <span class="material-symbols-rounded toast-check">check_circle</span>
+  </div>
+  <div class="toast-label">Venda Realizada!</div>
+  <div class="toast-amount" id="toast-title">R$ 117,00</div>
+  <div class="toast-buyer" id="toast-body">Alguém acabou de comprar.</div>
 </div>
 
 <script>
@@ -569,7 +615,7 @@ function startPolling() {
 }
 
 /* ─────────────────────────────────────────────
-   KPI CARDS (safe text injection)
+   KPI CARDS
 ───────────────────────────────────────────── */
 function updateKPIs(stats, funnel) {
   const revenue = stats.totalRevenue || 0;
@@ -625,7 +671,7 @@ function updateDailyChart(dailySales) {
 }
 
 /* ─────────────────────────────────────────────
-   TABLE HELPERS (safe DOM creation)
+   TABLE HELPERS
 ───────────────────────────────────────────── */
 function formatDate(ts) {
   if (!ts) return '—';
@@ -640,20 +686,34 @@ function formatMoney(v) {
 
 function makeStatusBadge(status) {
   const span = document.createElement('span');
-  span.className = 'badge ' +
-    (status === 'COMPLETED' ? 'badge-green' :
-     status === 'PENDING'   ? 'badge-yellow' :
-     status === 'FAILED'    ? 'badge-red' : 'badge-blue');
-  span.textContent =
-    status === 'COMPLETED' ? '✅ Pago' :
-    status === 'PENDING'   ? '⏳ Pendente' :
-    status === 'FAILED'    ? '❌ Falhou' : status || '—';
+  const icon = document.createElement('span');
+  icon.className = 'material-symbols-rounded';
+
+  if (status === 'COMPLETED') {
+    span.className = 'badge badge-green';
+    icon.textContent = 'check_circle';
+    span.appendChild(icon);
+    span.appendChild(document.createTextNode(' Pago'));
+  } else if (status === 'PENDING') {
+    span.className = 'badge badge-yellow';
+    icon.textContent = 'schedule';
+    span.appendChild(icon);
+    span.appendChild(document.createTextNode(' Pendente'));
+  } else if (status === 'FAILED') {
+    span.className = 'badge badge-red';
+    icon.textContent = 'cancel';
+    span.appendChild(icon);
+    span.appendChild(document.createTextNode(' Falhou'));
+  } else {
+    span.className = 'badge badge-blue';
+    span.textContent = status || '—';
+  }
   return span;
 }
 
 function makeCell(text) {
   const td = document.createElement('td');
-  td.textContent = text ?? '—';
+  td.textContent = text != null ? text : '—';
   return td;
 }
 
@@ -712,7 +772,7 @@ function renderAllSales(transactions) {
 }
 
 /* ─────────────────────────────────────────────
-   FUNNEL (safe DOM creation)
+   FUNNEL
 ───────────────────────────────────────────── */
 const FUNNEL_LABELS = {
   PageView:        'Visitou a Página',
@@ -766,7 +826,7 @@ function renderFunnel(funnel) {
     if (drop !== null && Number(drop) > 20) {
       const dropEl = document.createElement('div');
       dropEl.className = 'funnel-drop';
-      dropEl.textContent = '−' + drop + '%';
+      dropEl.textContent = '-' + drop + '%';
       step.appendChild(dropEl);
     }
 
@@ -788,51 +848,69 @@ function renderInsights(funnel) {
 
   if (views > 0) {
     const engRate = ((quizS / views) * 100).toFixed(0);
-    insights.push(engRate >= 50
-      ? `✅ ${engRate}% dos visitantes iniciam o quiz — bom engajamento!`
-      : `⚠️ Apenas ${engRate}% dos visitantes iniciam o quiz. Revise o hero da página.`);
+    insights.push({ ok: engRate >= 50,
+      text: engRate >= 50
+        ? engRate + '% dos visitantes iniciam o quiz — bom engajamento!'
+        : 'Apenas ' + engRate + '% dos visitantes iniciam o quiz. Revise o hero da pagina.'
+    });
   }
   if (quizS > 0) {
     const complRate = ((quizC / quizS) * 100).toFixed(0);
-    insights.push(complRate >= 70
-      ? `✅ ${complRate}% completam o quiz — fluxo bem otimizado.`
-      : `⚠️ ${complRate}% completam o quiz. Reduza as etapas ou mude as perguntas.`);
+    insights.push({ ok: complRate >= 70,
+      text: complRate >= 70
+        ? complRate + '% completam o quiz — fluxo bem otimizado.'
+        : complRate + '% completam o quiz. Reduza as etapas ou mude as perguntas.'
+    });
   }
   if (quizC > 0 && vsl60 > 0) {
     const retRate = ((vsl60 / quizC) * 100).toFixed(0);
-    insights.push(retRate >= 60
-      ? `✅ ${retRate}% assistem à VSL por 60s — VSL engajando bem.`
-      : `⚠️ Apenas ${retRate}% chegam a 60s na VSL. Melhore a abertura do vídeo.`);
+    insights.push({ ok: retRate >= 60,
+      text: retRate >= 60
+        ? retRate + '% assistem a VSL por 60s — VSL engajando bem.'
+        : 'Apenas ' + retRate + '% chegam a 60s na VSL. Melhore a abertura do video.'
+    });
   }
   if (ckS > 0 && ckC > 0) {
     const convRate = ((ckC / ckS) * 100).toFixed(0);
-    insights.push(convRate >= 30
-      ? `✅ ${convRate}% convertem no checkout — excelente!`
-      : `⚠️ Apenas ${convRate}% convertem no checkout. Teste preço, urgência e prova social.`);
+    insights.push({ ok: convRate >= 30,
+      text: convRate >= 30
+        ? convRate + '% convertem no checkout — excelente!'
+        : 'Apenas ' + convRate + '% convertem no checkout. Teste preco, urgencia e prova social.'
+    });
   }
   if (!insights.length) {
     const p = document.createElement('p');
-    p.textContent = 'Dados insuficientes. Assim que houver tráfego os insights aparecerão aqui.';
+    p.textContent = 'Dados insuficientes. Assim que houver trafego os insights aparecerao aqui.';
     container.appendChild(p);
     return;
   }
-  insights.forEach(txt => {
+  insights.forEach(item => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:flex-start;gap:8px;margin-bottom:8px';
+
+    const icon = document.createElement('span');
+    icon.className = 'material-symbols-rounded';
+    icon.style.cssText = 'font-size:16px;margin-top:2px;flex-shrink:0;color:' + (item.ok ? 'var(--green)' : 'var(--yellow)');
+    icon.textContent = item.ok ? 'check_circle' : 'warning';
+
     const p = document.createElement('p');
-    p.textContent = txt;
-    container.appendChild(p);
+    p.style.margin = '0';
+    p.textContent = item.text;
+
+    row.appendChild(icon);
+    row.appendChild(p);
+    container.appendChild(row);
   });
 }
 
 /* ─────────────────────────────────────────────
-   SALE ALERT TOAST (safe text)
+   SALE ALERT TOAST
 ───────────────────────────────────────────── */
 function showSaleAlert(tx) {
   playCashSound();
   const toast = document.getElementById('sale-toast');
-  const title = document.getElementById('toast-title');
-  const body = document.getElementById('toast-body');
-  title.textContent = '🤑 Nova Venda — ' + formatMoney(tx.amount);
-  body.textContent = (tx.name || 'Alguém') + ' acabou de comprar o Google Cash!';
+  document.getElementById('toast-title').textContent = formatMoney(tx.amount);
+  document.getElementById('toast-body').textContent = (tx.name || 'Alguem') + ' acabou de comprar o Google Cash!';
   toast.style.display = 'block';
   setTimeout(() => { toast.style.display = 'none'; }, 6000);
 }
@@ -868,7 +946,7 @@ function checkPushState() {
 
 document.getElementById('push-toggle').addEventListener('click', async () => {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    alert('Seu navegador não suporta notificações push. Use Chrome ou Edge.');
+    alert('Seu navegador nao suporta notificacoes push. Use Chrome ou Edge.');
     return;
   }
   if (pushActive) {
@@ -880,11 +958,11 @@ document.getElementById('push-toggle').addEventListener('click', async () => {
 
 document.getElementById('test-push-btn').addEventListener('click', () => {
   if (Notification.permission !== 'granted') {
-    alert('Ative as notificações primeiro.');
+    alert('Ative as notificacoes primeiro.');
     return;
   }
-  new Notification('🤑 Teste — Google Cash', {
-    body: 'Notificação funcionando! Você receberá alertas de venda assim.',
+  new Notification('Google Cash — Teste', {
+    body: 'Notificacao funcionando! Voce recebera alertas de venda assim.',
     icon: '/assets/icon.svg'
   });
   playCashSound();
@@ -897,11 +975,19 @@ async function subscribePush() {
     const perm = await Notification.requestPermission();
     if (perm !== 'granted') { btn.textContent = 'Ativar'; btn.className = 'toggle-btn off'; return; }
     const reg = await navigator.serviceWorker.ready;
-    // fetch public VAPID key from meta (injected by server) or use placeholder
-    const vapidMeta = document.querySelector('meta[name="vapid-public-key"]');
-    const vapidKey = vapidMeta ? vapidMeta.content : null;
-    if (!vapidKey || vapidKey === 'YOUR_VAPID_PUBLIC_KEY') {
-      alert('Configure o VAPID_PUBLIC_KEY nas variáveis de ambiente do Vercel para ativar push no servidor.');
+
+    // Fetch VAPID public key from API (avoids embedding server env vars in HTML)
+    let vapidKey = null;
+    try {
+      const vr = await fetch('/api/vapid-key');
+      if (vr.ok) {
+        const vd = await vr.json();
+        vapidKey = vd.publicKey || null;
+      }
+    } catch (e) { /* VAPID key fetch failed */ }
+
+    if (!vapidKey) {
+      // Fallback: local-only notifications (no server push subscription)
       pushActive = true;
       btn.textContent = 'Ativo (local)'; btn.className = 'toggle-btn on';
       return;
