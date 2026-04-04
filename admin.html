@@ -242,21 +242,84 @@
     animation: pulse 2s ease-in-out infinite;
   }
 
-  /* mobile */
+  /* ── MOBILE HEADER ── */
+  .mobile-header {
+    display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    height: 56px; align-items: center; padding: 0 16px; gap: 12px;
+  }
+  .hamburger {
+    width: 40px; height: 40px; background: none; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; border-radius: 8px;
+    color: var(--text); flex-shrink: 0;
+  }
+  .hamburger:hover { background: var(--surface2); }
+  .hamburger .material-symbols-rounded { font-size: 24px; }
+  .mobile-logo { font-size: 18px; font-weight: 800; }
+  .mobile-logo span:nth-child(1){color:#4285f4}
+  .mobile-logo span:nth-child(2){color:#ea4335}
+  .mobile-logo span:nth-child(3){color:#fbbc04}
+  .mobile-logo span:nth-child(4){color:#4285f4}
+  .mobile-logo span:nth-child(5){color:#34a853}
+  .mobile-logo span:nth-child(6){color:#ea4335}
+
+  /* Sidebar overlay on mobile */
+  .sidebar-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 299;
+  }
+  .sidebar-overlay.open { display: block; }
+
+  /* ── BOTTOM NAV (mobile) ── */
+  .bottom-nav {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    background: var(--surface); border-top: 1px solid var(--border);
+    height: 60px; align-items: center; justify-content: space-around; padding: 0 8px;
+  }
+  .bottom-nav-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; flex: 1; height: 100%; background: none; border: none; cursor: pointer;
+    color: var(--muted); font-family: var(--font); font-size: 10px; font-weight: 600;
+    transition: color .15s; padding: 6px 0;
+  }
+  .bottom-nav-item.active { color: var(--accent); }
+  .bottom-nav-item .material-symbols-rounded { font-size: 22px; }
+
+  /* ── RESPONSIVE TABLES ── */
+  @media (max-width: 640px) {
+    .table-wrap { -webkit-overflow-scrolling: touch; }
+    table { min-width: 520px; }
+    th, td { padding: 10px 10px; font-size: 12px; }
+  }
+
+  /* ── MEDIA QUERIES ── */
   @media (max-width: 900px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    .sidebar { width: 64px; }
-    .sidebar-logo small, .sidebar-logo .g, .nav-item span:not(.icon), .logout-btn span:not(.icon) { display: none; }
-    .nav-item, .logout-btn { justify-content: center; }
+    .mobile-header { display: flex; }
+    .bottom-nav { display: flex; }
+    .layout { flex-direction: column; height: auto; min-height: 100vh; }
+    .sidebar {
+      position: fixed; top: 0; left: -260px; height: 100vh; z-index: 300;
+      width: 240px; transition: left .25s cubic-bezier(.4,0,.2,1); padding-top: 0;
+    }
+    .sidebar.open { left: 0; }
+    .sidebar-logo { padding-top: 20px; }
+    .main { padding-top: 56px; padding-bottom: 60px; }
     .page { padding: 20px 16px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   }
   @media (max-width: 600px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .kpi-card { padding: 14px 16px; }
+    .kpi-grid { gap: 10px; }
+    .kpi-card { padding: 14px 14px; }
     .kpi-value { font-size: 22px; }
+    .kpi-label { font-size: 10px; }
     .page { padding: 16px 12px; }
+    .page-header { margin-bottom: 18px; }
     .page-header h1 { font-size: 20px; }
-    #sale-toast { right: 12px; top: 12px; min-width: 260px; }
+    .card { padding: 16px; }
+    .funnel-label { width: 110px; font-size: 12px; }
+    .funnel-count { width: 50px; font-size: 12px; }
+    .funnel-pct { display: none; }
+    #sale-toast { right: 10px; top: 66px; min-width: 260px; max-width: calc(100vw - 20px); }
+    .config-row { flex-direction: column; align-items: flex-start; gap: 10px; }
   }
 </style>
 </head>
@@ -282,10 +345,48 @@
 
 <!-- ── APP ── -->
 <div id="app">
+
+  <!-- Mobile top header -->
+  <header class="mobile-header" id="mobile-header">
+    <button class="hamburger" id="hamburger-btn" aria-label="Menu">
+      <span class="material-symbols-rounded">menu</span>
+    </button>
+    <div class="mobile-logo">
+      <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+      <span style="color:var(--text);font-weight:400"> Cash</span>
+    </div>
+    <div style="margin-left:auto">
+      <span id="refresh-dot-mobile" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite"></span>
+    </div>
+  </header>
+
+  <!-- Sidebar overlay (mobile tap-to-close) -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Bottom navigation (mobile) -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bottom-nav-item active" data-page="dashboard">
+      <span class="material-symbols-rounded">dashboard</span>
+      <span>Dashboard</span>
+    </button>
+    <button class="bottom-nav-item" data-page="vendas">
+      <span class="material-symbols-rounded">payments</span>
+      <span>Vendas</span>
+    </button>
+    <button class="bottom-nav-item" data-page="funil">
+      <span class="material-symbols-rounded">filter_alt</span>
+      <span>Funil</span>
+    </button>
+    <button class="bottom-nav-item" data-page="config">
+      <span class="material-symbols-rounded">settings</span>
+      <span>Config</span>
+    </button>
+  </nav>
+
   <div class="layout">
 
     <!-- sidebar -->
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebar">
       <div class="sidebar-logo">
         <div class="g">
           <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
@@ -566,15 +667,36 @@ function showApp() {
 }
 
 /* ─────────────────────────────────────────────
+   MOBILE SIDEBAR
+───────────────────────────────────────────── */
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-overlay').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+document.getElementById('hamburger-btn').addEventListener('click', openSidebar);
+document.getElementById('sidebar-overlay').addEventListener('click', closeSidebar);
+
+/* ─────────────────────────────────────────────
    NAVIGATION
 ───────────────────────────────────────────── */
+function navigateTo(page) {
+  document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('[data-page="' + page + '"]').forEach(b => b.classList.add('active'));
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) pageEl.classList.add('active');
+  closeSidebar();
+}
+
 document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('page-' + btn.dataset.page).classList.add('active');
-  });
+  btn.addEventListener('click', () => navigateTo(btn.dataset.page));
+});
+document.querySelectorAll('.bottom-nav-item[data-page]').forEach(btn => {
+  btn.addEventListener('click', () => navigateTo(btn.dataset.page));
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
