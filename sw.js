@@ -1,12 +1,12 @@
-/* Google Cash — Service Worker v1 */
-const CACHE = 'gc-cache-v1';
-const STATIC = ['/admin.html', '/checkout.html', '/manifest.json', '/assets/icon.svg'];
+/* Google Cash — Service Worker v2 */
+const CACHE = 'gc-cache-v2';
+const STATIC = ['/admin.html', '/checkout.html', '/manifest.json'];
 
-/* ── Install: cache static assets ── */
+/* ── Install ── */
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE)
-      .then(c => c.addAll(STATIC))
+      .then(c => c.addAll(STATIC).catch(() => {}))
       .then(() => self.skipWaiting())
   );
 });
@@ -20,51 +20,65 @@ self.addEventListener('activate', e => {
   );
 });
 
-/* ── Fetch: cache-first for static, network-first for API ── */
+/* ── Fetch: network-first for API, cache-first for assets ── */
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  if (e.request.url.includes('/api/')) return; // never cache API
+  if (e.request.url.includes('/api/')) return;
   e.respondWith(
     caches.match(e.request)
       .then(cached => cached || fetch(e.request).then(res => {
-        if (res && res.status === 200) {
+        if (res && res.status === 200 && res.type !== 'opaque') {
           const clone = res.clone();
           caches.open(CACHE).then(c => c.put(e.request, clone));
         }
         return res;
-      }))
+      }).catch(() => cached))
   );
 });
 
-/* ── Push: show notification + notify open tabs ── */
+/* ── Push: mostra notificacao nativa + avisa abas abertas ── */
 self.addEventListener('push', e => {
   if (!e.data) return;
+
   let data = {};
-  try { data = e.data.json(); } catch { data = { title: '🤑 Nova Venda!', body: e.data.text() }; }
+  try { data = e.data.json(); } catch { data = { title: 'Google Cash', body: e.data.text() }; }
+
+  const amount = data.amount
+    ? 'R$ ' + Number(data.amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+    : null;
+
+  const title = data.title || 'Google Cash — Venda Realizada!';
+  const body  = amount
+    ? (data.buyer ? data.buyer + ' — ' + amount : amount)
+    : (data.body || 'Nova venda confirmada!');
 
   const opts = {
-    body: data.body || 'Google Cash',
+    body,
     icon: '/assets/icon.svg',
     badge: '/assets/icon.svg',
-    vibrate: [200, 100, 400, 100, 200, 100, 400],
-    tag: 'gc-sale',
+    image: '/assets/icon.svg',
+    vibrate: [300, 100, 300, 100, 600],
+    sound: 'default',
+    tag: 'gc-sale-' + Date.now(),
+    renotify: true,
     requireInteraction: false,
+    silent: false,
     data: { url: '/admin.html', payload: data }
   };
 
   e.waitUntil(Promise.all([
-    self.registration.showNotification(data.title || '🤑 Nova Venda — Google Cash!', opts),
+    self.registration.showNotification(title, opts),
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list =>
       list.forEach(c => c.postMessage({ type: 'NEW_SALE', payload: data }))
     )
   ]));
 });
 
-/* ── Notification click: focus or open admin ── */
+/* ── Clique na notificacao: abre o admin ── */
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   e.waitUntil(
-    clients.matchAll({ type: 'window' }).then(list => {
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
       for (const c of list) {
         if (c.url.includes('/admin') && 'focus' in c) return c.focus();
       }

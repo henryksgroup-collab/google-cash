@@ -521,47 +521,63 @@
         </div>
 
         <div class="card">
+          <!-- PUSH STATUS BANNER -->
+          <div id="push-status-banner" style="border-radius:10px;padding:14px 16px;margin-bottom:20px;background:var(--surface2);border:1px solid var(--border)">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="material-symbols-rounded" id="push-status-icon" style="font-size:22px;color:var(--muted)">notifications_off</span>
+              <div>
+                <div style="font-size:14px;font-weight:600" id="push-status-title">Notificações inativas</div>
+                <div style="font-size:12px;color:var(--muted);margin-top:2px" id="push-status-sub">Clique em Ativar neste dispositivo para receber alertas de venda</div>
+              </div>
+            </div>
+          </div>
+
           <div class="config-section">
-            <h3>Notificações Push</h3>
+            <h3>Passo 1 — Ativar neste dispositivo</h3>
             <div class="config-row">
               <div class="config-info">
-                <p>Notificação de Nova Venda</p>
-                <small>Receba um alerta com som toda vez que houver uma compra confirmada</small>
+                <p>Notificações de Venda</p>
+                <small id="push-device-sub">Aparecem no celular/PC mesmo com o navegador fechado</small>
               </div>
               <button class="toggle-btn off" id="push-toggle">Ativar</button>
             </div>
+          </div>
+
+          <div class="config-section">
+            <h3>Passo 2 — Testar se está funcionando</h3>
             <div class="config-row">
               <div class="config-info">
-                <p>Testar Notificação</p>
-                <small>Dispara um alerta de teste no seu dispositivo agora</small>
+                <p>Testar Push do Servidor</p>
+                <small>Manda uma notificacao real pelo servidor — deve aparecer no celular com som</small>
               </div>
               <button class="toggle-btn off" id="test-push-btn" style="background:var(--surface2);color:var(--muted)">Testar</button>
             </div>
           </div>
 
+          <!-- HOW IT WORKS -->
+          <div style="background:rgba(26,115,232,.08);border:1px solid rgba(26,115,232,.2);border-radius:10px;padding:16px;margin-bottom:20px">
+            <div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span class="material-symbols-rounded" style="font-size:16px">info</span>
+              Como funciona
+            </div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.9">
+              <strong style="color:var(--text)">Android (Chrome):</strong> Clique "Ativar" → Permita notificacoes → Pronto. Aparece na barra do celular, com som, mesmo com Chrome fechado.<br>
+              <strong style="color:var(--text)">iPhone (iOS 16.4+):</strong> Primeiro instale o app: Safari → compartilhar → "Adicionar a Tela de Inicio". Abra o app instalado → Clique "Ativar".<br>
+              <strong style="color:var(--text)">PC (Windows/Mac):</strong> Clique "Ativar" → Permita → Notificacao aparece no canto da tela.
+            </div>
+          </div>
+
           <div class="config-section">
-            <h3>Instalar App (PWA)</h3>
+            <h3>Instalar App no Celular (PWA)</h3>
             <div class="config-row">
               <div class="config-info">
-                <p>Baixar no Celular</p>
-                <small>Instale o painel como app — funciona offline e aparece na tela inicial</small>
+                <p>Adicionar à Tela Inicial</p>
+                <small>Instale o painel como app — necessario no iPhone para receber notificacoes</small>
               </div>
               <button class="install-btn" id="install-btn">
                 <span class="material-symbols-rounded">install_mobile</span> Instalar
               </button>
               <span id="install-done" style="font-size:13px;color:var(--green);display:none">App instalado</span>
-            </div>
-          </div>
-
-          <div class="config-section">
-            <h3>VAPID — Chaves de Push</h3>
-            <div style="background:var(--surface2);border-radius:10px;padding:16px;font-size:13px;color:var(--muted);line-height:1.8">
-              Para ativar as notificações push no servidor, gere suas chaves VAPID e adicione ao Vercel:<br><br>
-              <code style="color:var(--accent)">npx web-push generate-vapid-keys</code><br><br>
-              Depois adicione ao Vercel (Settings → Environment Variables):<br>
-              <code style="color:var(--text)">VAPID_PUBLIC_KEY</code><br>
-              <code style="color:var(--text)">VAPID_PRIVATE_KEY</code><br>
-              <code style="color:var(--text)">VAPID_EMAIL</code>
             </div>
           </div>
         </div>
@@ -1056,19 +1072,48 @@ function setupSW() {
   });
 }
 
-function checkPushState() {
-  if (!('Notification' in window)) return;
-  const btn = document.getElementById('push-toggle');
-  if (Notification.permission === 'granted') {
-    pushActive = true;
+function updatePushUI() {
+  const banner = document.getElementById('push-status-banner');
+  const icon   = document.getElementById('push-status-icon');
+  const title  = document.getElementById('push-status-title');
+  const sub    = document.getElementById('push-status-sub');
+  const btn    = document.getElementById('push-toggle');
+
+  if (pushActive) {
+    banner.style.background = 'rgba(52,168,83,.1)';
+    banner.style.borderColor = 'rgba(52,168,83,.3)';
+    icon.textContent = 'notifications_active';
+    icon.style.color = 'var(--green)';
+    title.textContent = 'Notificacoes ativas neste dispositivo';
+    sub.textContent = 'Voce recebera alertas de venda mesmo com o app fechado';
     btn.textContent = 'Desativar';
     btn.className = 'toggle-btn on';
+    document.getElementById('test-push-btn').style.background = 'var(--accent)';
+    document.getElementById('test-push-btn').style.color = '#fff';
+    document.getElementById('test-push-btn').className = 'toggle-btn on';
+  } else {
+    banner.style.background = 'var(--surface2)';
+    banner.style.borderColor = 'var(--border)';
+    icon.textContent = 'notifications_off';
+    icon.style.color = 'var(--muted)';
+    title.textContent = 'Notificacoes inativas';
+    sub.textContent = 'Clique em Ativar neste dispositivo para receber alertas de venda';
+    btn.textContent = 'Ativar';
+    btn.className = 'toggle-btn off';
   }
+}
+
+function checkPushState() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') {
+    pushActive = true;
+  }
+  updatePushUI();
 }
 
 document.getElementById('push-toggle').addEventListener('click', async () => {
   if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    alert('Seu navegador nao suporta notificacoes push. Use Chrome ou Edge.');
+    alert('Seu navegador nao suporta notificacoes push.\nUse Chrome (Android) ou Safari (iPhone iOS 16.4+).');
     return;
   }
   if (pushActive) {
@@ -1078,61 +1123,94 @@ document.getElementById('push-toggle').addEventListener('click', async () => {
   }
 });
 
-document.getElementById('test-push-btn').addEventListener('click', () => {
-  if (Notification.permission !== 'granted') {
-    alert('Ative as notificacoes primeiro.');
+document.getElementById('test-push-btn').addEventListener('click', async () => {
+  if (!pushActive) {
+    alert('Ative as notificacoes primeiro (Passo 1).');
     return;
   }
-  new Notification('Google Cash — Teste', {
-    body: 'Notificacao funcionando! Voce recebera alertas de venda assim.',
-    icon: '/assets/icon.svg'
-  });
-  playCashSound();
+  const btn = document.getElementById('test-push-btn');
+  const orig = btn.textContent;
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/test-push', {
+      method: 'POST',
+      headers: { 'x-admin-token': TOKEN }
+    });
+    const d = await r.json();
+    if (d.ok) {
+      btn.textContent = 'Enviado!';
+      playCashSound();
+      setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 3000);
+    } else {
+      alert(d.warn || d.error || 'Erro ao enviar push');
+      btn.textContent = orig; btn.disabled = false;
+    }
+  } catch (e) {
+    alert('Falha de conexao');
+    btn.textContent = orig; btn.disabled = false;
+  }
 });
 
 async function subscribePush() {
   const btn = document.getElementById('push-toggle');
-  btn.textContent = 'Ativando…';
+  btn.textContent = 'Ativando...';
+  btn.disabled = true;
   try {
     const perm = await Notification.requestPermission();
-    if (perm !== 'granted') { btn.textContent = 'Ativar'; btn.className = 'toggle-btn off'; return; }
+    if (perm !== 'granted') {
+      alert('Voce precisa permitir notificacoes para que os alertas de venda funcionem.');
+      btn.disabled = false; updatePushUI(); return;
+    }
     const reg = await navigator.serviceWorker.ready;
 
-    // Fetch VAPID public key from API (avoids embedding server env vars in HTML)
+    // Busca a VAPID public key do servidor
     let vapidKey = null;
     try {
       const vr = await fetch('/api/vapid-key');
-      if (vr.ok) {
-        const vd = await vr.json();
-        vapidKey = vd.publicKey || null;
-      }
-    } catch (e) { /* VAPID key fetch failed */ }
+      if (vr.ok) { const vd = await vr.json(); vapidKey = (vd.publicKey || '').trim() || null; }
+    } catch (e) { console.warn('[push] vapid-key fetch failed', e); }
 
     if (!vapidKey) {
-      // Fallback: local-only notifications (no server push subscription)
-      pushActive = true;
-      btn.textContent = 'Ativo (local)'; btn.className = 'toggle-btn on';
-      return;
+      console.warn('[push] VAPID key nao disponivel — ativando modo local');
+      pushActive = true; btn.disabled = false; updatePushUI(); return;
     }
+
     const sub = await reg.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: urlBase64ToUint8Array(vapidKey)
     });
-    await fetch('/api/subscribe', {
+
+    const r = await fetch('/api/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN },
       body: JSON.stringify(sub)
     });
+    const d = await r.json();
+    console.log('[push] subscribe result', d);
+
     pushActive = true;
-    btn.textContent = 'Desativar'; btn.className = 'toggle-btn on';
+    btn.disabled = false;
+    updatePushUI();
+    // Mostra notificacao local de confirmacao
+    if (Notification.permission === 'granted') {
+      new Notification('Google Cash — Notificacoes ativadas!', {
+        body: 'Voce recebera alertas de venda neste dispositivo.',
+        icon: '/assets/icon.svg'
+      });
+    }
   } catch (e) {
     console.error('[push] subscribe error', e);
-    btn.textContent = 'Ativar'; btn.className = 'toggle-btn off';
+    pushActive = false;
+    btn.disabled = false;
+    updatePushUI();
+    alert('Erro ao ativar notificacoes: ' + e.message + '\n\nNo iPhone: primeiro instale o site como app (Safari → Adicionar a Tela de Inicio) e abra pelo icone instalado.');
   }
 }
 
 async function unsubscribePush() {
   const btn = document.getElementById('push-toggle');
+  btn.disabled = true;
   try {
     const reg = await navigator.serviceWorker.ready;
     const sub = await reg.pushManager.getSubscription();
@@ -1145,8 +1223,12 @@ async function unsubscribePush() {
       await sub.unsubscribe();
     }
     pushActive = false;
-    btn.textContent = 'Ativar'; btn.className = 'toggle-btn off';
-  } catch (e) { console.error('[push] unsubscribe error', e); }
+    btn.disabled = false;
+    updatePushUI();
+  } catch (e) {
+    console.error('[push] unsubscribe error', e);
+    btn.disabled = false;
+  }
 }
 
 function urlBase64ToUint8Array(base64String) {
