@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-store,no-cache,must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<title>Carregando...</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow-x:hidden;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+
+/* GATE */
+#__gate{display:flex;align-items:center;justify-content:center;height:100vh;background:#f5f5f5;flex-direction:column;gap:16px}
+.gate-spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:#1a73e8;border-radius:50%;animation:spin .8s linear infinite}
+.gate-txt{font-size:13px;color:#aaa}
+
+/* APP */
+#__app{display:none;max-width:480px;margin:0 auto;min-height:100vh;background:#f5f5f5;position:relative}
+
+/* HEADER */
+#hdr{background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
+.hlogo span{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.hbadges{display:flex;gap:6px}
+.hbdg{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;font-size:11px;font-weight:700;cursor:default;transition:transform .1s}
+.hbdg.xp{background:#e8f0fe;color:#1a73e8}
+.hbdg.cash{background:#e6f4ea;color:#188038}
+.hbdg svg{width:11px;height:11px}
+
+/* XP FLOAT */
+.xp-float{position:fixed;right:16px;top:58px;font-size:12px;font-weight:700;color:#1a73e8;background:#e8f0fe;padding:4px 10px;border-radius:99px;pointer-events:none;z-index:100;animation:xpFloat .9s ease forwards}
+.cash-float{position:fixed;right:16px;top:84px;font-size:12px;font-weight:700;color:#188038;background:#e6f4ea;padding:4px 10px;border-radius:99px;pointer-events:none;z-index:100;animation:xpFloat .9s ease forwards}
+
+/* NAV */
+#nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:#fff;border-top:.5px solid rgba(0,0,0,.1);display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 0 12px;background:none;border:none;cursor:pointer;gap:3px;outline:none;transition:opacity .1s}
+.nb:active{opacity:.7}
+.nb svg{width:18px;height:18px;stroke-width:1.6;color:#999;transition:color .15s,stroke-width .15s}
+.nb span{font-size:9.5px;color:#999;font-weight:500;transition:color .15s,font-weight .15s}
+.nb.a svg{stroke-width:2.2;color:#1a73e8}
+.nb.a span{color:#1a73e8;font-weight:700}
+
+/* CONTENT */
+#cnt{padding:16px 16px 110px;min-height:calc(100vh - 52px);overflow-y:auto}
+
+/* CARDS */
+.cd{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px 16px}
+.cd+.cd{margin-top:10px}
+.cdp0{padding:0;overflow:hidden}
+
+/* SECTIONS */
+.section{display:none;animation:slideUp .22s ease}
+.section.active{display:block}
+
+/* TAGS */
+.tg{font-size:10px;font-weight:700;letter-spacing:.06em;padding:2px 8px;border-radius:99px;display:inline-block;line-height:1.6}
+
+/* XP BAR */
+.xptrack{height:7px;background:#e8eaed;border-radius:99px;overflow:hidden}
+.xpfill{height:100%;border-radius:99px;background:linear-gradient(90deg,#1a73e8,#34a853);transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* MODULE CARD */
+.mcrd{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:13px 14px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:border-color .15s,transform .1s,box-shadow .15s;margin-bottom:8px}
+.mcrd:active{transform:scale(.98)}
+.micn{width:42px;height:42px;min-width:42px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.micn svg{width:18px;height:18px}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:14px}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 6px;border-radius:8px;font-size:12px;cursor:pointer;border:.5px solid rgba(0,0,0,.1);background:#fff;color:#888;font-weight:500;transition:all .15s;font-family:inherit}
+.tab svg{width:13px;height:13px}
+.tab.a{font-weight:700}
+
+/* QUIZ */
+.qopt{display:flex;align-items:center;gap:11px;padding:11px 14px;border:.5px solid rgba(0,0,0,.08);border-radius:8px;margin-bottom:8px;cursor:pointer;background:#fff;transition:all .15s;font-family:inherit;width:100%;text-align:left}
+.qopt:active{transform:scale(.98)}
+.qopt.correct{background:#e6f4ea;border-color:#34a853}
+.qopt.wrong{background:#fce8e6;border-color:#ea4335}
+.qlet{width:22px;height:22px;min-width:22px;border-radius:50%;border:.5px solid rgba(0,0,0,.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#666}
+
+/* CHECKLIST */
+.chkrow{display:flex;align-items:flex-start;gap:10px;padding:11px 15px;border-top:.5px solid rgba(0,0,0,.06);cursor:pointer;transition:background .15s}
+.chkrow:first-child{border-top:none}
+.chkrow:active{background:#f8f9fa}
+.chkrow svg{min-width:15px;margin-top:1px;transition:transform .2s}
+.chkrow.checked svg{animation:bounceIn .3s ease}
+
+/* STEP */
+.step{display:flex;gap:11px;margin-bottom:11px;align-items:flex-start}
+.stepn{width:22px;height:22px;min-width:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:2px;flex-shrink:0}
+.stepn span{font-size:11px;font-weight:700;color:#fff}
+
+/* INPUTS */
+.inp{width:100%;font-size:13px;padding:10px 12px;border-radius:8px;border:.5px solid rgba(0,0,0,.15);background:#f8f9fa;color:#202124;outline:none;font-family:inherit;transition:border-color .15s,box-shadow .15s}
+.inp:focus{border-color:#1a73e8;box-shadow:0 0 0 3px rgba(26,115,232,.1);background:#fff}
+.inp.mb{margin-bottom:8px}
+textarea.inp{resize:vertical;min-height:72px}
+select.inp{cursor:pointer}
+
+/* BUTTONS */
+.btn{width:100%;padding:11px;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;transition:transform .1s,opacity .15s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-blue{background:#1a73e8;color:#fff}
+.btn-green{background:#34a853;color:#fff}
+.btn-gray{background:#f1f3f4;color:#444}
+.btn svg{width:14px;height:14px}
+
+/* CLIENT */
+.cliavt{width:36px;height:36px;min-width:36px;border-radius:50%;background:#e8f0fe;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#1a73e8;flex-shrink:0}
+
+/* SECTIONS LABEL */
+.slbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin:0 0 10px}
+
+/* TOAST */
+#toast{position:fixed;top:62px;left:50%;transform:translateX(-50%) scale(.9);background:#202124;color:#fff;padding:8px 16px;border-radius:99px;font-size:12px;font-weight:700;z-index:99;white-space:nowrap;pointer-events:none;opacity:0;transition:all .2s;max-width:90%;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s ease}
+.modal-bg.hidden{display:none}
+.modal-box{background:#fff;border-radius:18px 18px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:480px;max-height:90vh;overflow-y:auto;animation:slideUp .25s cubic-bezier(.32,.72,0,1)}
+.modal-handle{width:40px;height:4px;background:#e0e0e0;border-radius:99px;margin:0 auto 16px}
+
+/* MISC */
+.row{display:flex;align-items:center;gap:10px}
+.flex1{flex:1;min-width:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.muted{color:#666;font-size:13px;line-height:1.6}
+.green{color:#188038}.blue{color:#1a73e8}.red{color:#c5221f}.amber{color:#a07000}
+.back-btn{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;color:#666;font-size:13px;padding:0 0 14px;font-family:inherit}
+.back-btn svg{width:15px;height:15px}
+.complete-btn{width:100%;padding:13px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;margin-top:14px;transition:background .2s,transform .1s;font-family:inherit}
+.complete-btn:active{transform:scale(.97)}
+.done-banner{margin-top:14px;padding:12px;background:#e6f4ea;border:.5px solid #34a85330;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px;color:#188038;font-size:13px;font-weight:700}
+.info-box{border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.info-row{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.info-row svg{width:13px;height:13px;min-width:13px}
+.dots{display:flex;gap:5px}
+.dot{width:8px;height:8px;border-radius:50%}
+.stat-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:13px 14px}
+.badge-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:12px 14px;text-align:center;transition:transform .2s}
+.badge-card.earned{animation:bounceIn .4s ease}
+.tool-link{display:flex;align-items:center;gap:12px;background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:12px 14px;margin-bottom:8px;color:inherit;text-decoration:none;transition:border-color .15s}
+.tool-link:active{border-color:#1a73e8}
+.plan-card{background:#fff;border-radius:12px;padding:13px 15px;margin-bottom:10px;border:.5px solid rgba(0,0,0,.08)}
+.copy-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:.5px solid rgba(0,0,0,.1);background:#f1f3f4;color:#444;font-family:inherit;transition:all .15s}
+.copy-btn.done{background:#e6f4ea;border-color:#34a85340;color:#188038}
+.wa-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:.5px solid #25d36640;background:#e7fde8;color:#128c7e;text-decoration:none}
+.wa-btn svg{width:13px;height:13px}
+.sim-card{background:linear-gradient(135deg,#e8f0fe,#f0f7ff);border:.5px solid #1a73e820;border-radius:14px;padding:16px}
+.sim-result{display:none;margin-top:12px;padding:12px;border-radius:10px;font-size:13px;font-weight:600;text-align:center}
+.note-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.note-hdr{padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.agenda-item{padding:11px 15px;border-top:.5px solid rgba(0,0,0,.06);display:flex;align-items:center;gap:10px;cursor:pointer}
+.agenda-item:first-child{border-top:none}
+.agenda-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.mod-header{border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.mod-header-icn{width:46px;height:46px;min-width:46px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.prompt-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:13px 15px;margin-bottom:8px}
+
+/* KEYFRAMES */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+@keyframes bounceIn{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes xpFloat{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-40px);opacity:0}}
+@keyframes levelUpPulse{0%{box-shadow:0 0 0 0 rgba(26,115,232,.5)}70%{box-shadow:0 0 0 16px rgba(26,115,232,0)}100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}}
+</style>
+</head>
+<body>
+
+<!-- GATE -->
+<div id="__gate">
+  <div class="gate-spinner"></div>
+  <p class="gate-txt">Verificando acesso...</p>
+</div>
+
+<!-- APP -->
+<div id="__app">
+  <div id="hdr">
+    <div class="hlogo">
+      <span style="color:#1a73e8">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#1a73e8">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span><span style="color:#202124;margin-left:4px">Cash</span>
+    </div>
+    <div class="hbadges">
+      <div class="hbdg xp" id="hxp">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        <span id="xp-val">0</span> XP
+      </div>
+      <div class="hbdg cash" id="hcash">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+        R$<span id="cash-val">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="cnt">
+    <div id="s-home" class="section active"></div>
+    <div id="s-modules" class="section"></div>
+    <div id="s-clients" class="section"></div>
+    <div id="s-plan" class="section"></div>
+    <div id="s-more" class="section"></div>
+  </div>
+
+  <nav id="nav">
+    <button class="nb a" data-v="home" onclick="nav('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      <span>Início</span>
+    </button>
+    <button class="nb" data-v="modules" onclick="nav('modules')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      <span>Módulos</span>
+    </button>
+    <button class="nb" data-v="clients" onclick="nav('clients')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      <span>Clientes</span>
+    </button>
+    <button class="nb" data-v="plan" onclick="nav('plan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+      <span>Planejar</span>
+    </button>
+    <button class="nb" data-v="more" onclick="nav('more')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+      <span>Mais</span>
+    </button>
+  </nav>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ═══════ GATE ═══════ */
+;(function(){
+  var TOKEN='gc2024x9z', CK='__gc_auth', SK='__gc_sess';
+  function checkToken(){
+    var p=new URLSearchParams(location.search),t=p.get('access')||p.get('utm_content')||p.get('ref');
+    if(t===TOKEN){
+      try{sessionStorage.setItem(SK,btoa(TOKEN+Date.now()));var d=new Date();d.setTime(d.getTime()+86400000);document.cookie=CK+'='+btoa(TOKEN)+';expires='+d.toUTCString()+';path=/;SameSite=Strict';}catch(e){}
+      try{history.replaceState({},'',location.pathname);}catch(e){}
+      return true;
+    }
+    try{var s=sessionStorage.getItem(SK);if(s&&atob(s).indexOf(TOKEN)===0)return true;}catch(e){}
+    try{var ck=document.cookie.split(';').find(function(c){return c.trim().startsWith(CK+'=');});if(ck&&atob(ck.split('=')[1].trim())===TOKEN)return true;}catch(e){}
+    return false;
+  }
+  function boot(){
+    if(!checkToken()){setTimeout(function(){try{location.replace('https://www.google.com');}catch(e){}},100);return;}
+    document.getElementById('__gate').style.display='none';
+    document.getElementById('__app').style.display='block';
+    document.title='Google Cash';
+    document.addEventListener('contextmenu',function(e){e.preventDefault();});
+    document.addEventListener('keydown',function(e){if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C','U'].indexOf(e.key)>-1)||(e.ctrlKey&&e.key==='U')||(e.ctrlKey&&e.key==='S')){e.preventDefault();}});
+    initApp();
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',boot);}else{setTimeout(boot,300);}
+})();
+
+/* ═══════ SVG ICONS ═══════ */
+var IC={
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>',
+  book:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>',
+  users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+  calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
+  zap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+  dollar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>',
+  target:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>',
+  checksq:'<svg viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>',
+  sq:'<svg viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>',
+  chevL:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>',
+  chevR:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>',
+  copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>',
+  trash:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>',
+  award:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>',
+  star:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>',
+  trend:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>',
+  search:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+  pin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
+  image:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>',
+  bot:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>',
+  pkg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>',
+  bar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line><line x1="2" y1="20" x2="22" y2="20"></line></svg>',
+  layout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>',
+  msg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>',
+  help:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+  clip:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>',
+  link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>',
+  note:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>',
+  lightbulb:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>',
+  meta:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>',
+  video:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>',
+  cpu:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>',
+  bookm:'<svg viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>'
+};
+
+function svg(name,size,color){
+  var s=IC[name]||IC['star'];
+  s=s.replace('<svg ','<svg width="'+size+'" height="'+size+'" style="display:inline-block;flex-shrink:0;vertical-align:middle;min-width:'+size+'px" ');
+  if(color) s=s.replace(/stroke="[^"]*"/g,'stroke="'+color+'"');
+  return s;
+}
+
+/* ═══════ AUDIO ═══════ */
+var SFX=(function(){
+  var ctx=null;
+  function ac(){if(!ctx){try{ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}return ctx;}
+  function tone(freq,dur,type,vol,delay){
+    var c=ac();if(!c)return;
+    var o=c.createOscillator(),g=c.createGain();
+    o.connect(g);g.connect(c.destination);
+    o.type=type||'sine';o.frequency.value=freq;
+    var t=c.currentTime+(delay||0);
+    g.gain.setValueAtTime(vol||0.2,t);
+    g.gain.exponentialRampToValueAtTime(0.001,t+dur);
+    o.start(t);o.stop(t+dur+.05);
+  }
+  return{
+    click:function(){tone(600,.04,'sine',.12);},
+    xp:function(){[523,659,784].forEach(function(f,i){setTimeout(function(){tone(f,.1,'sine',.22);},i*90);});},
+    coin:function(){tone(880,.05,'sine',.18);setTimeout(function(){tone(1109,.1,'sine',.18);},60);},
+    complete:function(){[523,659,784,1047].forEach(function(f,i){setTimeout(function(){tone(f,.12,'sine',.25);},i*80);});},
+    levelup:function(){[523,587,659,784,1047].forEach(function(f,i){setTimeout(function(){tone(f,.1,'sine',.28);},i*70);});},
+    error:function(){tone(220,.2,'sawtooth',.12);},
+    success:function(){tone(784,.08,'sine',.2);setTimeout(function(){tone(1047,.15,'sine',.2);},90);},
+    mission:function(){[440,659,880].forEach(function(f,i){setTimeout(function(){tone(f,.08,'sine',.18);},i*70);}); }
+  };
+})();
+
+/* ═══════ STATE ═══════ */
+function todayKey(){return new Date().toISOString().slice(0,10);}
+var S={
+  xp:parseInt(localStorage.getItem('gc_xp')||'0',10),
+  cash:parseInt(localStorage.getItem('gc_cash')||'0',10),
+  completedMods:JSON.parse(localStorage.getItem('gc_cm')||'[]'),
+  clients:JSON.parse(localStorage.getItem('gc_cl')||'[]'),
+  notes:JSON.parse(localStorage.getItem('gc_notes')||'[]'),
+  agenda:JSON.parse(localStorage.getItem('gc_agenda')||'[]'),
+  products:JSON.parse(localStorage.getItem('gc_products')||'[]'),
+  scriptCopies:parseInt(localStorage.getItem('gc_sc')||'0',10),
+  doneMissions:JSON.parse(localStorage.getItem('gc_dm_'+todayKey())||'[]'),
+  simDone:localStorage.getItem('gc_simd_'+todayKey())==='1',
+  currentView:'home',
+  selectedMod:null
+};
+
+function save(){
+  localStorage.setItem('gc_xp',S.xp);
+  localStorage.setItem('gc_cash',S.cash);
+  localStorage.setItem('gc_cm',JSON.stringify(S.completedMods));
+  localStorage.setItem('gc_cl',JSON.stringify(S.clients));
+  localStorage.setItem('gc_notes',JSON.stringify(S.notes));
+  localStorage.setItem('gc_agenda',JSON.stringify(S.agenda));
+  localStorage.setItem('gc_products',JSON.stringify(S.products));
+  localStorage.setItem('gc_sc',S.scriptCopies);
+  localStorage.setItem('gc_dm_'+todayKey(),JSON.stringify(S.doneMissions));
+  if(S.simDone) localStorage.setItem('gc_simd_'+todayKey(),'1');
+}
+
+var LEVELS=[
+  {l:1,name:'Iniciante',min:0,max:500},
+  {l:2,name:'Prospector',min:500,max:1200},
+  {l:3,name:'Vendedor',min:1200,max:2500},
+  {l:4,name:'Especialista',min:2500,max:4500},
+  {l:5,name:'Master',min:4500,max:99999}
+];
+function getLvl(xp){return LEVELS.find(function(l){return xp>=l.min&&xp<l.max;})||LEVELS[4];}
+
+function addXP(amt,msg){
+  var prevLvl=getLvl(S.xp).l;
+  S.xp+=amt;
+  var newLvl=getLvl(S.xp).l;
+  save();
+  showToast('+'+amt+' XP — '+msg);
+  updateHeader();
+  showFloat('+'+amt+' XP','xp-float');
+  SFX.xp();
+  if(newLvl>prevLvl){
+    setTimeout(function(){
+      SFX.levelup();
+      showToast('Subiu para Nível '+newLvl+' — '+getLvl(S.xp).name+'!');
+      var el=document.getElementById('hxp');
+      if(el){el.style.animation='levelUpPulse .6s ease';setTimeout(function(){el.style.animation='';},700);}
+    },400);
+  }
+}
+
+function addCash(amt,msg){
+  S.cash+=amt;
+  save();
+  showFloat('+R$'+amt,'cash-float');
+  SFX.coin();
+  if(msg) showToast('+R$'+amt+' — '+msg);
+  updateHeader();
+}
+
+function showFloat(txt,cls){
+  var f=document.createElement('div');
+  f.className=cls;f.textContent=txt;
+  document.body.appendChild(f);
+  setTimeout(function(){if(f.parentNode)f.parentNode.removeChild(f);},950);
+}
+
+function updateHeader(){
+  document.getElementById('xp-val').textContent=S.xp;
+  document.getElementById('cash-val').textContent=S.cash;
+}
+
+function showToast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._to);
+  t._to=setTimeout(function(){t.classList.remove('show');},2600);
+}
+
+function tag(label,color){
+  return '<span class="tg" style="color:'+color+';background:'+color+'1A">'+label+'</span>';
+}
+
+/* ═══════ DATA & RENDER ═══════ */
+/* ═══════ NAV ═══════ */
+function nav(v){
+  SFX.click();
+  S.currentView=v;S.selectedMod=null;
+  document.querySelectorAll('.section').forEach(function(el){el.classList.remove('active');});
+  document.getElementById('s-'+v).classList.add('active');
+  document.querySelectorAll('.nb').forEach(function(el){el.classList.toggle('a',el.dataset.v===v);});
+  if(v==='home') renderHome();
+  else if(v==='modules') renderModulesList();
+  else if(v==='clients') renderClients();
+  else if(v==='plan') renderPlan('notes');
+  else if(v==='more') renderMore('scripts');
+}
+
+/* ═══════ UTILS ═══════ */
+function hashStr(s){var h=0;for(var i=0;i<s.length;i++){h=(Math.imul(31,h)+s.charCodeAt(i))|0;}return h;}
+function todayKey(){return new Date().toISOString().slice(0,10);}
+function tag(label,color){var sp=document.createElement('span');sp.className='tg';sp.style.color=color;sp.style.background=color+'1A';sp.textContent=label;return sp.outerHTML;}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+/* ═══════ MODULES DATA ═══════ */
+var MODULES=[
+  {id:1,color:'#1a73e8',tag:'INÍCIO',xp:100,cash:20,icon:'lightbulb',title:'Fundamentos do Google Cash',desc:'Entenda o jogo e a oportunidade',
+   resumo:'O Google Cash é um modelo de negócio onde você presta serviços de visibilidade local para pequenas empresas. A maioria dos negócios locais no Brasil não sabe como aparecer no Google — e isso é a sua oportunidade.',
+   passos:['Entenda que empresas locais perdem clientes todo dia por não aparecer no Google','Aprenda que você pode cobrar entre R$200 e R$1.500/mês por cliente','Pesquise 3 tipos de negócio na sua cidade: restaurantes, clínicas, salões','Observe quais perfis aparecem mal no Google Maps (fotos ruins, sem avaliações)','Anote pelo menos 5 empresas com problemas — essas são suas primeiras oportunidades'],
+   exemplo:'João mora em cidade de 80 mil habitantes. Pesquisou "dentista" no Google Maps e encontrou 12 clínicas — 8 sem foto, sem horário e com menos de 5 avaliações. Abordou 3 e fechou 2 no mesmo mês por R$350/mês cada.',
+   dica:'Quanto menor a concorrência digital na sua cidade, maior a oportunidade. Cidades menores são mais fáceis de dominar.',
+   checklist:['Pesquisei minha cidade no Google Maps em 3 categorias','Identifiquei pelo menos 5 perfis com oportunidade de melhoria','Entendi que posso cobrar mensalidade recorrente','Anotei os nomes e contatos dessas empresas'],
+   quiz:[{q:'Qual é o principal problema que o Google Cash resolve?',opts:['Criar redes sociais','Aparecer melhor nas buscas do Google','Fazer anúncios caros','Desenvolver sites completos'],c:1,exp:'O foco é fazer a empresa aparecer quando alguém pesquisa no Google — especialmente no Maps.'},{q:'Quanto um prestador pode cobrar por cliente?',opts:['R$50 a R$100','Apenas R$500 fixo','R$200 a R$1.500 por mês','Apenas R$5.000'],c:2,exp:'O valor varia conforme o pacote, mas a média está entre R$200 e R$1.500/mês.'},{q:'Qual tipo de cidade tem mais oportunidade?',opts:['Apenas São Paulo e Rio','Cidades com muita concorrência','Cidades menores com pouca presença digital','Apenas capitais'],c:2,exp:'Cidades menores têm menos concorrência e muitos negócios sem presença digital.'}]},
+  {id:2,color:'#34a853',tag:'DINHEIRO',xp:150,cash:30,icon:'search',title:'Encontrando Clientes',desc:'Prospecção e como achar oportunidades',
+   resumo:'Prospecção é encontrar empresas que precisam do seu serviço antes mesmo de saber que precisam. O Google Maps é sua principal ferramenta gratuita. Um perfil mal otimizado é o sinal de que aquele negócio precisa de você.',
+   passos:['Abra o Google Maps e pesquise uma categoria de negócio na sua cidade','Procure perfis com menos de 10 avaliações, sem foto de capa ou sem horário','Anote nome, telefone e endereço de cada prospect em uma planilha','Verifique o Instagram do negócio — perfis parados também são oportunidade','Monte uma lista de 20 prospects qualificados antes de começar a abordar'],
+   exemplo:'Critérios de cliente ideal: menos de 20 avaliações, sem foto de capa, sem resposta a avaliações existentes, Instagram com menos de 500 seguidores. Esse perfil indica que o dono não tem tempo ou conhecimento para cuidar disso.',
+   dica:'Não aborde mais de 5 empresas por dia. Qualidade na abordagem vale mais do que quantidade.',
+   checklist:['Criei uma planilha para organizar meus prospects','Pesquisei pelo menos 3 categorias no Google Maps','Listei 20 prospects com telefone e observação do problema','Identifiquei quais têm Instagram parado'],
+   quiz:[{q:'Qual é o melhor sinal de que uma empresa precisa de você?',opts:['Ter muitos funcionários','Menos de 10 avaliações e perfil incompleto','Ter um site profissional','Aparecer no topo do Google'],c:1,exp:'Perfil incompleto com poucas avaliações indica que o negócio está invisível para clientes potenciais.'},{q:'Qual ferramenta gratuita é a base da prospecção?',opts:['Instagram Ads','Google Maps','LinkedIn','TikTok'],c:1,exp:'O Google Maps mostra exatamente quais negócios existem e o estado do perfil deles.'},{q:'Quantos prospects listar antes de abordar?',opts:['3','50','20','100'],c:2,exp:'20 prospects qualificados te dão volume suficiente para testar abordagens.'}]},
+  {id:3,color:'#f9ab00',tag:'CRÍTICO',xp:200,cash:40,icon:'dollar',title:'Primeira Venda',desc:'Feche seu primeiro cliente sem experiência',
+   resumo:'A primeira venda é a mais difícil porque você não tem portfólio. A solução é trocar portfólio por transparência: mostre o problema real do cliente e como você vai resolver — sem precisar de resultados anteriores.',
+   passos:['Aborde o prospect com a mensagem de primeiro contato da aba Scripts','Se ele responder, ofereça um diagnóstico gratuito de 10 minutos','No diagnóstico, mostre problemas reais do perfil no Google Maps','Apresente o que você vai melhorar e em quanto tempo','Ofereça um preço inicial menor para o primeiro mês com garantia'],
+   exemplo:'"Fiz uma análise rápida do seu perfil no Google e encontrei 3 pontos que estão impedindo clientes de te acharem. Consigo te mostrar em 10 minutos por WhatsApp." — Esse script tem alta taxa de resposta porque entrega valor antes de pedir qualquer coisa.',
+   dica:'Ofereça o primeiro mês com desconto ou garantia de resultado. Isso elimina o risco percebido e facilita o sim.',
+   checklist:['Escolhi 5 prospects para abordar essa semana','Copiei o script de primeiro contato','Preparei um diagnóstico simples do perfil de cada prospect','Defini meu preço inicial para o primeiro cliente'],
+   quiz:[{q:'Como compensar a falta de portfólio na primeira venda?',opts:['Mentir sobre experiência','Cobrar muito barato','Fazer diagnóstico gratuito mostrando problemas reais','Não abordar clientes ainda'],c:2,exp:'O diagnóstico gratuito entrega valor real e mostra competência sem precisar de portfólio prévio.'},{q:'Qual boa estratégia para o primeiro cliente?',opts:['Cobrar o preço máximo logo','Oferecer o primeiro mês com desconto ou garantia','Esperar ter 10 clientes','Criar um site completo primeiro'],c:1,exp:'Reduzir o risco percebido facilita o primeiro sim.'},{q:'O que o diagnóstico gratuito deve mostrar?',opts:['Seus diplomas','Problemas reais do perfil do cliente','Quanto você vai cobrar','Seus outros clientes'],c:1,exp:'Mostre problemas concretos: avaliações baixas, fotos ruins, posição no Maps, campos incompletos.'}]},
+  {id:4,color:'#ea4335',tag:'BASE',xp:180,cash:35,icon:'pin',title:'Google Meu Negócio',desc:'Criação e otimização completa de perfis',
+   resumo:'O Google Meu Negócio (GMB) é o produto que você vende. Um perfil bem otimizado aparece mais vezes nas buscas locais, gera mais ligações e mais visitas. Saber otimizar perfis é a habilidade central do Google Cash.',
+   passos:['Acesse business.google.com e verifique ou crie o perfil do cliente','Preencha 100% das informações: nome, categoria, endereço, telefone, horários','Adicione uma descrição com palavras-chave locais como "dentista em [cidade]"','Envie pelo menos 10 fotos: fachada, interior, equipe, produtos','Configure categorias secundárias e adicione serviços detalhados com preços'],
+   exemplo:'Antes: Pizzaria sem descrição, 2 fotos, 4 avaliações, horário incorreto. Depois: descrição com palavras-chave, 18 fotos, horário correto, 15 avaliações. Resultado: apareceu no top 3 para "pizza [cidade]" em 30 dias.',
+   dica:'A categoria principal é o fator de rankeamento mais importante. Veja qual categoria os concorrentes melhor ranqueados usam e replique.',
+   checklist:['Perfil criado e verificado no Google Meu Negócio','Todas as informações básicas preenchidas','Descrição com palavras-chave locais adicionada','Pelo menos 10 fotos enviadas','Categorias e serviços configurados'],
+   quiz:[{q:'Qual é o fator de rankeamento mais importante no GMB?',opts:['Número de posts','Categoria principal','Cor do perfil','Número de funcionários'],c:1,exp:'A categoria principal define para quais buscas o perfil é relevante — fator número 1.'},{q:'Onde você acessa o Google Meu Negócio?',opts:['google.com.br','business.google.com','ads.google.com','maps.google.com'],c:1,exp:'business.google.com é o painel onde você gerencia todos os perfis de clientes.'},{q:'Quantas fotos são recomendadas para um perfil otimizado?',opts:['1 foto','3 fotos','No mínimo 10 fotos','Apenas a logo'],c:2,exp:'Perfis com 10+ fotos recebem significativamente mais visualizações e cliques.'}]},
+  {id:5,color:'#1a73e8',tag:'PODER',xp:160,cash:30,icon:'star',title:'Avaliações e Autoridade',desc:'Gere reputação e aumente resultados',
+   resumo:'Avaliações são a moeda mais valiosa do Google Maps. Um negócio com mais avaliações positivas aparece mais e converte mais. Sua missão é criar um sistema que gere avaliações de forma consistente para cada cliente.',
+   passos:['Pegue o link direto de avaliação do perfil do cliente no painel GMB','Crie uma mensagem de WhatsApp pedindo avaliação para clientes atendidos','Configure o cliente para enviar essa mensagem a todo cliente atendido','Responda TODAS as avaliações — positivas e negativas — dentro de 24h','Meta inicial: 10 avaliações novas no primeiro mês'],
+   exemplo:'Sistema simples: cliente atende um paciente, no final envia mensagem pedindo avaliação com o link. Em 30 dias, saiu de 4 para 23 avaliações. Resultado imediato no rankeamento.',
+   dica:'Nunca peça avaliações em troca de desconto ou brinde — isso viola as políticas do Google e pode remover o perfil.',
+   checklist:['Copiei o link de avaliação do perfil do cliente','Criei a mensagem de pedido de avaliação','Treinei o cliente sobre quando enviar a mensagem','Configurei alerta para responder avaliações novas'],
+   quiz:[{q:'Por que avaliações são importantes para o rankeamento local?',opts:['Só pelo visual','Google usa número e qualidade como fator de rankeamento','Não influenciam','Apenas a nota importa'],c:1,exp:'Número de avaliações, nota média e frequência são fatores diretos de rankeamento.'},{q:'O que NUNCA fazer ao pedir avaliações?',opts:['Pedir via WhatsApp','Pedir presencialmente','Oferecer desconto em troca','Enviar o link direto'],c:2,exp:'Avaliações incentivadas com benefícios violam as políticas do Google.'},{q:'Em quanto tempo responder avaliações novas?',opts:['1 semana','1 mês','Nunca precisa','Dentro de 24 horas'],c:3,exp:'Responder rápido mostra que o negócio é ativo — sinal positivo para o Google.'}]},
+  {id:6,color:'#34a853',tag:'IA',xp:170,cash:35,icon:'image',title:'Criativos com IA',desc:'Imagens, posts e conteúdo com IA',
+   resumo:'Conteúdo visual de qualidade diferencia um perfil mediano de um que gera confiança. Com ferramentas de IA você cria imagens profissionais, textos e posts sem precisar ser designer ou redator.',
+   passos:['Use o Canva para criar posts com templates prontos para cada categoria de negócio','Use o ChatGPT para gerar descrições, posts e textos de serviços em segundos','Para fotos do negócio, oriente o cliente a tirar fotos com luz natural e fundo limpo','Use Adobe Firefly ou ferramentas similares para melhorar fotos','Crie um calendário simples: 2 posts por semana no perfil do cliente'],
+   exemplo:'Prompt de ChatGPT para GMB: "Escreva uma descrição de 200 palavras para uma clínica odontológica em [cidade] chamada [nome], especializada em clareamento e ortodontia. Tom: profissional e acolhedor." Resultado em 10 segundos.',
+   dica:'Posts regulares no Google Meu Negócio (função Publicações) ajudam no rankeamento. Um post por semana já faz diferença.',
+   checklist:['Criei conta no Canva e escolhi template para o nicho do cliente','Testei o ChatGPT para criar descrição e textos','Criei pelo menos 3 imagens para o perfil do cliente','Fiz a primeira publicação no Google Meu Negócio'],
+   quiz:[{q:'Qual ferramenta gratuita é melhor para criar posts sem ser designer?',opts:['Photoshop','Canva','CorelDraw','After Effects'],c:1,exp:'O Canva tem templates prontos para todos os nichos e é 100% gratuito na versão básica.'},{q:'Como o ChatGPT pode ajudar?',opts:['Não pode ajudar','Criar textos e posts com um prompt bem feito','Apenas traduzir','Criar fotos automaticamente'],c:1,exp:'Com um prompt claro, o ChatGPT entrega textos prontos para uso em segundos.'},{q:'Com que frequência publicar no GMB?',opts:['Nunca','Uma vez por ano','Pelo menos 1 vez por semana','Só quando tiver novidade'],c:2,exp:'Publicações regulares sinalizam ao Google que o perfil está ativo.'}]},
+  {id:7,color:'#f9ab00',tag:'ESCALA',xp:220,cash:45,icon:'trend',title:'Google Ads',desc:'Anúncios locais e primeiros resultados pagos',
+   resumo:'Google Ads acelera os resultados do cliente quando o perfil orgânico não é suficiente. Com orçamento pequeno de R$20-50 por dia, você coloca o negócio do cliente na primeira posição para buscas locais relevantes.',
+   passos:['Acesse ads.google.com e crie uma conta para o cliente','Escolha o objetivo "Visitas à loja local" ou "Ligações telefônicas"','Defina a área de abrangência: raio de 5-15km do negócio','Crie 3 variações de título e 2 descrições diferentes','Comece com R$15-25/dia e monitore por 7 dias antes de escalar'],
+   exemplo:'Clínica com R$20/dia no Google Ads para "dentista [cidade]". Em 30 dias: 47 cliques, 12 ligações, 4 agendamentos. Custo por agendamento: R$150. Ticket médio: R$800. ROI amplamente positivo.',
+   dica:'Anúncios de chamada geram ligações diretas sem precisar de site. São os mais fáceis de configurar e têm alta taxa de conversão.',
+   checklist:['Criei conta no Google Ads para o cliente','Defini objetivo e área de abrangência','Criei pelo menos 3 variações de anúncio','Defini orçamento diário e palavras-chave','Configurei conversões para medir ligações'],
+   quiz:[{q:'Qual objetivo é mais indicado para negócios locais?',opts:['Vendas online','Visitas à loja local ou Ligações telefônicas','Tráfego para blog','Inscrições no YouTube'],c:1,exp:'Para negócios físicos locais, o objetivo é atrair pessoas que estão perto e prontas para comprar.'},{q:'Com qual orçamento diário começar um teste?',opts:['R$1.000/dia','R$500/dia','R$15-25/dia','Precisa de R$10.000'],c:2,exp:'R$15-25/dia é suficiente para testar e colher dados reais.'},{q:'O que são anúncios de chamada?',opts:['Anúncios em áudio','Anúncios que geram ligações diretas sem site','Anúncios no YouTube','Anúncios de vagas'],c:1,exp:'Call Ads mostram o telefone diretamente — o cliente clica e já liga.'}]},
+  {id:8,color:'#ea4335',tag:'LUCRO',xp:190,cash:40,icon:'pkg',title:'Pacotes de Serviços',desc:'Crie seus planos e tabela de preços',
+   resumo:'Ter pacotes bem definidos facilita a venda, elimina negociação de preço e aumenta o valor percebido. Com 3 planos, o cliente compara entre os seus planos — não entre você e o concorrente.',
+   passos:['Defina 3 planos: Básico, Intermediário e Premium com serviços claros','Precifique o Básico como acessível, o Intermediário como popular e o Premium como completo','Sempre apresente os 3 planos juntos — o cliente tende a escolher o do meio','Inclua garantia no plano inicial: 30 dias ou devolvemos','Documente o que está incluído em cada plano'],
+   exemplo:'Básico R$247/mês: GMB otimizado + avaliações. Pro R$497/mês: Básico + 8 posts. Premium R$897/mês: Pro + Google Ads. Com essa estrutura, 60% dos clientes escolhem o plano do meio.',
+   dica:'Não negocie preço — negocie escopo. Se o cliente quer pagar menos, retire um serviço do plano, nunca baixe o preço pelo mesmo pacote.',
+   checklist:['Defini os serviços incluídos em cada um dos 3 planos','Precifiquei os 3 planos de forma escalonada','Criei uma tabela de preços para mostrar ao cliente','Incluí garantia no plano inicial'],
+   quiz:[{q:'Por que apresentar 3 planos em vez de 1?',opts:['Para confundir o cliente','O cliente compara entre seus planos e tende a escolher o do meio','Para parecer maior','Não há vantagem'],c:1,exp:'Com 3 opções, o plano intermediário parece o mais equilibrado — é estatisticamente o mais escolhido.'},{q:'Como reagir quando o cliente pede desconto?',opts:['Sempre dar desconto','Encerrar a negociação','Negociar escopo, nunca baixar o preço pelo mesmo serviço','Dobrar o preço'],c:2,exp:'Baixar o preço pelo mesmo serviço desvaloriza o seu trabalho. Retire um item do pacote.'},{q:'Qual faixa de preço para o plano intermediário?',opts:['R$50-100','R$1.000-2.000','R$397-597','R$5.000'],c:2,exp:'R$397-597 é acessível para pequenos negócios mas rentável para você.'}]},
+  {id:9,color:'#1a73e8',tag:'AVANÇADO',xp:250,cash:50,icon:'bar',title:'Escala',desc:'De 1 para 5+ clientes com organização',
+   resumo:'Escalar significa atender mais clientes sem perder qualidade. O segredo está em padronizar processos, criar checklists de entrega e organizar sua rotina semanal. Com processos claros, você consegue atender 5-8 clientes com poucas horas por dia.',
+   passos:['Crie um documento de onboarding padrão para novos clientes','Monte um calendário semanal: segunda e quarta para execução, terça e quinta para relatórios','Crie templates reutilizáveis: posts, respostas a avaliações, relatórios mensais','Use uma planilha simples para monitorar tarefas de cada cliente','Quando chegar a 5 clientes, analise o que pode ser delegado ou automatizado'],
+   exemplo:'Rotina de 3h/dia para 5 clientes: Segunda — checar avaliações e criar posts (90min). Quarta — atualizar GMB (60min). Sexta — relatório + follow-up (30min). Total: menos de 3h/dia, R$2.000/mês.',
+   dica:'O primeiro cliente é o mais difícil. Do segundo em diante, você já tem processo. Do quinto em diante, você tem um negócio.',
+   checklist:['Criei documento de onboarding para novos clientes','Defini meu calendário semanal de execução','Tenho templates de posts, relatórios e respostas','Estou prospectando ativamente para o próximo cliente'],
+   quiz:[{q:'Qual é o segredo para atender múltiplos clientes sem perder qualidade?',opts:['Trabalhar 16h por dia','Padronizar processos e criar checklists','Ter equipe de 10 pessoas','Só aceitar grandes empresas'],c:1,exp:'Processos padronizados permitem replicar a qualidade para cada cliente sem reinventar a roda.'},{q:'Quantas horas diárias para 5 clientes com processos definidos?',opts:['12 horas','8 horas','2-3 horas organizadas','Não é possível sozinho'],c:2,exp:'Com templates e rotina definida, 5 clientes cabem em 2-3 horas diárias de trabalho focado.'},{q:'O que fazer ao chegar a 5 clientes?',opts:['Parar de prospectar','Analisar o que pode ser delegado ou automatizado','Fechar o negócio','Baixar preços'],c:1,exp:'5 clientes é o ponto onde começar a pensar em alavancagem.'}]},
+  {id:10,color:'#34a853',tag:'AVANÇADO',xp:300,cash:60,icon:'bot',title:'Automação com IA',desc:'Ferramentas para turbinar sua operação',
+   resumo:'Automação elimina tarefas repetitivas e libera seu tempo para vender mais e atender mais clientes. Ferramentas como n8n, Zapier e IA de texto permitem criar sistemas que trabalham por você 24 horas por dia.',
+   passos:['Identifique as 3 tarefas que você mais repete por semana','Use o ChatGPT para gerar respostas padrão a avaliações positivas e negativas','Configure alertas de novas avaliações no Google','Use n8n ou Zapier para automatizar relatórios e notificações','Crie prompts salvos para gerar posts e textos para cada nicho de cliente'],
+   exemplo:'Automação simples com Zapier: nova avaliação no GMB gera notificação automática no WhatsApp. Você responde em segundos. Custo: R$0 no plano gratuito para até 100 automatizações/mês.',
+   dica:'Comece automatizando relatórios. Um relatório mensal automatizado economiza 2-3 horas por cliente por mês.',
+   checklist:['Listei as 3 tarefas mais repetitivas da minha rotina','Criei prompts salvos no ChatGPT para geração de conteúdo','Configurei alertas de novas avaliações','Testei pelo menos 1 automação com Zapier ou n8n'],
+   quiz:[{q:'Qual é a principal vantagem da automação?',opts:['Impressionar clientes','Eliminar tarefas repetitivas e liberar tempo para vender mais','Parecer mais profissional','Cobrar mais caro'],c:1,exp:'Automação transforma tempo gasto em tarefas repetitivas em tempo disponível para crescer o negócio.'},{q:'Qual ferramenta permite criar automações entre apps sem programar?',opts:['Photoshop','Excel','Zapier ou n8n','Word'],c:2,exp:'Zapier e n8n conectam apps diferentes sem código.'},{q:'Por onde começar na automação?',opts:['Automatizar tudo de uma vez','Pelos relatórios e alertas de avaliações','Nunca automatizar','Contratar programador primeiro'],c:1,exp:'Relatórios e alertas são simples de automatizar e têm impacto imediato.'}]},
+  {id:11,color:'#f9ab00',tag:'MASTER',xp:350,cash:70,icon:'layout',title:'Sistema Operacional',desc:'Organize sua operação como um negócio',
+   resumo:'Agora você tem um negócio real. O passo final é tratá-lo como empresa: processos documentados, metas mensais, controle financeiro e um sistema de crescimento contínuo. Quem tem sistema cresce. Quem não tem sistema fica estagnado.',
+   passos:['Defina sua meta: quantos clientes e qual faturamento em 3, 6 e 12 meses','Documente todos os seus processos em um Google Docs ou Notion','Crie um controle financeiro simples: entradas por cliente, saídas, lucro','Reserve 1 hora por semana para revisar o que está funcionando','Defina quando vai contratar o primeiro assistente ou parceiro'],
+   exemplo:'Meta de 12 meses: 10 clientes a R$500/mês = R$5.000 mensais. Meses 1-2: fechar 2 clientes. Meses 3-6: ir para 5 clientes. Meses 7-12: escalar para 10 com automação e 1 assistente part-time.',
+   dica:'Trate seu negócio como você trata os negócios dos seus clientes. Você precisa de organização e estratégia tanto quanto eles.',
+   checklist:['Defini metas de 3, 6 e 12 meses com números concretos','Documentei meus processos principais','Criei controle financeiro simples','Tenho revisão semanal marcada na agenda'],
+   quiz:[{q:'Qual é a diferença entre freelancer e negócio?',opts:['Não há diferença','Negócio tem sistema, processo e pode escalar sem depender só de você','Apenas o nome muda','Negócio paga mais impostos'],c:1,exp:'Negócio tem sistemas que funcionam independentemente de você.'},{q:'Com qual frequência revisar o que está funcionando?',opts:['Nunca','Uma vez por ano','A cada 5 anos','1 hora por semana'],c:3,exp:'Revisão semanal permite ajustar rapidamente e evitar que problemas pequenos se tornem grandes.'},{q:'Qual é uma meta realista para 12 meses?',opts:['R$50.000/mês no primeiro ano','10 clientes a R$500 = R$5.000/mês','Nenhuma meta é realista','1 cliente por ano'],c:1,exp:'R$5.000/mês em 12 meses com 10 clientes é ambicioso e alcançável com execução consistente.'}]},
+  {id:12,color:'#1877f2',tag:'META ADS',xp:280,cash:55,icon:'meta',title:'Meta Ads',desc:'Facebook e Instagram para empresas locais',
+   resumo:'O Meta Ads (Facebook + Instagram) é uma das ferramentas mais poderosas para negócios locais. Com segmentação por raio de localização e interesses, você mostra anúncios exatamente para pessoas que estão perto do negócio do seu cliente.',
+   passos:['Crie uma conta no Meta Business Suite para o cliente','Vincule a página do Facebook e o perfil do Instagram do negócio','No Gerenciador de Anúncios, escolha objetivo "Reconhecimento local" ou "Mensagens"','Segmente por raio de localização (3-10km) e faixa etária relevante','Crie anúncios com foto do negócio, oferta clara e chamada para ação'],
+   exemplo:'Barbearia com R$15/dia no Meta Ads. Segmentação: homens de 18-45 anos num raio de 5km. Anúncio com foto do corte + "Agendamento pelo WhatsApp". Em 2 semanas: 43 mensagens recebidas, 18 agendamentos confirmados.',
+   dica:'Vídeos curtos (15-30 segundos) têm custo por resultado até 3x menor que imagens estáticas no Meta Ads. Oriente o cliente a gravar um vídeo simples no celular.',
+   checklist:['Criei conta no Meta Business Suite para o cliente','Vinculei Facebook e Instagram do negócio','Configurei segmentação por localização','Criei pelo menos 2 variações de anúncio','Configurei pixel para rastrear conversões'],
+   quiz:[{q:'Qual segmentação é mais eficiente para negócios locais no Meta Ads?',opts:['Todo o Brasil','Apenas por interesse em futebol','Raio de localização + faixa etária','Apenas por idade'],c:2,exp:'Segmentar por raio de 3-10km garante que o anúncio chegue apenas para pessoas que podem visitar o negócio.'},{q:'Qual tipo de conteúdo tem menor custo por resultado?',opts:['Imagens estáticas','Vídeos curtos de 15-30 segundos','Textos longos','Stories com texto'],c:1,exp:'Vídeos curtos têm taxa de engajamento maior, o que reduz o custo por resultado.'},{q:'Qual objetivo usar para gerar mensagens no WhatsApp?',opts:['Reconhecimento de marca','Tráfego para site','Mensagens','Instalações de app'],c:2,exp:'O objetivo Mensagens direciona o usuário direto para o WhatsApp do negócio.'}]},
+  {id:13,color:'#202124',tag:'TIKTOK',xp:240,cash:48,icon:'video',title:'TikTok para Negócios',desc:'Alcance orgânico e anúncios no TikTok',
+   resumo:'O TikTok oferece alcance orgânico impossível em outras plataformas. Um vídeo bem feito de um negócio local pode alcançar milhares de pessoas na cidade gratuitamente. Para negócios de alimentação, estética e serviços visuais, o resultado é especialmente forte.',
+   passos:['Crie uma conta TikTok Business para o cliente','Grave vídeos curtos (15-30s) mostrando o processo do serviço ou produto','Use músicas em alta e hashtags locais como #[cidade] #[nicho][cidade]','Poste pelo menos 3 vezes por semana para o algoritmo distribuir o conteúdo','Para anúncios, use o TikTok Ads Manager com objetivo de tráfego local'],
+   exemplo:'Sorveteria postou vídeo de 20 segundos mostrando a montagem de um sundae. Sem anúncio pago, o vídeo alcançou 12.000 pessoas da cidade em 3 dias. Resultado: fila na porta no fim de semana seguinte.',
+   dica:'No TikTok, o conteúdo autêntico e simples sempre supera o conteúdo produzido. Um celular bem posicionado e boa iluminação natural já são suficientes.',
+   checklist:['Criei conta TikTok Business para o cliente','Gravei os primeiros 3 vídeos curtos','Usei hashtags locais e músicas em alta','Postei com consistência por pelo menos 2 semanas','Analisei quais vídeos tiveram mais alcance'],
+   quiz:[{q:'Por que o TikTok é valioso para negócios locais?',opts:['Só para jovens','Oferece alcance orgânico gratuito impossível em outras plataformas','É caro e difícil','Só funciona para música'],c:1,exp:'O algoritmo do TikTok distribui conteúdo para novos usuários mesmo sem seguidores — alcance orgânico real.'},{q:'Com que frequência postar para crescer?',opts:['Uma vez por mês','Uma vez por semana','Pelo menos 3 vezes por semana','Só quando tiver algo especial'],c:2,exp:'Consistência é o principal fator para o algoritmo distribuir o conteúdo.'},{q:'Qual tipo de negócio tem melhor resultado orgânico?',opts:['Escritórios de contabilidade','Negócios com produto ou processo visual: comida, estética, corte','Seguros','Advocacia'],c:1,exp:'Conteúdo visual e transformações antes/depois performam muito bem no TikTok.'}]},
+  {id:14,color:'#7c3aed',tag:'PÁGINAS',xp:260,cash:50,icon:'layout',title:'Páginas de Vendas Gratuitas',desc:'Crie landing pages sem pagar nada',
+   resumo:'Uma página de vendas bem feita converte visitantes em clientes. Você pode criar páginas profissionais usando ferramentas 100% gratuitas — Carrd, Google Sites ou Notion — e apresentar para empresas como um serviço de alto valor.',
+   passos:['Acesse carrd.co e crie uma conta gratuita','Escolha um template adequado ao nicho do cliente','Preencha com nome, serviços, fotos, depoimentos e botão de WhatsApp','Publique no subdomínio gratuito (nomecliente.carrd.co)','Apresente a página pronta para o cliente como parte do pacote'],
+   exemplo:'Dentista sem site. Você cria uma página no Carrd em 2 horas com: foto da clínica, lista de serviços, depoimentos, botão "Agendar pelo WhatsApp" e mapa do endereço. Cobrou R$200 pela criação + R$50/mês de manutenção.',
+   dica:'Mostre a página no celular do cliente na reunião. Ver a própria empresa com uma página profissional gera impacto emocional enorme — é quando ele decide fechar.',
+   checklist:['Criei conta no Carrd e testei o editor','Criei uma página de demonstração para mostrar aos prospects','Aprendi a conectar um botão de WhatsApp na página','Tenho um template base para adaptar a cada nicho'],
+   quiz:[{q:'Qual ferramenta gratuita é mais fácil para criar landing pages?',opts:['WordPress com hospedagem','Carrd.co','Adobe XD','Figma'],c:1,exp:'O Carrd é o mais simples para criar páginas bonitas sem precisar de código ou hospedagem paga.'},{q:'Qual elemento mais importante em uma página para negócio local?',opts:['Animações elaboradas','Botão de WhatsApp visível e chamada para ação clara','Muitas fotos','Contador regressivo'],c:1,exp:'O objetivo da página é fazer o cliente entrar em contato — o botão de WhatsApp deve estar em destaque.'},{q:'Como usar a página de demonstração na prospecção?',opts:['Não mostrar antes de fechar','Mostrar no celular do prospect durante a reunião para impacto visual','Só enviar por e-mail','Cobrar para ver a demonstração'],c:1,exp:'Ver a própria empresa com uma página profissional aumenta drasticamente a conversão.'}]},
+  {id:15,color:'#f9ab00',tag:'CRIATIVO',xp:220,cash:45,icon:'image',title:'Edição de Imagem e Vídeo',desc:'CapCut e Canva para conteúdo profissional',
+   resumo:'Saber editar imagem e vídeo permite cobrar mais por cada pacote. Com CapCut e Canva, você cria conteúdo que parece profissional — sem experiência prévia e em poucos minutos. Esse serviço pode agregar R$100-300/mês ao seu pacote.',
+   passos:['Instale o CapCut no celular — é gratuito e tem templates prontos','Para vídeos: grave bruto, importe no CapCut, adicione legenda automática e música','Para imagens: use o Canva com templates de Stories e Feed para o nicho do cliente','Crie um pacote: 8 posts/mês no Canva + 2 Reels/mês no CapCut','Entregue o conteúdo via Google Drive para o cliente aprovar'],
+   exemplo:'Salão de beleza. Você edita um Reel de 30 segundos no CapCut mostrando coloração com música em alta e legenda automática. Mais 8 posts no Canva com promoções da semana. Cobrou R$350/mês a mais pelo pacote de conteúdo.',
+   dica:'A legenda automática do CapCut é um diferencial enorme. Vídeos com legenda têm 80% mais visualizações porque as pessoas assistem sem som.',
+   checklist:['Instalei e testei o CapCut no celular','Criei meu primeiro vídeo com legenda automática e música','Criei 3 templates de post no Canva para um nicho específico','Defini um pacote de conteúdo com preço claro para oferecer'],
+   quiz:[{q:'Por que vídeos com legenda têm mais visualizações?',opts:['Ficam mais bonitos','As pessoas assistem sem som — a legenda mantém a atenção','São mais longos','O algoritmo favorece legendas'],c:1,exp:'A maioria das pessoas assiste vídeos sem som em lugares públicos — a legenda é essencial.'},{q:'Qual app gratuito é melhor para editar vídeos no celular?',opts:['Adobe Premiere','Final Cut','CapCut','Vegas Pro'],c:2,exp:'O CapCut é gratuito, tem templates prontos, legenda automática e é feito para celular.'},{q:'Como entregar conteúdo para o cliente aprovar?',opts:['Imprimir e levar','Via Google Drive ou pasta compartilhada','Apenas por e-mail','Nunca mostrar antes de publicar'],c:1,exp:'Google Drive permite o cliente aprovar ou pedir ajustes antes de publicar.'}]},
+  {id:16,color:'#34a853',tag:'IA',xp:400,cash:80,icon:'cpu',title:'Análise Estratégica com IA',desc:'Use IA para estudar e melhorar empresas dos clientes',
+   resumo:'Com os prompts certos, você entrega para o cliente um diagnóstico completo da empresa — pontos fortes, fracos, oportunidades e um plano de ação — em minutos. Isso justifica cobrar mais e fideliza o cliente.',
+   passos:['Colete o máximo de informações: site, redes sociais, avaliações, produtos, preços','Use o prompt de análise estratégica para inserir todos esses dados no ChatGPT','Peça ao ChatGPT um plano de metas e estratégias para os próximos 3 e 6 meses','Organize o resultado em um documento Google e apresente ao cliente como consultoria','Atualize a análise a cada 3 meses para mostrar progresso e renovar o contrato'],
+   exemplo:'Prompt base: "Você é um consultor de marketing digital especializado em negócios locais. Analise a seguinte empresa e crie um plano estratégico completo: [cole todas as informações]. Inclua: análise SWOT, metas de 3 e 6 meses, estratégias por canal e indicadores de resultado."',
+   dica:'O cliente que recebe um documento de consultoria estratégica profissional dificilmente troca de prestador. É o maior fator de retenção que você pode criar.',
+   checklist:['Criei meu prompt de análise estratégica personalizado','Testei o prompt com uma empresa real','Criei um template de documento para apresentar os resultados','Incluí análise estratégica como diferencial no meu pacote premium'],
+   quiz:[{q:'Qual é o principal benefício de entregar uma análise estratégica ao cliente?',opts:['Parece mais trabalho','Fideliza o cliente e justifica cobrar mais','É obrigatório por lei','Não tem benefício real'],c:1,exp:'Clientes que recebem consultoria estratégica raramente trocam de prestador.'},{q:'O que incluir em um prompt de análise estratégica?',opts:['Apenas o nome da empresa','Todas as informações disponíveis: site, redes, avaliações, produtos, preços','Apenas o endereço','Só perguntar qual é o problema'],c:1,exp:'Quanto mais contexto você der ao ChatGPT, mais preciso e útil será o resultado.'},{q:'Com que frequência atualizar a análise estratégica do cliente?',opts:['Nunca','A cada 5 anos','A cada 3 meses','Apenas quando o cliente pedir'],c:2,exp:'Atualizar a cada 3 meses mostra progresso, justifica a mensalidade e é motivo para uma reunião de renovação.'}]}
+];
+
+var MISSIONS=[
+  {id:'m1',text:'Prospectar 5 empresas no Google Maps',xp:30,cash:15,icon:'search'},
+  {id:'m2',text:'Enviar 3 mensagens de primeiro contato',xp:40,cash:20,icon:'msg'},
+  {id:'m3',text:'Estudar 1 módulo completo',xp:50,cash:25,icon:'book'},
+  {id:'m4',text:'Fazer follow-up com 2 prospects',xp:25,cash:12,icon:'target'},
+  {id:'m5',text:'Cadastrar ou atualizar 1 cliente',xp:20,cash:10,icon:'users'},
+  {id:'m6',text:'Copiar e usar 1 script de venda',xp:15,cash:8,icon:'clip'},
+  {id:'m7',text:'Criar 1 post ou criativo para um cliente',xp:35,cash:18,icon:'image'}
+];
+
+var SIMS=[
+  {biz:'Barbearia do Carlos',seg:'Barbearia',problem:'Perfil no Google sem foto de capa, 3 avaliações, sem horário de funcionamento',task:'Simule o primeiro contato pelo WhatsApp com essa barbearia.'},
+  {biz:'Restaurante Sabor Caseiro',seg:'Restaurante',problem:'Instagram com 120 seguidores, sem presença no Google Maps',task:'Apresente um diagnóstico rápido e proponha um pacote básico para esse restaurante.'},
+  {biz:'Clínica Sorriso Perfeito',seg:'Odontologia',problem:'Perfil GMB com horário errado, 7 avaliações, sem fotos do interior',task:'Detalhe os 3 problemas principais e o que você faria primeiro.'},
+  {biz:'Pet Shop Amigo Fiel',seg:'Pet Shop',problem:'Sem site, sem WhatsApp comercial, Facebook com última postagem há 2 anos',task:'Monte um pacote de entrada com preço e descreva o que está incluído.'},
+  {biz:'Academia Força Total',seg:'Academia',problem:'Google Ads ativo mas sem segmentação local, gastando R$50/dia sem resultado',task:'Explique o problema e descreva como você otimizaria a campanha.'},
+  {biz:'Salão Beleza e Arte',seg:'Salão de Beleza',problem:'Boas avaliações (4.8, 34 avaliações) mas sem posts no GMB há 3 meses',task:'Proponha um pacote de manutenção e conteúdo para manter o rankeamento.'},
+  {biz:'Farmácia Saúde e Vida',seg:'Farmácia',problem:'Concorrente aparece no topo do Maps, seu cliente na 4a posição',task:'Quais ações você tomaria para subir o rankeamento do seu cliente?'},
+  {biz:'Escola de Inglês Speak Up',seg:'Educação',problem:'Site desatualizado, sem avaliações no Google, Instagram ativo com 800 seguidores',task:'Elabore um diagnóstico e proponha as 3 primeiras ações.'},
+  {biz:'Pizzaria Forno de Pedra',seg:'Alimentação',problem:'Delivery funcionando mas sem visibilidade no Google Maps e zero presença no TikTok',task:'Descreva uma estratégia de conteúdo orgânico no TikTok para essa pizzaria.'},
+  {biz:'Escritório Advocacia Lima',seg:'Advocacia',problem:'Site profissional mas sem GMB, sem avaliações, concorrentes dominando o Maps',task:'Monte um plano de 30 dias para criar e otimizar o perfil GMB desse escritório.'}
+];
+
+var SCRIPTS=[
+  {id:1,tag:'PROSPECÇÃO',title:'Primeiro contato',text:'Fala, tudo bem? Vi o perfil da sua empresa no Google e percebi algumas oportunidades de melhorar a visibilidade e atrair mais clientes. Você já trabalha isso hoje?'},
+  {id:2,tag:'FOLLOW-UP',title:'Resposta positiva',text:'Top! Hoje muitas empresas estão perdendo clientes por não aparecerem bem nas buscas locais. Eu trabalho justamente ajudando a melhorar isso. Se fizer sentido, posso te mostrar rápido o que daria para melhorar no seu caso.'},
+  {id:3,tag:'VENDA',title:'Apresentação do serviço',text:'Basicamente eu organizo seu perfil no Google para ele aparecer melhor quando alguém procurar pelo seu serviço. Isso normalmente aumenta muito o número de contatos que o negócio recebe. Trabalho com um valor mensal onde faço toda essa parte para você.'},
+  {id:4,tag:'FECHAMENTO',title:'Fechamento simples',text:'Quer que eu te mostre um exemplo prático de como isso funciona? Posso te mostrar em 10 minutos o que está impedindo seu negócio de aparecer no topo do Google.'},
+  {id:5,tag:'AVALIAÇÕES',title:'Pedido de avaliação',text:'Olá! Ficou satisfeito com o atendimento? Se sim, nos ajudaria muito se pudesse deixar uma avaliação rápida no Google. Leva menos de 1 minuto e faz grande diferença para nós! [LINK DO PERFIL]'},
+  {id:6,tag:'REPUTAÇÃO',title:'Resposta a avaliação positiva',text:'Muito obrigado pela sua avaliação! Fico feliz que tenha gostado do atendimento. É uma satisfação enorme poder contar com clientes como você. Qualquer necessidade, pode contar com a gente!'},
+  {id:7,tag:'META ADS',title:'Anúncio de resultado',text:'Vi que você tem um ótimo negócio aqui na cidade. Já pensou em quanto mais clientes você poderia ter se mais pessoas soubessem da sua empresa? Trabalho com anúncios no Instagram e Facebook segmentados só para pessoas da sua região.'},
+  {id:8,tag:'PÁGINA',title:'Oferta de página de vendas',text:'Você sabia que empresas com uma boa página de apresentação online convertem até 3x mais clientes? Tenho um modelo pronto para o seu segmento que posso mostrar para você hoje mesmo — sem compromisso.'}
+];
+
+var PROMPTS=[
+  {cat:'Análise de Empresa',color:'#1a73e8',items:[
+    {title:'Análise completa de empresa local',text:'Você é um consultor de marketing digital especializado em negócios locais. Analise a seguinte empresa e crie um plano estratégico completo:\n\nNome: [nome]\nSegmento: [segmento]\nCidade: [cidade]\nSite: [site ou "não tem"]\nRedes sociais: [perfis]\nAvaliações no Google: [nota e quantidade]\nPrincipais serviços: [lista]\nDiferenciais: [lista]\n\nCrie: análise SWOT, metas de 3 e 6 meses, estratégias por canal (Google, Instagram, WhatsApp) e indicadores de resultado.'},
+    {title:'Identificar problemas de visibilidade',text:'Analise o perfil do Google Meu Negócio da empresa [nome] no segmento [segmento] e identifique: 1) quais informações estão faltando ou incorretas, 2) como está a qualidade das fotos, 3) quantas avaliações tem e qual a nota, 4) com que frequência o perfil é atualizado. Depois, liste as 5 ações mais urgentes para melhorar o rankeamento local, em ordem de impacto.'},
+    {title:'Prompt para reunião com cliente',text:'Vou ter uma reunião de vendas com o dono de uma [tipo de negócio] em [cidade]. O negócio tem [situação atual: sem site, poucas avaliações, etc]. Me ajude a criar: 1) as 3 perguntas certas para entender as necessidades do cliente, 2) como apresentar meu serviço de forma simples e direta, 3) como lidar com a objeção de preço, 4) como fechar o pedido no final da reunião.'}
+  ]},
+  {cat:'Google Meu Negócio',color:'#34a853',items:[
+    {title:'Descrição profissional para GMB',text:'Escreva uma descrição de 250 palavras para o Google Meu Negócio de [tipo de negócio] chamado [nome], localizado em [cidade e bairro]. Os principais serviços são: [lista de serviços]. Tom de voz: profissional e acolhedor. Inclua palavras-chave locais naturalmente. Não use bullet points — apenas parágrafos corridos.'},
+    {title:'Resposta profissional a avaliação negativa',text:'Um cliente deixou a seguinte avaliação negativa no Google Meu Negócio de [nome da empresa]: "[cole a avaliação]". Escreva uma resposta profissional de no máximo 3 frases que: 1) demonstre empatia e peça desculpas sem admitir culpa excessiva, 2) ofereça uma solução ou contato direto, 3) reforce o compromisso com a qualidade do serviço.'},
+    {title:'Post semanal para GMB',text:'Crie 4 posts para o Google Meu Negócio de [tipo de negócio] chamado [nome], um para cada semana do mês. Cada post deve ter: título chamativo (máximo 8 palavras), texto de 2 frases sobre [tema: promoção, novidade, dica, depoimento] e uma chamada para ação (ligar, visitar, agendar). Tom descontraído e local.'}
+  ]},
+  {cat:'Google Ads',color:'#f9ab00',items:[
+    {title:'Estrutura de campanha local',text:'Crie uma estrutura completa de campanha no Google Ads para [tipo de negócio] em [cidade]. Inclua: 5 palavras-chave de intenção de compra, 3 títulos de anúncio (máximo 30 caracteres cada), 2 descrições (máximo 90 caracteres cada), sugestão de orçamento diário inicial e extensões de anúncio recomendadas para esse segmento.'},
+    {title:'Análise de desempenho de campanha',text:'Tenho uma campanha no Google Ads para [tipo de negócio] com os seguintes dados: Orçamento diário: R$[valor], Impressões: [número], Cliques: [número], CTR: [porcentagem], Conversões: [número], Custo por conversão: R$[valor]. Analise esses resultados, diga se são bons ou ruins para esse segmento e sugira 3 otimizações para melhorar o desempenho.'},
+    {title:'Copy de anúncio por segmento',text:'Crie 5 variações de anúncio no Google Ads para [tipo de negócio] em [cidade]. Para cada variação, escreva: Título 1 (30 car.), Título 2 (30 car.), Título 3 (30 car.), Descrição 1 (90 car.), Descrição 2 (90 car.). Use gatilhos como urgência, localidade, benefício principal e diferencial competitivo.'}
+  ]},
+  {cat:'Meta Ads',color:'#1877f2',items:[
+    {title:'Copy de anúncio para Instagram',text:'Crie 3 variações de copy para anúncio no Instagram para [tipo de negócio] em [cidade]. Objetivo: gerar mensagens no WhatsApp. Cada variação deve ter: headline de impacto (até 10 palavras), texto principal (3-4 linhas com dor + solução + prova + chamada para ação) e sugestão de visual (tipo de imagem ou vídeo ideal para acompanhar).'},
+    {title:'Estratégia de anúncios por segmento',text:'Crie uma estratégia completa de Meta Ads para [tipo de negócio] em [cidade] com orçamento de R$[valor]/mês. Inclua: público-alvo detalhado (idade, interesses, localização), divisão de orçamento entre campanhas, tipos de conteúdo para cada fase do funil (awareness, consideração, conversão) e métricas para acompanhar.'},
+    {title:'Análise e otimização de campanha',text:'Tenho uma campanha no Meta Ads para [tipo de negócio] com esses resultados na última semana: Alcance: [número], Impressões: [número], Cliques: [número], Custo por clique: R$[valor], Resultados (mensagens/leads): [número], Custo por resultado: R$[valor]. O objetivo era [objetivo]. Analise e dê 3 sugestões práticas de otimização.'}
+  ]},
+  {cat:'Páginas de Vendas',color:'#7c3aed',items:[
+    {title:'Estrutura completa de landing page',text:'Crie a estrutura de uma página de vendas para [tipo de negócio] chamado [nome] em [cidade]. Inclua: headline principal (problema que resolve), subheadline (promessa de resultado), 3 benefícios principais com prova, seção de serviços com preços sugeridos, seção de depoimentos (crie 3 exemplos realistas), FAQ com 4 perguntas e respostas e CTA final com botão para WhatsApp.'},
+    {title:'Headline e copy de conversão',text:'Crie 5 opções de headline para a página de vendas de [tipo de negócio] em [cidade] focando em [benefício principal: mais clientes, aparecer no Google, etc]. Para cada headline, crie também um subtítulo de 2 linhas que complemente e reforce a mensagem. Use linguagem simples, direta e focada no resultado para o cliente.'},
+    {title:'Depoimentos realistas para demonstração',text:'Crie 4 depoimentos realistas e convincentes para usar numa página de demonstração de serviços de marketing digital para [tipo de negócio]. Cada depoimento deve ter: nome fictício (nome + sobrenome), cidade, resultado específico com número (ex: "aumentou 40% as ligações"), texto de 2-3 frases em linguagem natural e informal. Evite linguagem corporativa ou exagerada.'}
+  ]},
+  {cat:'Scripts de Venda',color:'#ea4335',items:[
+    {title:'Script completo de abordagem',text:'Crie um script de abordagem pelo WhatsApp para prospectar donos de [tipo de negócio] em [cidade] que não aparecem bem no Google Maps. O script deve ter 4 etapas: 1) abertura que não parece venda, 2) diagnóstico do problema (sem revelar que você já pesquisou tudo), 3) apresentação da solução de forma simples, 4) convite para uma conversa de 10 minutos. Tom: direto, honesto, sem pressão.'},
+    {title:'Objeções e respostas',text:'Crie respostas para as 6 objeções mais comuns que donos de negócio local têm quando ofereço serviços de gestão de presença digital: 1) "Não tenho dinheiro agora", 2) "Já tentei e não funcionou", 3) "Vou fazer sozinho", 4) "Não preciso disso, meu negócio vai bem", 5) "Me manda uma proposta por e-mail", 6) "Vou pensar e te retorno". Para cada objeção: 1 resposta curta (2-3 frases) e 1 pergunta de reversão.'},
+    {title:'Follow-up sem parecer insistente',text:'Crie uma sequência de 3 mensagens de follow-up para um prospect que demonstrou interesse mas não respondeu. Mensagem 1: no dia seguinte (casual, sem pressão). Mensagem 2: 3 dias depois (entrega valor gratuito — uma dica sobre o negócio dele). Mensagem 3: 7 dias depois (última tentativa com escassez leve). Cada mensagem deve ter no máximo 3 linhas e tom amigável e profissional.'}
+  ]}
+];
+
+/* ═══════ RENDER HOME ═══════ */
+function renderHome(){
+  var lvl=getLvl(S.xp);
+  var pct=Math.min(100,Math.round(((S.xp-lvl.min)/(lvl.max-lvl.min))*100));
+  var today=todayKey();
+  var simIdx=Math.abs(hashStr(today))%SIMS.length;
+  var sim=SIMS[simIdx];
+  var el=document.getElementById('s-home');
+  var h='';
+
+  // XP card
+  h+='<div class="cd" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:13px;color:#666">Nível '+esc(String(lvl.l))+' — <b>'+esc(lvl.name)+'</b></span><span style="font-size:20px;font-weight:700;color:#1a73e8">'+S.xp+' <span style="font-size:11px;color:#aaa">XP</span></span></div><div class="xptrack"><div class="xpfill" style="width:'+pct+'%"></div></div><div style="display:flex;justify-content:space-between;margin-top:5px"><span style="font-size:11px;color:#aaa">'+lvl.min+' XP</span><span style="font-size:11px;color:#aaa">'+pct+'% — próx. '+lvl.max+'</span></div></div>';
+
+  // Stats grid
+  h+='<div class="g2" style="margin-bottom:10px">';
+  h+='<div class="stat-card"><div style="font-size:10px;color:#aaa;margin-bottom:4px;display:flex;align-items:center;gap:4px">'+svg('book','12','#1a73e8')+' Módulos</div><div style="font-size:26px;font-weight:700;color:#1a73e8">'+S.completedMods.length+'<span style="font-size:12px;color:#aaa">/'+MODULES.length+'</span></div></div>';
+  h+='<div class="stat-card"><div style="font-size:10px;color:#aaa;margin-bottom:4px;display:flex;align-items:center;gap:4px">'+svg('users','12','#34a853')+' Clientes</div><div style="font-size:26px;font-weight:700;color:#34a853">'+S.clients.length+'</div></div>';
+  h+='<div class="stat-card"><div style="font-size:10px;color:#aaa;margin-bottom:4px;display:flex;align-items:center;gap:4px">'+svg('dollar','12','#188038')+' Ganhos</div><div style="font-size:20px;font-weight:700;color:#188038">R$'+S.cash+'</div></div>';
+  h+='<div class="stat-card"><div style="font-size:10px;color:#aaa;margin-bottom:4px;display:flex;align-items:center;gap:4px">'+svg('target','12','#f9ab00')+' Missões</div><div style="font-size:26px;font-weight:700;color:#f9ab00">'+S.doneMissions.length+'<span style="font-size:12px;color:#aaa">/'+MISSIONS.length+'</span></div></div>';
+  h+='</div>';
+
+  // Missions
+  h+='<p class="slbl">Missões do dia</p><div class="cd cdp0" style="margin-bottom:10px">';
+  MISSIONS.forEach(function(m,i){
+    var done=S.doneMissions.indexOf(m.id)>-1;
+    h+='<div onclick="toggleMission(\''+m.id+'\','+m.xp+','+m.cash+')" style="display:flex;align-items:center;gap:11px;padding:11px 15px;cursor:pointer;'+(i<MISSIONS.length-1?'border-bottom:.5px solid rgba(0,0,0,.06)':'')+'">'+svg(m.icon,'14',done?'#34a853':'#ccc')+'<span style="flex:1;font-size:13px;color:'+(done?'#aaa':'#202124')+';text-decoration:'+(done?'line-through':'none')+'">'+esc(m.text)+'</span><span style="font-size:10px;font-weight:700;color:#1a73e8;background:#e8f0fe;padding:2px 6px;border-radius:99px;margin-right:3px">+'+m.xp+'XP</span><span style="font-size:10px;font-weight:700;color:#188038;background:#e6f4ea;padding:2px 6px;border-radius:99px">+R$'+m.cash+'</span></div>';
+  });
+  h+='</div>';
+
+  // Daily simulation
+  h+='<p class="slbl">Simulação do dia</p><div class="sim-card" style="margin-bottom:10px">';
+  if(S.simDone){
+    h+='<div style="text-align:center;padding:12px">'+svg('check','16','#34a853')+'<p style="font-size:13px;font-weight:700;color:#188038;margin:6px 0 2px">Simulação concluída hoje</p><p style="font-size:11px;color:#888">Volte amanhã para um novo cenário</p></div>';
+  }else{
+    h+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'+svg('target','15','#1a73e8')+'<div><p style="font-size:12px;font-weight:700;color:#1a73e8;margin:0">'+esc(sim.biz)+'</p><span style="font-size:10px;color:#888">'+esc(sim.seg)+'</span></div></div>';
+    h+='<div style="background:rgba(234,67,53,.07);border:.5px solid #ea433520;border-radius:8px;padding:10px 12px;margin-bottom:10px"><p style="font-size:10px;font-weight:700;color:#c5221f;margin:0 0 3px">Situação real:</p><p style="font-size:12px;color:#444;margin:0;line-height:1.5">'+esc(sim.problem)+'</p></div>';
+    h+='<p style="font-size:12px;font-weight:600;color:#202124;margin:0 0 8px;display:flex;align-items:center;gap:5px">'+svg('help','13','#888')+' '+esc(sim.task)+'</p>';
+    h+='<textarea class="inp" id="sim-ans" placeholder="Escreva sua resposta aqui..." style="min-height:80px;margin-bottom:8px"></textarea>';
+    h+='<button class="btn btn-blue" onclick="submitSim()">'+svg('check','14','#fff')+' Enviar resposta (+100 XP +R$50)</button>';
+  }
+  h+='</div>';
+
+  // Badges
+  h+='<p class="slbl">Conquistas</p><div class="g2">';
+  var badges=[
+    {l:'Primeiro Contato',i:'msg',e:S.scriptCopies>=1,d:'Copie 1 script'},
+    {l:'Primeiro Cliente',i:'users',e:S.clients.length>=1,d:'Cadastre 1 cliente'},
+    {l:'5 Clientes',i:'award',e:S.clients.length>=5,d:'Cadastre 5 clientes'},
+    {l:'Módulo 1',i:'book',e:S.completedMods.indexOf(1)>-1,d:'Conclua o módulo 1'},
+    {l:'Meio Caminho',i:'target',e:S.completedMods.length>=8,d:'Conclua 8 módulos'},
+    {l:'Mestre',i:'star',e:S.completedMods.length>=MODULES.length,d:'Conclua todos os módulos'},
+    {l:'Simulador',i:'cpu',e:S.simDone,d:'Complete 1 simulação'},
+    {l:'Milionário',i:'dollar',e:S.cash>=1000,d:'Acumule R$1.000'}
+  ];
+  badges.forEach(function(b){
+    h+='<div class="badge-card" style="opacity:'+(b.e?1:.4)+';border-color:'+(b.e?'#1a73e840':'rgba(0,0,0,.06)')+'">'+svg(b.i,'20',b.e?'#1a73e8':'#ccc')+'<div style="font-size:11px;font-weight:700;color:#202124;margin-top:7px">'+esc(b.l)+'</div><div style="font-size:10px;color:#aaa;margin-top:2px">'+esc(b.d)+'</div></div>';
+  });
+  h+='</div>';
+
+  el.innerHTML=h;
+}
+
+function toggleMission(id,xp,cash){
+  if(S.doneMissions.indexOf(id)>-1)return;
+  SFX.mission();
+  S.doneMissions.push(id);
+  save();
+  addXP(xp,'Missão concluída!');
+  addCash(cash,'');
+  renderHome();
+}
+
+function submitSim(){
+  var ans=(document.getElementById('sim-ans')||{}).value||'';
+  if(ans.trim().length<20){SFX.error();showToast('Escreva uma resposta mais completa!');return;}
+  SFX.complete();
+  S.simDone=true;
+  save();
+  addXP(100,'Simulação concluída!');
+  addCash(50,'Simulação do dia');
+  renderHome();
+}
+
+/* ═══════ MODULES LIST ═══════ */
+function renderModulesList(){
+  var el=document.getElementById('s-modules');
+  var h='<p style="font-size:13px;color:#666;margin:0 0 14px">'+S.completedMods.length+' de '+MODULES.length+' módulos concluídos</p>';
+  MODULES.forEach(function(m){
+    var isDone=S.completedMods.indexOf(m.id)>-1;
+    h+='<div class="mcrd" onclick="openModule('+m.id+')" style="border-color:'+(isDone?m.color+'55':'rgba(0,0,0,.08)')+'"><div class="micn" style="background:'+m.color+'18">'+svg(m.icon,'18',m.color)+'</div><div class="flex1" style="min-width:0"><div style="margin-bottom:3px">'+tag(m.tag,m.color)+(isDone?' <span style="font-size:10px;color:#188038;font-weight:700">Concluído</span>':'')+'</div><p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#202124;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(m.title)+'</p><p style="margin:0;font-size:12px;color:#888">'+esc(m.desc)+'</p></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0"><span style="font-size:10px;color:#aaa;white-space:nowrap">+'+m.xp+' XP</span><span style="font-size:10px;color:#188038;white-space:nowrap">+R$'+m.cash+'</span>'+svg('chevR','14','#ccc')+'</div></div>';
+  });
+  el.innerHTML=h;
+}
+
+/* ═══════ MODULE DETAIL ═══════ */
+var _QS={},_CK={};
+function openModule(id){
+  SFX.click();
+  S.selectedMod=id;
+  _QS={step:0,answers:[],finished:false,score:0};
+  _CK={};
+  renderModDetail('learn');
+}
+function closeModule(){S.selectedMod=null;renderModulesList();}
+function switchModTab(t){renderModDetail(t);}
+
+function renderModDetail(activeTab){
+  var m=MODULES.find(function(x){return x.id===S.selectedMod;});
+  if(!m)return;
+  var isDone=S.completedMods.indexOf(m.id)>-1;
+  var el=document.getElementById('s-modules');
+  var h='';
+
+  // back
+  h+='<button class="back-btn" onclick="closeModule()">'+svg('chevL','15','#666')+' Voltar aos módulos</button>';
+  // header
+  h+='<div style="background:'+m.color+'0D;border:.5px solid '+m.color+'28;border-radius:12px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;gap:12px"><div style="width:46px;height:46px;min-width:46px;border-radius:10px;background:'+m.color+'22;display:flex;align-items:center;justify-content:center">'+svg(m.icon,'22',m.color)+'</div><div class="flex1"><div style="margin-bottom:3px">'+tag(m.tag,m.color)+'</div><p style="margin:0 0 2px;font-size:16px;font-weight:700;color:#202124">'+esc(m.title)+'</p><p style="margin:0;font-size:12px;color:#888">+'+m.xp+' XP  +R$'+m.cash+'</p></div>'+(isDone?svg('check','18','#34a853'):'')+'</div>';
+
+  // tabs
+  h+='<div class="tabs"><button class="tab'+(activeTab==='learn'?' a':'')+'" style="'+(activeTab==='learn'?'border-color:'+m.color+'50;background:'+m.color+'10;color:'+m.color:'color:#888')+'" onclick="switchModTab(\'learn\')">'+svg('book','13',activeTab==='learn'?m.color:'#aaa')+' Conteúdo</button><button class="tab'+(activeTab==='quiz'?' a':'')+'" style="'+(activeTab==='quiz'?'border-color:'+m.color+'50;background:'+m.color+'10;color:'+m.color:'color:#888')+'" onclick="switchModTab(\'quiz\')">'+svg('help','13',activeTab==='quiz'?m.color:'#aaa')+' Quiz</button></div>';
+
+  if(activeTab==='learn'){
+    h+='<div class="cd" style="margin-bottom:10px"><p class="slbl">Resumo</p><p class="muted">'+esc(m.resumo)+'</p></div>';
+    h+='<div class="cd" style="margin-bottom:10px"><p class="slbl">Passo a passo</p>';
+    m.passos.forEach(function(p,i){h+='<div style="display:flex;gap:10px;margin-bottom:10px;align-items:flex-start"><div style="width:22px;height:22px;min-width:22px;border-radius:50%;background:'+m.color+';display:flex;align-items:center;justify-content:center;margin-top:2px"><span style="font-size:11px;font-weight:700;color:#fff">'+(i+1)+'</span></div><p style="margin:0;font-size:13px;color:#202124;line-height:1.55">'+esc(p)+'</p></div>';});
+    h+='</div>';
+    h+='<div style="background:#1a73e80A;border:.5px solid #1a73e820;border-radius:10px;padding:12px 14px;margin-bottom:10px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'+svg('bookm','13','#1a73e8')+'<span style="font-size:11px;font-weight:700;color:#1a73e8">Exemplo prático</span></div><p class="muted" style="margin:0">'+esc(m.exemplo)+'</p></div>';
+    h+='<div style="background:#f9ab000A;border:.5px solid #f9ab0020;border-radius:10px;padding:12px 14px;margin-bottom:14px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'+svg('zap','13','#a07000')+'<span style="font-size:11px;font-weight:700;color:#a07000">Dica de ouro</span></div><p class="muted" style="margin:0">'+esc(m.dica)+'</p></div>';
+    h+='<div class="cd cdp0" style="margin-bottom:0"><div style="padding:10px 15px 0"><p style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin:0 0 0">Checklist de execução</p></div>';
+    m.checklist.forEach(function(item,i){var checked=_CK[i];h+='<div class="chkrow'+(checked?' checked':'')+'" onclick="toggleCK('+i+')">'+( checked?svg('checksq','15','#34a853'):svg('sq','15','#ccc'))+'<p style="margin:0;font-size:13px;color:'+(checked?'#aaa':'#202124')+';text-decoration:'+(checked?'line-through':'none')+';line-height:1.4">'+esc(item)+'</p></div>';});
+    h+='</div>';
+  }
+
+  if(activeTab==='quiz'){h+=renderQuiz(m);}
+
+  var allCK=m.checklist.every(function(_,i){return _CK[i];});
+  var passed=_QS.finished&&_QS.score>=2;
+  var canComplete=allCK&&passed;
+  if(!isDone){
+    h+='<button class="complete-btn" style="background:'+(canComplete?m.color:'#f1f3f4')+';color:'+(canComplete?'#fff':'#aaa')+'" '+(canComplete?'onclick="completeModule('+m.id+')"':'disabled')+'>'+(canComplete?'Concluir módulo (+'+m.xp+' XP +R$'+m.cash+')':'Complete o checklist e o quiz para concluir')+'</button>';
+  }else{
+    h+='<div class="done-banner">'+svg('check','16','#188038')+' Módulo concluído</div>';
+  }
+
+  el.innerHTML=h;
+}
+
+function renderQuiz(m){
+  var q=_QS;
+  if(q.finished){
+    var passed=q.score>=2;
+    return '<div style="background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:28px 16px;text-align:center;margin-top:0">'+svg(passed?'check':'x','30',passed?'#34a853':'#ea4335')+'<p style="margin:8px 0 4px;font-size:17px;font-weight:700;color:#202124">'+(passed?'Quiz aprovado!':'Tente novamente')+'</p><p style="margin:0 0 14px;font-size:13px;color:#888">'+q.score+' de '+m.quiz.length+' corretas</p>'+(!passed?'<button onclick="resetQuiz()" style="padding:9px 22px;background:'+m.color+';color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Refazer quiz</button>':'')+'</div>';
+  }
+  var qi=m.quiz[q.step];
+  var ans=q.answers[q.step];
+  var h='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><span style="font-size:12px;color:#888">Questão '+(q.step+1)+' de '+m.quiz.length+'</span><div class="dots">';
+  m.quiz.forEach(function(_,i){h+='<div class="dot" style="background:'+(i<q.step?'#34a853':i===q.step?m.color:'#e0e0e0')+'"></div>';});
+  h+='</div></div>';
+  h+='<div class="cd" style="margin-bottom:12px"><p style="margin:0;font-size:14px;font-weight:600;color:#202124;line-height:1.5">'+esc(qi.q)+'</p></div>';
+  qi.opts.forEach(function(opt,oi){
+    var isCorrect=oi===qi.c;
+    var isAns=ans===oi;
+    var bc='rgba(0,0,0,.08)',bg='#fff',tc='#202124';
+    if(ans!==undefined){
+      if(isCorrect){bc='#34a85338';bg='#e6f4ea';tc='#188038';}
+      else if(isAns){bc='#ea433538';bg='#fce8e6';tc='#c5221f';}
+    }
+    h+='<button class="qopt" style="border-color:'+bc+';background:'+bg+';cursor:'+(ans===undefined?'pointer':'default')+'" '+(ans===undefined?'onclick="answerQ('+oi+')"':'')+'>'+
+      '<div class="qlet" style="border-color:'+bc+';color:'+tc+'">'+'ABCD'[oi]+'</div>'+
+      '<span style="font-size:13px;color:'+tc+';line-height:1.4">'+esc(opt)+'</span></button>';
+  });
+  if(ans!==undefined){
+    h+='<div style="margin-top:8px;padding:10px 13px;border-radius:8px;background:'+(ans===qi.c?'#e6f4ea':'#fce8e6')+';border:.5px solid '+(ans===qi.c?'#34a85330':'#ea433530')+'"><p style="font-size:12px;color:#444;margin:0;line-height:1.5">'+esc(qi.exp)+'</p></div>';
+  }
+  return h;
+}
+
+function allCKDone(m){return m.checklist.every(function(_,i){return _CK[i];});}
+function toggleCK(i){SFX.click();_CK[i]=!_CK[i];renderModDetail('learn');}
+function answerQ(oi){
+  var m=MODULES.find(function(x){return x.id===S.selectedMod;});
+  if(!m)return;
+  var qi=m.quiz[_QS.step];
+  _QS.answers[_QS.step]=oi;
+  if(oi===qi.c){_QS.score++;SFX.success();}else{SFX.error();}
+  renderModDetail('quiz');
+  setTimeout(function(){
+    if(_QS.step<m.quiz.length-1){_QS.step++;renderModDetail('quiz');}
+    else{_QS.finished=true;renderModDetail('quiz');}
+  },900);
+}
+function resetQuiz(){_QS={step:0,answers:[],finished:false,score:0};renderModDetail('quiz');}
+function completeModule(id){
+  if(S.completedMods.indexOf(id)>-1)return;
+  var m=MODULES.find(function(x){return x.id===id;});
+  S.completedMods.push(id);
+  save();
+  SFX.complete();
+  addXP(m.xp,'Módulo '+m.title+' concluído!');
+  addCash(m.cash,'Módulo concluído');
+  renderModDetail('learn');
+}
+
+/* ═══════ CLIENTS ═══════ */
+function renderClients(){
+  var el=document.getElementById('s-clients');
+  var total=S.clients.reduce(function(s,c){return s+(parseFloat(c.revenue)||0);},0);
+  var h='<div class="g2" style="margin-bottom:10px">';
+  h+='<div class="stat-card" style="text-align:center"><div style="font-size:28px;font-weight:700;color:#1a73e8">'+S.clients.length+'</div><div style="font-size:11px;color:#888;margin-top:3px">Clientes ativos</div></div>';
+  h+='<div class="stat-card" style="text-align:center"><div style="font-size:20px;font-weight:700;color:#188038">R$'+total.toFixed(0)+'</div><div style="font-size:11px;color:#888;margin-top:3px">Faturamento/mês</div></div>';
+  h+='</div>';
+  // Add form
+  h+='<div class="cd" style="margin-bottom:10px"><p class="slbl">Novo cliente</p>';
+  h+='<input class="inp mb" id="cli-biz" placeholder="Nome da empresa">';
+  h+='<input class="inp mb" id="cli-seg" placeholder="Segmento (barbearia, restaurante...)">';
+  h+='<input class="inp mb" id="cli-contact" placeholder="Nome do responsável">';
+  h+='<input class="inp mb" id="cli-wa" placeholder="WhatsApp (11) 99999-9999">';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">';
+  h+='<select class="inp" id="cli-status"><option value="novo">Novo</option><option value="negociando">Em negociação</option><option value="fechado">Fechado</option><option value="perdido">Perdido</option></select>';
+  h+='<select class="inp" id="cli-pay"><option value="pendente">Pendente</option><option value="pago">Pago</option><option value="atrasado">Atrasado</option></select>';
+  h+='</div>';
+  h+='<input class="inp mb" id="cli-rev" type="number" placeholder="Valor mensal (R$)">';
+  h+='<textarea class="inp mb" id="cli-obs" placeholder="Observações..." style="min-height:56px"></textarea>';
+  h+='<button class="btn btn-blue" onclick="addClient()">'+svg('plus','14','#fff')+' Adicionar cliente (+80 XP)</button></div>';
+
+  if(S.clients.length===0){
+    h+='<div style="text-align:center;padding:40px 20px;color:#aaa">'+svg('users','28','#ddd')+'<p style="font-size:13px;margin:10px 0 0">Nenhum cliente ainda. Hora de prospectar!</p></div>';
+  }else{
+    var statusColors={novo:'#1a73e8',negociando:'#f9ab00',fechado:'#34a853',perdido:'#ea4335'};
+    var payColors={pago:'#188038',pendente:'#a07000',atrasado:'#c5221f'};
+    S.clients.forEach(function(c){
+      var sc=statusColors[c.status]||'#888';
+      var pc=payColors[c.pay]||'#888';
+      h+='<div class="cd" style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div class="cliavt">'+esc(c.biz.charAt(0).toUpperCase())+'</div><div class="flex1"><p style="margin:0 0 2px;font-size:14px;font-weight:700;color:#202124;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(c.biz)+'</p><p style="margin:0;font-size:12px;color:#888">'+esc(c.seg||'')+'</p></div><button onclick="deleteClient('+c.id+')" style="background:none;border:none;cursor:pointer;padding:4px">'+svg('trash','14','#ccc')+'</button></div>';
+      h+='<div style="display:flex;gap:6px;flex-wrap:wrap"><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:'+sc+'1A;color:'+sc+'">'+esc(c.status||'novo')+'</span><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:'+pc+'1A;color:'+pc+'">'+esc(c.pay||'pendente')+'</span>'+(c.revenue?'<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:#34a85312;color:#188038">R$'+esc(String(c.revenue))+'/mês</span>':'')+'</div>';
+      if(c.obs){h+='<p style="margin:6px 0 0;font-size:12px;color:#888;line-height:1.4">'+esc(c.obs)+'</p>';}
+      h+='</div>';
+    });
+  }
+  el.innerHTML=h;
+}
+
+function addClient(){
+  var biz=(document.getElementById('cli-biz').value||'').trim();
+  if(!biz){SFX.error();showToast('Digite o nome da empresa!');return;}
+  SFX.success();
+  S.clients.push({
+    id:Date.now(),
+    biz:biz,
+    seg:(document.getElementById('cli-seg').value||'').trim(),
+    contact:(document.getElementById('cli-contact').value||'').trim(),
+    wa:(document.getElementById('cli-wa').value||'').trim(),
+    status:document.getElementById('cli-status').value,
+    pay:document.getElementById('cli-pay').value,
+    revenue:(document.getElementById('cli-rev').value||'').trim(),
+    obs:(document.getElementById('cli-obs').value||'').trim(),
+    createdAt:Date.now()
+  });
+  save();
+  addXP(80,'Novo cliente cadastrado!');
+  addCash(30,'Cliente cadastrado');
+  renderClients();
+}
+
+function deleteClient(id){
+  S.clients=S.clients.filter(function(c){return c.id!==id;});
+  save();
+  SFX.click();
+  renderClients();
+}
+
+/* ═══════ PLAN ═══════ */
+var _planTab='notes';
+function renderPlan(tab){
+  _planTab=tab;
+  var el=document.getElementById('s-plan');
+  var h='<div class="tabs">';
+  [{v:'notes',l:'Notas',i:'note'},{v:'agenda',l:'Agenda',i:'calendar'},{v:'products',l:'Produtos',i:'pkg'}].forEach(function(t){
+    var a=tab===t.v;
+    h+='<button class="tab'+(a?' a':'')+'" style="'+(a?'border-color:#1a73e850;background:#e8f0fe;color:#1a73e8':'color:#888')+'" onclick="renderPlan(\''+t.v+'\')">'+svg(t.i,'13',a?'#1a73e8':'#aaa')+' '+t.l+'</button>';
+  });
+  h+='</div>';
+
+  if(tab==='notes'){
+    h+='<div class="cd" style="margin-bottom:10px"><input class="inp mb" id="note-title" placeholder="Título da nota"><textarea class="inp mb" id="note-body" placeholder="Conteúdo..." style="min-height:80px"></textarea><button class="btn btn-blue" onclick="addNote()">'+svg('plus','14','#fff')+' Salvar nota (+10 XP)</button></div>';
+    if(S.notes.length===0){h+='<div style="text-align:center;padding:30px;color:#aaa">'+svg('note','24','#ddd')+'<p style="font-size:13px;margin:8px 0 0">Nenhuma nota ainda</p></div>';}
+    S.notes.slice().reverse().forEach(function(n,ri){
+      var i=S.notes.length-1-ri;
+      h+='<div class="note-card"><div style="display:flex;align-items:center;justify-content:space-between;padding:11px 14px"><p style="margin:0;font-size:13px;font-weight:700;color:#202124">'+esc(n.title)+'</p><button onclick="deleteNote('+i+')" style="background:none;border:none;cursor:pointer;padding:4px">'+svg('trash','13','#ccc')+'</button></div><p style="margin:0;font-size:12px;color:#666;line-height:1.5;padding:0 14px 12px;border-top:.5px solid rgba(0,0,0,.06)">'+esc(n.body)+'</p></div>';
+    });
+  }
+
+  if(tab==='agenda'){
+    h+='<div class="cd" style="margin-bottom:10px">';
+    h+='<input class="inp mb" id="ag-title" placeholder="Título do agendamento">';
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">';
+    h+='<input class="inp" id="ag-date" type="date">';
+    h+='<input class="inp" id="ag-time" type="time">';
+    h+='</div>';
+    h+='<select class="inp mb" id="ag-type"><option value="contato">Contato com cliente</option><option value="reunião">Reunião</option><option value="entrega">Entrega</option><option value="followup">Follow-up</option><option value="outro">Outro</option></select>';
+    h+='<button class="btn btn-blue" onclick="addAgenda()">'+svg('plus','14','#fff')+' Agendar (+10 XP)</button></div>';
+    var colors={contato:'#1a73e8',reunião:'#34a853',entrega:'#f9ab00',followup:'#ea4335',outro:'#888'};
+    var upcoming=S.agenda.filter(function(a){return new Date(a.date+' '+a.time)>=new Date();}).sort(function(a,b){return new Date(a.date+' '+a.time)-new Date(b.date+' '+b.time);});
+    var past=S.agenda.filter(function(a){return new Date(a.date+' '+a.time)<new Date();});
+    if(upcoming.length===0&&past.length===0){h+='<div style="text-align:center;padding:30px;color:#aaa">'+svg('calendar','24','#ddd')+'<p style="font-size:13px;margin:8px 0 0">Nenhum agendamento</p></div>';}
+    if(upcoming.length>0){
+      h+='<p class="slbl">Próximos</p><div class="cd cdp0" style="margin-bottom:10px">';
+      upcoming.forEach(function(a,i){var col=colors[a.type]||'#888';h+='<div class="agenda-item" style="'+(i<upcoming.length-1?'':'')+'"><div class="agenda-dot" style="background:'+col+'"></div><div class="flex1"><p style="margin:0 0 1px;font-size:13px;font-weight:700;color:#202124">'+esc(a.title)+'</p><p style="margin:0;font-size:11px;color:#888">'+esc(a.date)+' às '+esc(a.time)+' — '+esc(a.type)+'</p></div><button onclick="deleteAgenda('+a.id+')" style="background:none;border:none;cursor:pointer;padding:4px">'+svg('trash','13','#ddd')+'</button></div>';});
+      h+='</div>';
+    }
+  }
+
+  if(tab==='products'){
+    h+='<div class="cd" style="margin-bottom:10px"><p class="slbl">Novo pacote</p><input class="inp mb" id="prd-name" placeholder="Nome do pacote (ex: Plano Pro)"><textarea class="inp mb" id="prd-items" placeholder="O que está incluído (um por linha)..." style="min-height:72px"></textarea><input class="inp mb" id="prd-price" type="number" placeholder="Preço mensal (R$)"><button class="btn btn-blue" onclick="addProduct()">'+svg('plus','14','#fff')+' Criar pacote</button></div>';
+    if(S.products.length===0){h+='<div style="text-align:center;padding:30px;color:#aaa">'+svg('pkg','24','#ddd')+'<p style="font-size:13px;margin:8px 0 0">Nenhum pacote criado</p></div>';}
+    S.products.forEach(function(p,i){
+      h+='<div class="plan-card" style="border-left:3px solid #1a73e8"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><p style="margin:0;font-size:14px;font-weight:700;color:#202124">'+esc(p.name)+'</p><div style="display:flex;align-items:center;gap:8px"><span style="font-size:13px;font-weight:700;color:#1a73e8">R$'+esc(String(p.price))+'/mês</span><button onclick="deleteProduct('+i+')" style="background:none;border:none;cursor:pointer">'+svg('trash','13','#ccc')+'</button></div></div>';
+      p.items.forEach(function(it){h+='<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">'+svg('check','12','#34a853')+'<span style="font-size:12px;color:#666">'+esc(it)+'</span></div>';});
+      h+='</div>';
+    });
+  }
+  el.innerHTML=h;
+}
+
+function addNote(){
+  var t=(document.getElementById('note-title').value||'').trim();
+  var b=(document.getElementById('note-body').value||'').trim();
+  if(!t){SFX.error();showToast('Digite um título!');return;}
+  SFX.success();
+  S.notes.push({title:t,body:b,date:todayKey()});
+  save();
+  addXP(10,'Nota salva!');
+  renderPlan('notes');
+}
+function deleteNote(i){S.notes.splice(i,1);save();renderPlan('notes');}
+
+function addAgenda(){
+  var t=(document.getElementById('ag-title').value||'').trim();
+  var d=(document.getElementById('ag-date').value||'').trim();
+  var tm=(document.getElementById('ag-time').value||'').trim();
+  if(!t||!d){SFX.error();showToast('Preencha título e data!');return;}
+  SFX.success();
+  S.agenda.push({id:Date.now(),title:t,date:d,time:tm||'09:00',type:document.getElementById('ag-type').value});
+  save();
+  addXP(10,'Agendamento criado!');
+  renderPlan('agenda');
+}
+function deleteAgenda(id){S.agenda=S.agenda.filter(function(a){return a.id!==id;});save();renderPlan('agenda');}
+
+function addProduct(){
+  var n=(document.getElementById('prd-name').value||'').trim();
+  var raw=(document.getElementById('prd-items').value||'').trim();
+  var p=(document.getElementById('prd-price').value||'').trim();
+  if(!n){SFX.error();showToast('Digite o nome do pacote!');return;}
+  var items=raw.split('\n').map(function(s){return s.trim();}).filter(function(s){return s.length>0;});
+  SFX.success();
+  S.products.push({name:n,items:items,price:p});
+  save();
+  addXP(20,'Pacote criado!');
+  renderPlan('products');
+}
+function deleteProduct(i){S.products.splice(i,1);save();renderPlan('products');}
+
+/* ═══════ MORE ═══════ */
+var _moreTab='scripts';
+function renderMore(tab){
+  _moreTab=tab;
+  var el=document.getElementById('s-more');
+  var h='<div class="tabs">';
+  [{v:'scripts',l:'Scripts',i:'msg'},{v:'tools',l:'Ferramentas',i:'search'},{v:'prompts',l:'Prompts IA',i:'bot'}].forEach(function(t){
+    var a=tab===t.v;
+    h+='<button class="tab'+(a?' a':'')+'" style="'+(a?'border-color:#1a73e850;background:#e8f0fe;color:#1a73e8':'color:#888')+'" onclick="renderMore(\''+t.v+'\')">'+svg(t.i,'13',a?'#1a73e8':'#aaa')+' '+t.l+'</button>';
+  });
+  h+='</div>';
+
+  if(tab==='scripts'){
+    h+='<p style="font-size:13px;color:#888;margin:0 0 12px">Scripts prontos para copiar e enviar no WhatsApp.</p>';
+    SCRIPTS.forEach(function(s){
+      h+='<div class="cd" style="margin-bottom:10px"><div style="margin-bottom:8px">'+tag(s.tag,'#1a73e8')+'<p style="margin:5px 0 0;font-size:14px;font-weight:700;color:#202124">'+esc(s.title)+'</p></div><p style="margin:0 0 10px;font-size:13px;color:#666;line-height:1.6;background:#f8f9fa;padding:10px 12px;border-radius:8px">'+esc(s.text)+'</p><div style="display:flex;gap:8px"><button id="cp-'+s.id+'" class="copy-btn" onclick="copyScript('+s.id+')">'+svg('copy','13','#666')+' Copiar</button><a href="https://wa.me/?text='+encodeURIComponent(s.text)+'" target="_blank" class="wa-btn">'+svg('msg','13','#128c7e')+' WhatsApp</a></div></div>';
+    });
+  }
+
+  if(tab==='tools'){
+    var tools=[
+      {name:'Google Meu Negócio',url:'https://business.google.com',desc:'Gerenciar perfis de clientes',icon:'pin',color:'#ea4335'},
+      {name:'Google Maps',url:'https://maps.google.com',desc:'Prospectar empresas locais',icon:'search',color:'#1a73e8'},
+      {name:'Google Ads',url:'https://ads.google.com',desc:'Criar anúncios locais',icon:'trend',color:'#f9ab00'},
+      {name:'Canva',url:'https://canva.com',desc:'Criar posts e imagens',icon:'image',color:'#00c4cc'},
+      {name:'ChatGPT',url:'https://chat.openai.com',desc:'Gerar textos com IA',icon:'bot',color:'#34a853'},
+      {name:'Meta Business Suite',url:'https://business.facebook.com',desc:'Gerenciar anúncios Meta',icon:'meta',color:'#1877f2'},
+      {name:'Carrd.co',url:'https://carrd.co',desc:'Criar landing pages gratuitas',icon:'layout',color:'#7c3aed'},
+      {name:'n8n',url:'https://n8n.io',desc:'Automatizar tarefas',icon:'layout',color:'#ea4335'}
+    ];
+    tools.forEach(function(t){
+      h+='<a href="'+t.url+'" target="_blank" class="tool-link"><div style="width:36px;height:36px;min-width:36px;border-radius:8px;background:'+t.color+'18;display:flex;align-items:center;justify-content:center">'+svg(t.icon,'16',t.color)+'</div><div class="flex1"><p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#202124">'+esc(t.name)+'</p><p style="margin:0;font-size:12px;color:#888">'+esc(t.desc)+'</p></div>'+svg('link','13','#ccc')+'</a>';
+    });
+  }
+
+  if(tab==='prompts'){
+    h+='<p style="font-size:13px;color:#888;margin:0 0 12px">Prompts prontos para usar no ChatGPT.</p>';
+    PROMPTS.forEach(function(cat){
+      h+='<p class="slbl" style="margin-top:4px">'+svg('target','12',cat.color)+' '+esc(cat.cat)+'</p>';
+      cat.items.forEach(function(p,pi){
+        var pid='pp-'+cat.cat.replace(/\s/g,'_')+pi;
+        h+='<div class="prompt-card"><p style="margin:0 0 6px;font-size:13px;font-weight:700;color:#202124">'+esc(p.title)+'</p><p style="margin:0 0 10px;font-size:12px;color:#888;line-height:1.5;background:#f8f9fa;padding:8px 10px;border-radius:6px;white-space:pre-wrap">'+esc(p.text.substring(0,120))+'...</p><button id="'+pid+'" class="copy-btn" onclick="copyPrompt(\''+pid+'\','+JSON.stringify(p.text).replace(/'/g,"\\'")+')" style="width:100%">'+svg('copy','13','#666')+' Copiar prompt completo</button></div>';
+      });
+    });
+  }
+
+  el.innerHTML=h;
+}
+
+function copyScript(id){
+  var s=SCRIPTS.find(function(x){return x.id===id;});
+  if(!s)return;
+  try{navigator.clipboard.writeText(s.text);}catch(e){}
+  S.scriptCopies++;save();
+  SFX.success();
+  addXP(15,'Script copiado!');
+  var btn=document.getElementById('cp-'+id);
+  if(btn){btn.classList.add('done');btn.innerHTML=svg('check','13','#188038')+' Copiado';setTimeout(function(){btn.classList.remove('done');btn.innerHTML=svg('copy','13','#666')+' Copiar';},2000);}
+}
+
+function copyPrompt(pid,text){
+  try{navigator.clipboard.writeText(text);}catch(e){}
+  SFX.success();
+  showToast('Prompt copiado!');
+  var btn=document.getElementById(pid);
+  if(btn){btn.classList.add('done');btn.innerHTML=svg('check','13','#188038')+' Copiado';setTimeout(function(){btn.classList.remove('done');btn.innerHTML=svg('copy','13','#666')+' Copiar prompt completo';},2000);}
+}
+
+/* ═══════ INIT ═══════ */
+function initApp(){
+  updateHeader();
+  renderHome();
+}
+</script>
+</body>
+</html>

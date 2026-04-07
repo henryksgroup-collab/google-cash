@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método não permitido' });
 
-  const { name, email, document: doc, phone } = req.body || {};
+  const { name, email, document: doc, phone, amount: reqAmount } = req.body || {};
   if (!name || !email || !doc) {
     return res.status(400).json({ error: 'Nome, e-mail e CPF são obrigatórios' });
   }
@@ -23,12 +23,16 @@ module.exports = async (req, res) => {
   const cpf = doc.replace(/\D/g, '');
   if (cpf.length !== 11) return res.status(400).json({ error: 'CPF inválido' });
 
+  // Aceita R$117 (oferta principal) ou R$67 (oferta desconto)
+  const amount = reqAmount === 67 ? 67.00 : 117.00;
+  const isDownsell = amount === 67.00;
+
   const identifier = `GC_${Date.now()}_${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
   const baseUrl = process.env.BASE_URL || `https://${req.headers.host}`;
 
   const body = {
     identifier,
-    amount: 117.00,
+    amount,
     client: {
       name,
       email,
@@ -36,7 +40,7 @@ module.exports = async (req, res) => {
       ...(phone ? { phone: phone.replace(/\D/g, '') } : {})
     },
     products: [
-      { id: 'gc-acesso', name: 'Google Cash — Acesso Completo', quantity: 1, price: 117.00 }
+      { id: 'gc-acesso', name: 'Google Cash — Acesso Completo', quantity: 1, price: amount }
     ],
     dueDate: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
     callbackUrl: `${baseUrl}/api/webhook`,
@@ -68,7 +72,8 @@ module.exports = async (req, res) => {
         identifier,
         name,
         email,
-        amount: 117,
+        amount,
+        isDownsell,
         status: 'PENDING',
         createdAt: Date.now()
       };

@@ -159,10 +159,60 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   .btn{font-size:15px;padding:15px}
   .install-row{grid-template-columns:repeat(3,1fr)}
 }
+
+/* === EXIT INTENT MODAL === */
+#exit-modal{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:10000;padding:16px;backdrop-filter:blur(4px)}
+#exit-modal.show{display:flex}
+.exit-card{background:#fff;border-radius:22px;padding:28px 22px 20px;max-width:390px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.45);animation:exitPop .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes exitPop{from{transform:scale(.88) translateY(30px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.exit-badge{display:inline-block;background:linear-gradient(135deg,#ea4335,#c62828);color:#fff;font-size:10px;font-weight:800;padding:5px 16px;border-radius:20px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
+.exit-title{font-size:20px;font-weight:800;color:var(--dk);margin-bottom:6px;line-height:1.25}
+.exit-sub{font-size:13px;color:var(--sub);margin-bottom:18px;line-height:1.55}
+.exit-price-row{display:flex;align-items:baseline;justify-content:center;gap:10px;margin-bottom:4px}
+.exit-price-old{font-size:17px;color:#bbb;text-decoration:line-through;font-weight:600}
+.exit-price-new{font-size:44px;font-weight:800;color:var(--gn);line-height:1;letter-spacing:-2px}
+.exit-price-new small{font-size:20px;letter-spacing:0;font-weight:700}
+.exit-save{font-size:12px;font-weight:700;color:#2e7d32;background:#e8f5e9;border-radius:20px;padding:5px 16px;display:inline-block;margin:10px 0 14px}
+.exit-timer-box{background:#fff3e0;border-radius:10px;padding:8px 14px;margin-bottom:18px;font-size:12px;color:#e65100}
+.exit-timer-box strong{font-size:15px;font-variant-numeric:tabular-nums;font-weight:800}
+.exit-reject{background:none;border:none;color:#bbb;font-size:11px;cursor:pointer;margin-top:10px;font-family:inherit;display:block;width:100%;padding:8px;transition:color .2s}
+.exit-reject:hover{color:var(--sub)}
+
+/* Downsell ativo — produto card */
+.downsell-banner{background:linear-gradient(90deg,#e8f5e9,#f1f8e9);border:1.5px solid #66bb6a;border-radius:10px;padding:8px 12px;margin-top:10px;display:none;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#2e7d32}
+.downsell-banner.show{display:flex}
+.price-tag{font-size:10px;background:#43a047;color:#fff;border-radius:4px;padding:2px 6px;font-weight:800}
+
+/* Installments — fee tag */
+.inst-fee{font-size:9px;color:#f57c00;font-weight:700;margin-top:2px;letter-spacing:.02em}
+.install-opt.active .inst-fee{color:#e65100}
 </style>
 </head>
 <body>
 <div id="toast"></div>
+
+<!-- ======== EXIT INTENT MODAL ======== -->
+<div id="exit-modal">
+  <div class="exit-card">
+    <div class="exit-badge">⚡ Oferta Relâmpago</div>
+    <div class="exit-title">Espera! Não vai sair ainda...</div>
+    <div class="exit-sub">Preparamos um desconto exclusivo para você.<br><strong>Essa oferta aparece uma única vez.</strong></div>
+    <div class="exit-price-row">
+      <span class="exit-price-old">R$117,00</span>
+      <span class="exit-price-new"><small>R$</small>67</span>
+    </div>
+    <div style="font-size:11px;color:#aaa;margin-bottom:6px">à vista</div>
+    <div class="exit-save">✓ Você economiza R$50,00 — 43% OFF</div>
+    <div class="exit-timer-box">
+      ⏱ Oferta expira em: <strong id="exit-countdown">10:00</strong>
+    </div>
+    <button class="btn btn-green" onclick="acceptDownsell()">
+      <span class="material-symbols-rounded">bolt</span>
+      Quero por R$67,00 agora!
+    </button>
+    <button class="exit-reject" onclick="closeExitModal()">Não obrigado, prefiro pagar R$117,00</button>
+  </div>
+</div>
 
 <div class="wrap">
   <!-- Logo -->
@@ -189,9 +239,15 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="product-desc">App + Certificacao + Scripts + Comunidade</div>
     </div>
     <div class="product-price">
-      <div class="amount" id="product-price-display">R$ 117</div>
-      <div class="label">pagamento unico</div>
+      <div class="amount">
+        <span id="price-striked" style="display:none;font-size:13px;color:#bbb;text-decoration:line-through;font-weight:500;margin-right:4px">R$117</span><span id="product-price-display">R$ 117</span>
+      </div>
+      <div class="label" id="price-sublabel">pagamento unico</div>
     </div>
+  </div>
+  <div class="downsell-banner" id="downsell-banner">
+    <span class="price-tag">43% OFF</span>
+    Desconto especial aplicado! Economize R$50,00
   </div>
 
   <!-- ======== STEP 1: DADOS + METODO ======== -->
@@ -233,7 +289,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       <div class="method-selector">
         <button class="method-btn active" id="method-pix" onclick="selectMethod('pix')">
           <span class="method-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24"><path d="M4 4h4v4H4zm12 0h4v4h-4zM4 16h4v4H4zm8-12h1v1h-1zm0 3h1v1h-1zm3-3h1v1h-1zm-3 3h1v1h-1zM7 7h3v3H7zm7 7h3v3h-3zm-7 7h3v3H7z" fill="#1a73e8"/><path d="M12 12h1v1h-1zm1-1h1v1h-1zm1 1h1v1h-1zm-1 1h1v1h-1z" fill="#34a853"/></svg>
+            <svg width="32" height="32" viewBox="0 0 16 16" fill="#1a73e8" xmlns="http://www.w3.org/2000/svg"><path d="M11.917 11.71a2.046 2.046 0 0 1-1.454-.602l-2.1-2.1a.4.4 0 0 0-.551 0l-2.108 2.108a2.044 2.044 0 0 1-1.454.602h-.414l2.66 2.66c.83.83 2.177.83 3.007 0l2.667-2.668h-.253zM4.25 4.282c.55 0 1.066.214 1.454.602l2.108 2.108a.39.39 0 0 0 .552 0l2.1-2.1a2.044 2.044 0 0 1 1.453-.602h.253L9.503 1.623a2.127 2.127 0 0 0-3.007 0l-2.66 2.66h.414z"/><path d="m14.377 6.496-1.612-1.612a.307.307 0 0 1-.114.023h-.733c-.379 0-.75.154-1.017.422l-2.1 2.1a1.005 1.005 0 0 1-1.425 0L5.268 5.32a1.448 1.448 0 0 0-1.018-.422h-.9a.306.306 0 0 1-.109-.021L1.623 6.496c-.83.83-.83 2.177 0 3.008l1.618 1.618a.305.305 0 0 1 .108-.022h.901c.38 0 .75-.153 1.018-.421L7.375 8.57a1.034 1.034 0 0 1 1.426 0l2.1 2.1c.267.268.638.421 1.017.421h.733c.04 0 .079.01.114.024l1.612-1.612c.83-.83.83-2.178 0-3.008z"/></svg>
           </span>
           <span class="method-name">PIX</span>
           <span class="method-sub">Aprovacao imediata</span>
@@ -243,7 +299,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
             <svg width="32" height="22" viewBox="0 0 32 22" fill="none"><rect x="1" y="1" width="30" height="20" rx="3" stroke="#5f6368" stroke-width="1.5" fill="#fff"/><rect x="1" y="6" width="30" height="4" fill="#e0e0e0"/><rect x="5" y="15" width="8" height="3" rx="1" fill="#5f6368"/></svg>
           </span>
           <span class="method-name">Cartao</span>
-          <span class="method-sub">Credito em até 3x</span>
+          <span class="method-sub">Credito em até 12x</span>
         </button>
       </div>
 
@@ -263,7 +319,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   <div id="step2-pix" style="display:none">
     <div class="card">
       <div class="pix-amount">
-        <div class="val">R$ 117,00</div>
+        <div class="val" id="pix-amount-val">R$ 117,00</div>
         <div class="lbl">Pix — valido por 30 minutos</div>
       </div>
 
@@ -297,71 +353,60 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <p><strong>Como pagar:</strong><br>
         1. Abra o app do seu banco<br>
         2. Va em PIX &rarr; Copia e Cola (ou escaneie o QR Code)<br>
-        3. Cole o codigo e confirme o valor de R$117,00</p>
+        3. Cole o codigo e confirme o valor de <span id="pix-how-amount">R$117,00</span></p>
       </div>
     </div>
   </div>
 
-  <!-- ======== STEP 2b: CARTAO DE CREDITO ======== -->
+  <!-- ======== STEP 2b: CARTAO — REDIRECT INFINITEPAY ======== -->
   <div id="step2-card" style="display:none">
     <div class="card">
       <div class="card-title">
         <span class="material-symbols-rounded">credit_card</span>
-        Dados do Cartao
+        Pagamento com Cartao
       </div>
 
-      <div class="field">
-        <label>Numero do Cartao *</label>
-        <div class="card-number-wrap">
-          <input type="text" id="c-number" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" autocomplete="cc-number">
-          <span class="card-brand" id="card-brand"></span>
+      <!-- Resumo do pedido -->
+      <div style="background:#f8f9fa;border-radius:12px;padding:14px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--dk)">Google Cash — Acesso Completo</div>
+          <div style="font-size:11px;color:var(--sub);margin-top:3px">Pagamento via InfinitePay</div>
         </div>
-        <div class="field-error" id="c-number-err">Numero de cartao invalido</div>
-      </div>
-
-      <div class="field">
-        <label>Nome no Cartao *</label>
-        <input type="text" id="c-name" placeholder="JOAO SILVA" autocomplete="cc-name" style="text-transform:uppercase">
-        <div class="field-error" id="c-name-err">Preencha o nome igual ao cartao</div>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label>Validade *</label>
-          <input type="text" id="c-expiry" placeholder="MM/AA" maxlength="5" inputmode="numeric" autocomplete="cc-exp">
-          <div class="field-error" id="c-expiry-err">Data invalida</div>
-        </div>
-        <div class="field">
-          <label>CVV *</label>
-          <input type="text" id="c-cvv" placeholder="123" maxlength="4" inputmode="numeric" autocomplete="cc-csc">
-          <div class="field-error" id="c-cvv-err">CVV invalido</div>
+        <div style="text-align:right">
+          <div style="font-size:18px;font-weight:800;color:var(--gn)" id="card-summary-price">R$ 117</div>
         </div>
       </div>
 
-      <!-- Parcelas -->
-      <div class="field" style="margin-bottom:8px">
-        <label>Parcelas</label>
+      <!-- Parcelamento selecionavel -->
+      <div style="border:1.5px solid #e8f0fe;border-radius:10px;padding:12px 14px;margin-bottom:18px">
+        <div style="font-size:12px;font-weight:700;color:var(--bl);margin-bottom:8px">
+          <span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle">payments</span>
+          Escolha o parcelamento
+        </div>
+        <div id="card-installments-info" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px"></div>
+        <div style="font-size:10px;color:var(--sub);margin-top:8px">Toque para selecionar · Taxa repassada ao comprador</div>
       </div>
-      <div class="install-row" id="install-row">
-        <button class="install-opt active" data-inst="1" onclick="selectInstall(this,1)">
-          <div class="inst-label">1x</div>
-          <div class="inst-val">R$117,00</div>
-        </button>
-        <button class="install-opt" data-inst="2" onclick="selectInstall(this,2)">
-          <div class="inst-label">2x</div>
-          <div class="inst-val">R$58,50</div>
-        </button>
-        <button class="install-opt" data-inst="3" onclick="selectInstall(this,3)">
-          <div class="inst-label">3x</div>
-          <div class="inst-val">R$39,00</div>
-        </button>
-      </div>
-      <div style="font-size:11px;color:var(--sub);margin-bottom:16px;text-align:center">Sem juros</div>
 
-      <button class="btn btn-blue" id="btn-pay-card" onclick="submitCard()">
-        <span class="material-symbols-rounded">lock</span>
-        Pagar R$ <span id="card-price-label">117,00</span>
+      <!-- Selos -->
+      <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--sub)">
+          <span class="material-symbols-rounded" style="font-size:14px;color:var(--gn)">verified_user</span>Antifraude
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--sub)">
+          <span class="material-symbols-rounded" style="font-size:14px;color:var(--gn)">bolt</span>Recebimento na hora
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;font-size:11px;color:var(--sub)">
+          <span class="material-symbols-rounded" style="font-size:14px;color:var(--gn)">lock</span>Criptografado
+        </div>
+      </div>
+
+      <button class="btn btn-blue" id="btn-pay-card" onclick="submitInfinitePay()">
+        <span class="material-symbols-rounded">open_in_new</span>
+        Continuar para pagamento seguro
       </button>
+      <div style="font-size:11px;color:var(--sub);text-align:center;margin-top:10px">
+        Voce sera redirecionado para a pagina segura da InfinitePay
+      </div>
       <div class="security-row">
         <span class="sec-badge"><span class="material-symbols-rounded">shield</span> Pagamento seguro</span>
         <span class="sec-badge"><span class="material-symbols-rounded">lock</span> SSL 256-bit</span>
@@ -408,6 +453,66 @@ var timerInterval = null;
 var expiresAt = null;
 var paymentMethod = 'pix';
 var selectedInstallments = 1;
+var currentOffer = 'full';       // 'full' | 'downsell'
+var exitIntentShown = false;
+var exitTimerInterval = null;
+var currentStep = 'step1';
+
+// ── Pricing config ──
+var OFFERS = {
+  full: {
+    amount: 117, cents: 11700, display: 'R$ 117', displayFull: 'R$ 117,00',
+    installments: {
+      1: { label:'1x', val:'R$117,00',    fee:'sem acréscimo',   total:11700 },
+      2: { label:'2x', val:'R$61,43/mes', fee:'(total R$122,85)', total:12285 },
+      3: { label:'3x', val:'R$42,12/mes', fee:'(total R$126,36)', total:12636 }
+    }
+  },
+  downsell: {
+    amount: 67, cents: 6700, display: 'R$ 67', displayFull: 'R$ 67,00',
+    installments: {
+      1: { label:'1x', val:'R$67,00',     fee:'sem acréscimo',   total:6700  },
+      2: { label:'2x', val:'R$35,18/mes', fee:'(total R$70,35)', total:7035  },
+      3: { label:'3x', val:'R$24,12/mes', fee:'(total R$72,36)', total:7236  }
+    }
+  }
+};
+
+// ── Render installment buttons ──
+function renderInstallments() {
+  var data = OFFERS[currentOffer].installments;
+  var row = document.getElementById('install-row');
+  row.innerHTML = '';
+  [1,2,3].forEach(function(n) {
+    var d = data[n];
+    var btn = document.createElement('button');
+    btn.className = 'install-opt' + (selectedInstallments === n ? ' active' : '');
+    btn.setAttribute('data-inst', n);
+    btn.onclick = function(){ selectInstall(this, n); };
+    btn.innerHTML = '<div class="inst-label">' + d.label + '</div>' +
+                    '<div class="inst-val">' + d.val + '</div>' +
+                    '<div class="inst-fee">' + d.fee + '</div>';
+    row.appendChild(btn);
+  });
+  // Update pay button label
+  var inst = OFFERS[currentOffer].installments[selectedInstallments];
+  document.getElementById('card-price-label').textContent =
+    selectedInstallments === 1
+      ? OFFERS[currentOffer].amount + ',00'
+      : inst.val.replace('R$','').replace('/mes','');
+}
+// Detecta retorno do InfinitePay após pagamento com cartão
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  if (params.get('paid') === '1') {
+    window.history.replaceState({}, '', window.location.pathname);
+    document.addEventListener('DOMContentLoaded', function() {
+      setStep('step3');
+      var sub = document.getElementById('step3-sub');
+      if (sub) sub.textContent = 'Pagamento recebido! Verifique seu e-mail para o acesso.';
+    });
+  }
+})();
 
 // ── Masks ──
 document.getElementById('f-cpf').addEventListener('input', function(e) {
@@ -420,33 +525,7 @@ document.getElementById('f-phone').addEventListener('input', function(e) {
   v = v.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d{4})/,'$1-$2');
   e.target.value = v;
 });
-document.getElementById('c-number').addEventListener('input', function(e) {
-  var v = e.target.value.replace(/\D/g,'').substring(0,16);
-  v = v.replace(/(\d{4})(?=\d)/g,'$1 ');
-  e.target.value = v;
-  detectCardBrand(v.replace(/\s/g,''));
-});
-document.getElementById('c-expiry').addEventListener('input', function(e) {
-  var v = e.target.value.replace(/\D/g,'').substring(0,4);
-  if (v.length >= 3) v = v.substring(0,2) + '/' + v.substring(2);
-  e.target.value = v;
-});
-document.getElementById('c-cvv').addEventListener('input', function(e) {
-  e.target.value = e.target.value.replace(/\D/g,'').substring(0,4);
-});
-document.getElementById('c-name').addEventListener('input', function(e) {
-  e.target.value = e.target.value.toUpperCase();
-});
-
-function detectCardBrand(num) {
-  var el = document.getElementById('card-brand');
-  if (!num) { el.textContent = ''; el.className = 'card-brand'; return; }
-  if (/^4/.test(num)) { el.textContent = 'VISA'; el.className = 'card-brand visa'; }
-  else if (/^5[1-5]/.test(num) || /^2[2-7]/.test(num)) { el.textContent = 'MC'; el.className = 'card-brand mastercard'; }
-  else if (/^3[47]/.test(num)) { el.textContent = 'AMEX'; el.className = 'card-brand'; }
-  else if (/^6/.test(num)) { el.textContent = 'ELO'; el.className = 'card-brand elo'; }
-  else { el.textContent = ''; el.className = 'card-brand'; }
-}
+// Campos de cartão removidos — checkout via InfinitePay (redirect)
 
 function selectMethod(m) {
   paymentMethod = m;
@@ -458,11 +537,13 @@ function selectInstall(el, n) {
   selectedInstallments = n;
   document.querySelectorAll('.install-opt').forEach(function(b){b.classList.remove('active')});
   el.classList.add('active');
-  var prices = {1:'117,00', 2:'58,50', 3:'39,00'};
-  document.getElementById('card-price-label').textContent = prices[n] || '117,00';
+  var inst = OFFERS[currentOffer].installments[n];
+  var lbl = n === 1 ? OFFERS[currentOffer].amount + ',00' : inst.val.replace('R$','').replace('/mes','');
+  document.getElementById('card-price-label').textContent = lbl;
 }
 
 function setStep(s) {
+  currentStep = s;
   ['step1','step2-pix','step2-card','step2-processing','step3'].forEach(function(id){
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
@@ -505,7 +586,76 @@ async function handleContinue() {
   if (paymentMethod === 'pix') {
     await submitPix();
   } else {
+    // Reseta para 1x ao entrar no step2-card
+    selectedInstallments = 1;
+    var priceEl = document.getElementById('card-summary-price');
+    if (priceEl) priceEl.textContent = OFFERS[currentOffer].displayFull;
+    renderCardInstallmentsInfo();
     setStep('step2-card');
+  }
+}
+
+function renderCardInstallmentsInfo() {
+  var info = document.getElementById('card-installments-info');
+  if (!info) return;
+  var d = OFFERS[currentOffer].installments;
+  info.innerHTML = [1,2,3].map(function(n) {
+    var sel = selectedInstallments === n;
+    return '<button onclick="selectCardInstall(' + n + ')" style="' +
+      'background:' + (sel ? '#e8f0fe' : '#fff') + ';' +
+      'border:' + (sel ? '2px solid var(--bl)' : '1.5px solid #e0e0e0') + ';' +
+      'border-radius:8px;padding:7px 6px;text-align:center;cursor:pointer;font-family:inherit;transition:all .2s;width:100%">' +
+      '<div style="font-size:12px;font-weight:700;color:' + (sel ? 'var(--bl)' : 'var(--dk)') + '">' + d[n].label + '</div>' +
+      '<div style="font-size:10px;color:#444;font-weight:600;margin-top:2px">' + d[n].val + '</div>' +
+      '<div style="font-size:9px;color:#f57c00;font-weight:700;margin-top:2px">' + d[n].fee + '</div>' +
+      '</button>';
+  }).join('');
+}
+
+function selectCardInstall(n) {
+  selectedInstallments = n;
+  renderCardInstallmentsInfo();
+  var priceEl = document.getElementById('card-summary-price');
+  if (priceEl) {
+    var d = OFFERS[currentOffer].installments[n];
+    priceEl.textContent = n === 1 ? OFFERS[currentOffer].displayFull : d.val.replace('/mes', '/mês');
+  }
+}
+
+async function submitInfinitePay() {
+  var btn = document.getElementById('btn-pay-card');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-rounded">hourglass_empty</span> Aguarde...';
+
+  try {
+    var res = await fetch('/api/infinitepay', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        name:         document.getElementById('f-name').value.trim(),
+        email:        document.getElementById('f-email').value.trim(),
+        document:     document.getElementById('f-cpf').value,
+        offerType:    currentOffer,
+        installments: selectedInstallments
+      })
+    });
+
+    var data = await res.json();
+
+    if (!res.ok || !data.url) {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-rounded">open_in_new</span> Continuar para pagamento seguro';
+      toast(data.error || 'Erro ao gerar link. Tente novamente.', true);
+      return;
+    }
+
+    // Redireciona para o checkout InfinitePay
+    window.location.href = data.url;
+
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-rounded">open_in_new</span> Continuar para pagamento seguro';
+    toast('Falha ao conectar. Verifique sua internet.', true);
   }
 }
 
@@ -514,6 +664,9 @@ async function submitPix() {
   btn.disabled = true; btn.textContent = 'Gerando PIX...';
 
   try {
+    // Update PIX display amount
+    document.getElementById('pix-amount-val').textContent = OFFERS[currentOffer].displayFull;
+
     var res = await fetch('/api/pix', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -521,7 +674,8 @@ async function submitPix() {
         name: document.getElementById('f-name').value.trim(),
         email: document.getElementById('f-email').value.trim(),
         document: document.getElementById('f-cpf').value,
-        phone: document.getElementById('f-phone').value
+        phone: document.getElementById('f-phone').value,
+        amount: OFFERS[currentOffer].amount
       })
     });
 
@@ -660,6 +814,7 @@ async function submitCard() {
   var expYear = expParts[1] ? '20' + expParts[1] : '';
 
   try {
+    var instData = OFFERS[currentOffer].installments[selectedInstallments];
     var res = await fetch('/api/card', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
@@ -669,6 +824,8 @@ async function submitCard() {
         document: document.getElementById('f-cpf').value,
         phone: document.getElementById('f-phone').value,
         installments: selectedInstallments,
+        offerType: currentOffer,
+        installmentTotal: instData.total,
         card: {
           number: document.getElementById('c-number').value.replace(/\s/g,''),
           holderName: document.getElementById('c-name').value.trim(),
@@ -712,6 +869,101 @@ function toast(msg, isError) {
   el.className = isError ? 'error-toast' : '';
   el.classList.add('show');
   setTimeout(function(){ el.classList.remove('show'); }, 3500);
+}
+
+// ══════════════════════════════════════
+// EXIT INTENT + DOWNSELL
+// ══════════════════════════════════════
+
+// Desktop: mouse sai do viewport pelo topo (back button, nova aba, fechar)
+document.addEventListener('mouseleave', function(e) {
+  if (!exitIntentShown && currentStep === 'step1') {
+    // relatedTarget === null = cursor saiu da janela; clientY <= 0 = saiu pelo topo
+    if (e.clientY <= 0 || e.relatedTarget === null) {
+      showExitModal();
+    }
+  }
+});
+
+// Mobile / aba oculta: visibilitychange é mais confiável que popstate
+document.addEventListener('visibilitychange', function() {
+  if (document.hidden && !exitIntentShown && currentStep === 'step1') {
+    exitIntentShown = true; // marca antes para não disparar duplo
+    // Quando usuário voltar à aba o modal já estará visível
+    document.getElementById('exit-modal').classList.add('show');
+    startExitCountdown(10 * 60);
+  }
+});
+
+// Back button: intercept com History API (complementa visibilitychange)
+(function() {
+  if (history.state && history.state.exitguard) return; // já foi inserido
+  history.pushState({ exitguard: true }, '');
+  window.addEventListener('popstate', function(e) {
+    if (!exitIntentShown && currentStep === 'step1') {
+      history.pushState({ exitguard: true }, '');
+      showExitModal();
+    }
+  });
+})();
+
+function showExitModal() {
+  if (exitIntentShown) return;
+  exitIntentShown = true;
+  document.getElementById('exit-modal').classList.add('show');
+  startExitCountdown(10 * 60);
+}
+
+function closeExitModal() {
+  document.getElementById('exit-modal').classList.remove('show');
+  if (exitTimerInterval) clearInterval(exitTimerInterval);
+}
+
+function acceptDownsell() {
+  closeExitModal();
+  activateDownsell();
+  toast('Desconto de 43% aplicado com sucesso!');
+}
+
+function activateDownsell() {
+  currentOffer = 'downsell';
+  selectedInstallments = 1;
+
+  // Atualiza price display
+  document.getElementById('price-striked').style.display = 'inline';
+  document.getElementById('product-price-display').textContent = 'R$ 67';
+  document.getElementById('price-sublabel').textContent = '43% OFF — oferta especial';
+  document.getElementById('downsell-banner').classList.add('show');
+
+  // Atualiza PIX display
+  document.getElementById('pix-amount-val').textContent = 'R$ 67,00';
+  var howAmt = document.getElementById('pix-how-amount');
+  if (howAmt) howAmt.textContent = 'R$67,00';
+
+  // Re-renderiza parcelas do cartão (se estiver no step2-card)
+  selectedInstallments = 1;
+  renderCardInstallmentsInfo();
+  var csp = document.getElementById('card-summary-price');
+  if (csp) csp.textContent = 'R$ 67,00';
+
+  // Scroll suave para o formulário
+  var card = document.querySelector('.card');
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function startExitCountdown(seconds) {
+  var end = Date.now() + seconds * 1000;
+  if (exitTimerInterval) clearInterval(exitTimerInterval);
+  exitTimerInterval = setInterval(function() {
+    var rem = Math.max(0, Math.round((end - Date.now()) / 1000));
+    var m = Math.floor(rem / 60), s = rem % 60;
+    var el = document.getElementById('exit-countdown');
+    if (el) el.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    if (rem <= 0) {
+      clearInterval(exitTimerInterval);
+      closeExitModal(); // expirou — fecha sem aceitar
+    }
+  }, 1000);
 }
 </script>
 </body>
