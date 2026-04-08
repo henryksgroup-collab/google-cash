@@ -326,7 +326,8 @@ var SFX=(function(){
     levelup:function(){[523,587,659,784,1047].forEach(function(f,i){setTimeout(function(){tone(f,.1,'sine',.28);},i*70);});},
     error:function(){tone(220,.2,'sawtooth',.12);},
     success:function(){tone(784,.08,'sine',.2);setTimeout(function(){tone(1047,.15,'sine',.2);},90);},
-    mission:function(){[440,659,880].forEach(function(f,i){setTimeout(function(){tone(f,.08,'sine',.18);},i*70);}); }
+    mission:function(){[440,659,880].forEach(function(f,i){setTimeout(function(){tone(f,.08,'sine',.18);},i*70);}); },
+    generate:function(){tone(300,.05,'sine',.1);setTimeout(function(){tone(600,.05,'sine',.15);},80);setTimeout(function(){tone(1200,.18,'sine',.2);},160);}
   };
 })();
 
@@ -343,6 +344,8 @@ var S={
   scriptCopies:parseInt(localStorage.getItem('gc_sc')||'0',10),
   doneMissions:JSON.parse(localStorage.getItem('gc_dm_'+todayKey())||'[]'),
   simDone:localStorage.getItem('gc_simd_'+todayKey())==='1',
+  genHistory:JSON.parse(localStorage.getItem('gc_genh')||'[]'),
+  lgpdOk:localStorage.getItem('gc_lgpd')==='1',
   currentView:'home',
   selectedMod:null
 };
@@ -358,6 +361,7 @@ function save(){
   localStorage.setItem('gc_sc',S.scriptCopies);
   localStorage.setItem('gc_dm_'+todayKey(),JSON.stringify(S.doneMissions));
   if(S.simDone) localStorage.setItem('gc_simd_'+todayKey(),'1');
+  localStorage.setItem('gc_genh',JSON.stringify(S.genHistory.slice(0,8)));
 }
 
 var LEVELS=[
@@ -993,7 +997,7 @@ function renderMore(tab){
   _moreTab=tab;
   var el=document.getElementById('s-more');
   var h='<div class="tabs">';
-  [{v:'scripts',l:'Scripts',i:'msg'},{v:'tools',l:'Ferramentas',i:'search'},{v:'prompts',l:'Prompts IA',i:'bot'}].forEach(function(t){
+  [{v:'scripts',l:'Scripts',i:'msg'},{v:'tools',l:'Ferramentas',i:'search'},{v:'prompts',l:'Prompts IA',i:'bot'},{v:'criativos',l:'Criativos IA',i:'image'}].forEach(function(t){
     var a=tab===t.v;
     h+='<button class="tab'+(a?' a':'')+'" style="'+(a?'border-color:#1a73e850;background:#e8f0fe;color:#1a73e8':'color:#888')+'" onclick="renderMore(\''+t.v+'\')">'+svg(t.i,'13',a?'#1a73e8':'#aaa')+' '+t.l+'</button>';
   });
@@ -1033,7 +1037,132 @@ function renderMore(tab){
     });
   }
 
+  if(tab==='criativos'){
+    var nichos=[
+      {l:'Barbearia',p:'barbershop storefront professional advertisement, modern barber pole, men grooming, dark elegant'},
+      {l:'Restaurante',p:'restaurant food advertisement professional, gourmet meal, warm lighting, appetizing'},
+      {l:'Clínica',p:'medical clinic professional advertisement, clean white interior, health wellness, trust'},
+      {l:'Pet Shop',p:'pet shop advertisement cute dog cat, colorful professional, happy animals, bright'},
+      {l:'Academia',p:'gym fitness advertisement motivational, dumbbells, athlete training, dark powerful'},
+      {l:'Salão de Beleza',p:'beauty salon advertisement elegant, hair styling, makeup, glamour, pink gold'},
+      {l:'Farmácia',p:'pharmacy advertisement professional, medicine health, clean blue white, trust care'},
+      {l:'Pizzaria',p:'pizza restaurant advertisement delicious, wood fired pizza, italian style, warm red'},
+      {l:'Escola',p:'school education advertisement professional, children learning, bright colorful, inspiring'},
+      {l:'Advocacia',p:'law firm advertisement professional, scales justice, dark navy gold, serious trust'}
+    ];
+    var fmts=[{l:'Instagram (1:1)',w:1080,h:1080},{l:'Stories (9:16)',w:1080,h:1920},{l:'Capa (16:9)',w:1920,h:1080},{l:'Facebook (4:3)',w:1200,h:900}];
+    var estilos=[{l:'Profissional',p:'professional corporate clean minimal'},{l:'Vibrante',p:'vibrant colorful energetic bold'},{l:'Elegante',p:'elegant luxury premium sophisticated'},{l:'Moderno',p:'modern futuristic gradient tech'},{l:'Natural',p:'natural organic earthy warm authentic'}];
+
+    h+='<div style="margin-bottom:14px"><p style="font-size:13px;color:#888;margin:0 0 10px">Gere imagens de anuncio com IA. 100% gratuito, sem limite.</p>';
+
+    h+='<p class="slbl">Nicho do cliente</p><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">';
+    nichos.forEach(function(n,i){
+      h+='<button onclick="gcSetNicho('+i+')" id="gn'+i+'" style="padding:5px 10px;border-radius:20px;border:.5px solid #e8e8e8;font-size:12px;cursor:pointer;background:#f8f9fa;color:#444;transition:all .2s">'+n.l+'</button>';
+    });
+    h+='</div>';
+
+    h+='<p class="slbl">Formato</p><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">';
+    fmts.forEach(function(f,i){
+      h+='<button onclick="gcSetFmt('+i+')" id="gf'+i+'" style="padding:5px 10px;border-radius:20px;border:.5px solid #e8e8e8;font-size:12px;cursor:pointer;background:'+(i===0?'#e8f0fe':'#f8f9fa')+';color:'+(i===0?'#1a73e8':'#444')+';border-color:'+(i===0?'#1a73e8':'#e8e8e8')+';transition:all .2s">'+f.l+'</button>';
+    });
+    h+='</div>';
+
+    h+='<p class="slbl">Estilo visual</p><div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">';
+    estilos.forEach(function(e,i){
+      h+='<button onclick="gcSetEstilo('+i+')" id="ge'+i+'" style="padding:5px 10px;border-radius:20px;border:.5px solid #e8e8e8;font-size:12px;cursor:pointer;background:'+(i===0?'#e8f0fe':'#f8f9fa')+';color:'+(i===0?'#1a73e8':'#444')+';border-color:'+(i===0?'#1a73e8':'#e8e8e8')+';transition:all .2s">'+e.l+'</button>';
+    });
+    h+='</div>';
+
+    h+='<p class="slbl">Detalhe adicional (opcional)</p>';
+    h+='<input id="gc-custom-prompt" type="text" placeholder="Ex: fundo preto, logo branca, promocao de verao..." style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:10px;border:.5px solid #e8e8e8;font-size:13px;margin-bottom:10px;outline:none;font-family:inherit">';
+    h+='<button onclick="gcGerar()" style="width:100%;padding:13px;background:#1a73e8;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px">'+svg('image','14','#fff')+' Gerar Criativo com IA</button></div>';
+
+    h+='<div id="gc-result" style="margin-top:12px"></div>';
+
+    if(S.genHistory.length>0){
+      h+='<p class="slbl" style="margin-top:16px">'+svg('target','12','#1a73e8')+' Ultimos gerados</p>';
+      h+='<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px">';
+      S.genHistory.slice(0,6).forEach(function(u){
+        h+='<a href="'+u+'" target="_blank" download style="flex-shrink:0"><img src="'+u+'" style="width:80px;height:80px;object-fit:cover;border-radius:10px;border:.5px solid #e8e8e8"></a>';
+      });
+      h+='</div>';
+    }
+  }
+
   el.innerHTML=h;
+
+  if(tab==='criativos'){
+    window._gcNichos=nichos;
+    window._gcFmts=fmts;
+    window._gcEstilos=estilos;
+    window._gcSelN=null;
+    window._gcSelF=0;
+    window._gcSelE=0;
+  }
+}
+
+var _gcNichos,_gcFmts,_gcEstilos;
+window._gcSelN=null;window._gcSelF=0;window._gcSelE=0;
+
+function gcSetNicho(i){
+  window._gcSelN=i;
+  document.querySelectorAll('[id^="gn"]').forEach(function(b,j){
+    b.style.background=j===i?'#e8f0fe':'#f8f9fa';
+    b.style.color=j===i?'#1a73e8':'#444';
+    b.style.borderColor=j===i?'#1a73e8':'#e8e8e8';
+  });
+  SFX.click();
+}
+function gcSetFmt(i){
+  window._gcSelF=i;
+  document.querySelectorAll('[id^="gf"]').forEach(function(b,j){
+    b.style.background=j===i?'#e8f0fe':'#f8f9fa';
+    b.style.color=j===i?'#1a73e8':'#444';
+    b.style.borderColor=j===i?'#1a73e8':'#e8e8e8';
+  });
+  SFX.click();
+}
+function gcSetEstilo(i){
+  window._gcSelE=i;
+  document.querySelectorAll('[id^="ge"]').forEach(function(b,j){
+    b.style.background=j===i?'#e8f0fe':'#f8f9fa';
+    b.style.color=j===i?'#1a73e8':'#444';
+    b.style.borderColor=j===i?'#1a73e8':'#e8e8e8';
+  });
+  SFX.click();
+}
+function gcGerar(){
+  var nichos=window._gcNichos||[];
+  var fmts=window._gcFmts||[];
+  var estilos=window._gcEstilos||[];
+  var ni=window._gcSelN;
+  var fi=window._gcSelF||0;
+  var ei=window._gcSelE||0;
+  var fmt=fmts[fi]||fmts[0];
+  var estilo=estilos[ei]||estilos[0];
+  var custom=(document.getElementById('gc-custom-prompt')||{}).value||'';
+  var basePrompt=ni!==null&&nichos[ni]?nichos[ni].p:'professional business advertisement local store';
+  var fullPrompt=[basePrompt,estilo.p,custom,'photorealistic high quality 4k advertisement poster','text-free no text','--no watermark logo text'].filter(Boolean).join(', ');
+  var seed=Math.floor(Math.random()*999999);
+  var url='https://image.pollinations.ai/prompt/'+encodeURIComponent(fullPrompt)+'?width='+fmt.w+'&height='+fmt.h+'&model=flux&nologo=true&seed='+seed;
+  var res=document.getElementById('gc-result');
+  if(!res)return;
+  SFX.generate();
+  res.innerHTML='<div style="text-align:center;padding:30px 0"><div style="width:32px;height:32px;border:3px solid #e8e8e8;border-top-color:#1a73e8;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px"></div><p style="font-size:13px;color:#888">Gerando criativo... aguarde 15-30s</p></div>';
+  var img=new Image();
+  img.onload=function(){
+    SFX.success();
+    addXP(25,'Criativo gerado!');
+    S.genHistory.unshift(url);
+    save();
+    var aspectStyle=fmt.w>fmt.h?'width:100%;height:auto':'width:100%;height:auto;max-height:500px;object-fit:contain';
+    res.innerHTML='<div style="border-radius:14px;overflow:hidden;border:.5px solid #e8e8e8;margin-bottom:10px"><img src="'+url+'" style="'+aspectStyle+';display:block;width:100%"></div><div style="display:flex;gap:8px"><a href="'+url+'" target="_blank" download="criativo-gcash.jpg" style="flex:1;padding:11px;background:#1a73e8;color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:700;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px">'+svg('image','13','#fff')+' Baixar</a><button onclick="gcGerar()" style="flex:1;padding:11px;background:#f8f9fa;color:#1a73e8;border:.5px solid #1a73e8;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">'+svg('zap','13','#1a73e8')+' Gerar outro</button></div>';
+  };
+  img.onerror=function(){
+    SFX.error();
+    res.innerHTML='<div class="cd" style="text-align:center;padding:20px"><p style="color:#ea4335;font-size:13px">Erro ao gerar. Tente novamente ou escolha outro nicho.</p><button onclick="gcGerar()" style="margin-top:10px;padding:10px 20px;background:#1a73e8;color:#fff;border:none;border-radius:10px;font-size:13px;cursor:pointer">Tentar de novo</button></div>';
+  };
+  img.src=url;
 }
 
 function copyScript(id){
@@ -1055,10 +1184,33 @@ function copyPrompt(pid,text){
   if(btn){btn.classList.add('done');btn.innerHTML=svg('check','13','#188038')+' Copiado';setTimeout(function(){btn.classList.remove('done');btn.innerHTML=svg('copy','13','#666')+' Copiar prompt completo';},2000);}
 }
 
+/* ═══════ LGPD ═══════ */
+function showLGPD(){
+  if(S.lgpdOk)return;
+  var d=document.createElement('div');
+  d.id='lgpd-banner';
+  d.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:448px;background:#202124;color:#fff;border-radius:16px;padding:16px;z-index:100;box-shadow:0 8px 32px rgba(0,0,0,.4)';
+  d.innerHTML='<div style="display:flex;gap:12px;align-items:flex-start"><div style="flex:1"><p style="margin:0 0 4px;font-size:13px;font-weight:700">Privacidade e LGPD</p><p style="margin:0 0 10px;font-size:12px;color:#bbb;line-height:1.5">Este app usa localStorage para salvar seu progresso localmente. Nenhum dado pessoal e enviado a servidores. Ao continuar voce aceita nossa politica de privacidade.</p><div style="display:flex;gap:8px"><button onclick="aceitarLGPD()" style="padding:8px 16px;background:#1a73e8;color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">Aceitar</button><a href="#" onclick="mostrarTermos();return false" style="padding:8px 12px;background:transparent;color:#bbb;font-size:12px;text-decoration:none;display:inline-block">Ver termos</a></div></div></div>';
+  document.body.appendChild(d);
+}
+function aceitarLGPD(){
+  S.lgpdOk=true;
+  localStorage.setItem('gc_lgpd','1');
+  var b=document.getElementById('lgpd-banner');
+  if(b)b.remove();
+}
+function mostrarTermos(){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end';
+  d.innerHTML='<div style="background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 32px;width:100%;max-height:80vh;overflow-y:auto"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><h2 style="margin:0;font-size:16px;color:#202124">Termos de Uso e Privacidade</h2><button onclick="this.closest(\'div[style*=inset]\').remove()" style="background:none;border:none;cursor:pointer;padding:4px">'+svg('x','18','#666')+'</button></div><p style="font-size:13px;color:#444;line-height:1.7"><strong>1. Dados locais:</strong> Todo o progresso (XP, clientes, notas) fica salvo apenas no seu dispositivo via localStorage. Nao armazenamos dados em servidores.<br><br><strong>2. Geracao de imagens:</strong> Prompts enviados ao Pollinations.AI sao processados por servicos terceiros. Nao inclua dados pessoais nos prompts.<br><br><strong>3. Pagamento:</strong> Processado pela InfinitePay com criptografia SSL. Nao armazenamos dados de cartao.<br><br><strong>4. Uso comercial:</strong> O conteudo deste app e exclusivo para membros. Redistribuicao e proibida.<br><br><strong>5. LGPD:</strong> Em conformidade com a Lei 13.709/2018. Para solicitar exclusao de dados ou esclarecimentos: henryksgroup@gmail.com</p><button onclick="aceitarLGPD();this.closest(\'div[style*=inset]\').remove()" style="width:100%;margin-top:16px;padding:14px;background:#1a73e8;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">Entendido — Aceitar</button></div>';
+  document.body.appendChild(d);
+}
+
 /* ═══════ INIT ═══════ */
 function initApp(){
   updateHeader();
   renderHome();
+  setTimeout(showLGPD,1500);
 }
 </script>
 </body>

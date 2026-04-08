@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "description": "Persistent knowledge graph memory — lembra de tudo sobre clientes e o projeto"
+    },
+    "fetch": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-fetch"],
+      "description": "Faz requisicoes HTTP — busca precos, verifica sites de clientes, scraping leve"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\craft\\Desktop\\Google Cash"
+      ],
+      "description": "Acesso ao sistema de arquivos do projeto"
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"],
+      "description": "Documentacao atualizada de qualquer biblioteca — zero hallucination"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp"],
+      "description": "Automacao de browser — testa o app, scraping, screenshots automaticos"
+    }
+  }
+}
