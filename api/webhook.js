@@ -1,4 +1,6 @@
-/* Recebe webhook da Duckfy → atualiza Redis → envia push */
+/* Recebe webhook da Duckfy → atualiza Redis → concede creditos → envia push */
+const crypto = require('crypto');
+
 let redis;
 function getRedis() {
   if (!redis && process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
@@ -6,6 +8,31 @@ function getRedis() {
     redis = Redis.fromEnv();
   }
   return redis;
+}
+
+// Gera ou recupera token de acesso para o email
+async function getOrCreateUserToken(db, email) {
+  if (!db || !email) return null;
+  const emailKey = `gc:token:email:${email.toLowerCase().trim()}`;
+  let token = await db.get(emailKey);
+  if (!token) {
+    token = crypto.randomBytes(16).toString('hex');
+    await db.set(emailKey, token);
+    await db.set(`gc:email:${token}`, email.toLowerCase().trim());
+  }
+  return token;
+}
+
+// Concede creditos starter ao usuario (idempotente)
+async function grantStarterCredits(db, userToken) {
+  if (!db || !userToken) return;
+  const credKey = `gc:credits:${userToken}`;
+  const exists = await db.get(credKey);
+  if (!exists) {
+    await db.set(credKey, 50);
+    await db.set(`gc:plan:${userToken}`, 'starter');
+    console.log('[WEBHOOK] Creditos starter concedidos para token:', userToken.slice(0, 8) + '...');
+  }
 }
 
 let wp;
@@ -38,12 +65,13 @@ module.exports = async (req, res) => {
 
     if (db && transaction.id) {
       try {
+        const email = transaction.customer?.email || '';
         // Atualiza transação
         await db.hset(`tx:${transaction.id}`, {
           status: 'COMPLETED',
           paidAt: Date.now(),
           name: buyer,
-          email: transaction.customer?.email || '',
+          email,
           amount
         });
         // Garante que está na lista (pode ter vindo direto pelo webhook)
@@ -53,6 +81,18 @@ module.exports = async (req, res) => {
         await db.incr('stats:totalSales');
         await db.incrbyfloat('stats:totalRevenue', amount);
         await db.incr('funnel:CheckoutClicked');
+
+        // ── CONCEDE CREDITOS STARTER ──
+        // Tenta recuperar userToken ja vinculado a esta tx
+        const txData = await db.hgetall(`tx:${transaction.id}`);
+        let userToken = txData?.userToken || null;
+        // Se nao tem token na tx, gera/recupera pelo email
+        if (!userToken && email) {
+          userToken = await getOrCreateUserToken(db, email);
+          // Atualiza tx com o token
+          await db.hset(`tx:${transaction.id}`, { userToken });
+        }
+        await grantStarterCredits(db, userToken);
       } catch (e) {
         console.error('[WEBHOOK] Redis error:', e);
       }

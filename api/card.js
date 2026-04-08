@@ -1,4 +1,6 @@
 /* Cria cobrança de Cartão de Crédito via TriboPay */
+const crypto = require('crypto');
+
 let redis;
 function getRedis() {
   if (!redis && process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
@@ -6,6 +8,19 @@ function getRedis() {
     redis = Redis.fromEnv();
   }
   return redis;
+}
+
+// Gera ou recupera token de acesso unico para este email
+async function getOrCreateUserToken(db, email) {
+  if (!db || !email) return null;
+  const emailKey = `gc:token:email:${email.toLowerCase().trim()}`;
+  let token = await db.get(emailKey);
+  if (!token) {
+    token = crypto.randomBytes(16).toString('hex');
+    await db.set(emailKey, token);
+    await db.set(`gc:email:${token}`, email.toLowerCase().trim());
+  }
+  return token;
 }
 
 // Ofertas TriboPay — Google Cash
@@ -117,7 +132,9 @@ module.exports = async (req, res) => {
 
     // Persiste no Redis
     const db = getRedis();
+    let userToken = null;
     if (db && txId) {
+      userToken = await getOrCreateUserToken(db, email);
       const tx = {
         id:        txId,
         name,
@@ -127,13 +144,23 @@ module.exports = async (req, res) => {
         status:    normalizedStatus,
         method:    'card',
         createdAt: Date.now(),
-        paidAt:    normalizedStatus === 'COMPLETED' ? Date.now() : null
+        paidAt:    normalizedStatus === 'COMPLETED' ? Date.now() : null,
+        userToken: userToken || ''
       };
       await db.hset(`tx:${txId}`, tx);
       await db.lpush('tx:list', txId);
       await db.ltrim('tx:list', 0, 999);
       if (normalizedStatus === 'COMPLETED') {
         await db.incr('funnel:CheckoutClicked');
+        // Credita imediatamente se aprovado na hora (cartao)
+        if (userToken) {
+          const credKey = `gc:credits:${userToken}`;
+          const exists = await db.get(credKey);
+          if (!exists) {
+            await db.set(credKey, 50);
+            await db.set(`gc:plan:${userToken}`, 'starter');
+          }
+        }
       } else {
         await db.incr('funnel:CheckoutStarted');
       }
@@ -142,6 +169,7 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       transactionId: txId,
       status:        normalizedStatus,
+      userToken,    // enviado ao front para mostrar token de acesso
       raw:           data
     });
 

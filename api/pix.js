@@ -1,4 +1,6 @@
 /* Cria cobrança PIX via Duckfy */
+const crypto = require('crypto');
+
 let redis;
 function getRedis() {
   if (!redis && process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
@@ -6,6 +8,19 @@ function getRedis() {
     redis = Redis.fromEnv();
   }
   return redis;
+}
+
+// Gera ou recupera token de acesso unico para este email
+async function getOrCreateUserToken(db, email) {
+  if (!db || !email) return null;
+  const emailKey = `gc:token:email:${email.toLowerCase().trim()}`;
+  let token = await db.get(emailKey);
+  if (!token) {
+    token = crypto.randomBytes(16).toString('hex');
+    await db.set(emailKey, token);
+    await db.set(`gc:email:${token}`, email.toLowerCase().trim()); // reverso: token → email
+  }
+  return token;
 }
 
 module.exports = async (req, res) => {
@@ -66,7 +81,9 @@ module.exports = async (req, res) => {
 
     // Persiste no Redis
     const db = getRedis();
+    let userToken = null;
     if (db && data.transactionId) {
+      userToken = await getOrCreateUserToken(db, email);
       const tx = {
         id: data.transactionId,
         identifier,
@@ -75,7 +92,8 @@ module.exports = async (req, res) => {
         amount,
         isDownsell,
         status: 'PENDING',
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        userToken: userToken || ''
       };
       await db.hset(`tx:${data.transactionId}`, tx);
       await db.lpush('tx:list', data.transactionId);
@@ -86,7 +104,8 @@ module.exports = async (req, res) => {
     return res.status(200).json({
       transactionId: data.transactionId,
       pix: data.pix,
-      identifier
+      identifier,
+      userToken  // enviado ao front para exibir apos confirmacao
     });
 
   } catch (err) {

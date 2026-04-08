@@ -363,6 +363,7 @@ var S={
   aiKey:localStorage.getItem('gc_aikey')||'',
   aiProvider:localStorage.getItem('gc_aiprov')||'groq',
   plan:localStorage.getItem('gc_plan')||'starter',
+  userToken:localStorage.getItem('gc_utoken')||'',
   completedMods:JSON.parse(localStorage.getItem('gc_cm')||'[]'),
   clients:JSON.parse(localStorage.getItem('gc_cl')||'[]'),
   notes:JSON.parse(localStorage.getItem('gc_notes')||'[]'),
@@ -393,6 +394,7 @@ function save(){
   if(S.aiKey) localStorage.setItem('gc_aikey',S.aiKey);
   if(S.aiProvider) localStorage.setItem('gc_aiprov',S.aiProvider);
   localStorage.setItem('gc_plan',S.plan);
+  if(S.userToken) localStorage.setItem('gc_utoken',S.userToken);
 }
 
 var LEVELS=[
@@ -1296,6 +1298,25 @@ function renderMore(tab){
       +'<p style="font-size:12px;color:#888;margin:0">Creditos sao usados para funcoes de IA (Analise, Landing Page, etc.)</p>'
       +'</div>';
 
+    /* ── TOKEN DE ACESSO ── */
+    h+='<div class="cd" style="margin-bottom:10px;border-color:'+(S.userToken?'#34a85340':'#ea433540')+'">';
+    if(S.userToken){
+      h+='<p style="font-size:14px;font-weight:700;margin-bottom:6px;color:#34a853">'+svg('check','14','#34a853')+' Token de acesso ativo</p>'
+        +'<div style="background:#f0fdf4;border-radius:8px;padding:10px;margin-bottom:8px;font-family:monospace;font-size:11px;color:#15803d;word-break:break-all">'+S.userToken+'</div>'
+        +'<div style="display:flex;gap:6px">'
+        +'<button onclick="copiarToken()" style="flex:1;padding:9px;background:#34a853;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">Copiar token</button>'
+        +'<button onclick="sincronizarCreditos()" style="flex:1;padding:9px;background:#e8f0fe;color:#1a73e8;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">Sincronizar creditos</button>'
+        +'</div>'
+        +'<p style="font-size:11px;color:#aaa;margin-top:6px">Guarde este token. Ele da acesso aos seus creditos em qualquer dispositivo.</p>';
+    } else {
+      h+='<p style="font-size:14px;font-weight:700;margin-bottom:6px">'+svg('zap','14','#ea4335')+' Ative seus creditos</p>'
+        +'<p style="font-size:12px;color:#555;margin-bottom:10px;line-height:1.6">Se voce ja comprou o Google Cash, digite o e-mail da compra para recuperar seu token de acesso e ativar seus 50 creditos iniciais.</p>'
+        +'<input id="acesso-email" class="inp mb" type="email" placeholder="seu@email.com (e-mail da compra)">'
+        +'<button onclick="recuperarAcesso()" class="btn-primary" style="background:#34a853">'+svg('zap','14','#fff')+' Recuperar meu acesso</button>'
+        +'<div id="acesso-res" style="margin-top:8px"></div>';
+    }
+    h+='</div>';
+
     /* Chave de IA do usuario */
     h+='<div class="cd" style="margin-bottom:10px">'
       +'<p style="font-size:14px;font-weight:700;margin-bottom:4px">'+svg('zap','14','#34a853')+' Sua Chave de IA (Gratis)</p>'
@@ -1545,6 +1566,7 @@ function rodarAnalise(){
   if(S.credits<10&&!S.aiKey){res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="font-size:13px;font-weight:700;color:#ea4335;margin-bottom:8px">Creditos insuficientes</p><p style="font-size:12px;color:#555;margin-bottom:10px">Voce precisa de 10 creditos ou sua propria chave Groq gratuita.</p><button onclick="nav(\'more\');setTimeout(function(){renderMore(\'setup\');},50)" style="padding:10px 16px;background:#1a73e8;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Ver Planos e Configurar</button></div>';btn.disabled=false;btn.innerHTML=svg('cpu','14','#fff')+' Analisar com IA';return;}
   var iaHeaders={'Content-Type':'application/json'};
   if(S.aiKey){iaHeaders['x-api-key']=S.aiKey;iaHeaders['x-ai-provider']=S.aiProvider;}
+  if(S.userToken) iaHeaders['x-user-token']=S.userToken;
   fetch('/api/ia?action=analisar',{method:'POST',headers:iaHeaders,body:JSON.stringify({nome:nome,segmento:seg,cidade:cidade,problema:prob})})
   .then(function(r){return r.json();})
   .then(function(d){
@@ -1613,6 +1635,7 @@ function gerarLanding(){
   if(S.credits<15&&!S.aiKey){res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="font-size:13px;font-weight:700;color:#ea4335;margin-bottom:8px">Creditos insuficientes (precisa 15)</p><button onclick="nav(\'more\');setTimeout(function(){renderMore(\'setup\');},50)" style="padding:10px 16px;background:#1a73e8;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Ver Planos</button></div>';btn.disabled=false;btn.innerHTML=svg('layout','14','#fff')+' Gerar Landing Page';return;}
   var iaHdrs={'Content-Type':'application/json'};
   if(S.aiKey){iaHdrs['x-api-key']=S.aiKey;iaHdrs['x-ai-provider']=S.aiProvider;}
+  if(S.userToken) iaHdrs['x-user-token']=S.userToken;
   fetch('/api/ia?action=landing',{method:'POST',headers:iaHdrs,body:JSON.stringify({negocio:nome,segmento:seg,cidade:cidade,whatsapp:wa,servicos:servicos,cor:cor})})
   .then(function(r){return r.json();})
   .then(function(d){
@@ -1689,6 +1712,51 @@ function abrirWADireto(encoded){
 }
 
 /* ═══════ SETUP IA ═══════ */
+function recuperarAcesso(){
+  var email=(document.getElementById('acesso-email')||{}).value||'';
+  var res=document.getElementById('acesso-res');
+  if(!email||!email.includes('@')){if(res)res.innerHTML='<p style="font-size:12px;color:#ea4335">Digite um e-mail valido.</p>';return;}
+  if(res)res.innerHTML='<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#888"><div style="width:14px;height:14px;border:2px solid #e8e8e8;border-top-color:#34a853;border-radius:50%;animation:spin .8s linear infinite"></div>Buscando...</div>';
+  fetch('/api/acesso',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.ok&&d.token){
+      S.userToken=d.token;
+      S.credits=d.credits||50;
+      S.plan=d.plan||'starter';
+      save();
+      SFX.levelup();
+      addXP(20,'Acesso ativado!');
+      renderMore('setup');
+    } else {
+      if(res)res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">'+(d.error||'E-mail nao encontrado')+'</p>'+(d.dica?'<p style="font-size:11px;color:#888;margin:4px 0 0">'+d.dica+'</p>':'')+'</div>';
+    }
+  })
+  .catch(function(){if(res)res.innerHTML='<p style="font-size:12px;color:#ea4335">Erro de conexao. Tente novamente.</p>';});
+}
+
+function copiarToken(){
+  try{navigator.clipboard.writeText(S.userToken);}catch(e){}
+  SFX.success();
+}
+
+function sincronizarCreditos(){
+  if(!S.userToken){alert('Token nao encontrado. Recupere seu acesso primeiro.');return;}
+  fetch('/api/credits?token='+S.userToken)
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.ok){
+      S.credits=d.credits;
+      S.plan=d.plan||S.plan;
+      save();
+      updateHeader();
+      SFX.success();
+      renderMore('setup');
+    }
+  })
+  .catch(function(){});
+}
+
 function salvarChaveIA(){
   var key=(document.getElementById('ai-key-input')||{}).value||'';
   var prov=(document.getElementById('ai-prov')||{}).value||'groq';
