@@ -66,10 +66,33 @@ html,body{height:100%;overflow-x:hidden;background:#f5f5f5;font-family:-apple-sy
 .micn svg{width:18px;height:18px}
 
 /* TABS */
-.tabs{display:flex;gap:6px;margin-bottom:14px}
-.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 6px;border-radius:8px;font-size:12px;cursor:pointer;border:.5px solid rgba(0,0,0,.1);background:#fff;color:#888;font-weight:500;transition:all .15s;font-family:inherit}
-.tab svg{width:13px;height:13px}
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 10px;border-radius:8px;font-size:11.5px;cursor:pointer;border:.5px solid rgba(0,0,0,.1);background:#fff;color:#888;font-weight:500;transition:all .15s;font-family:inherit;white-space:nowrap}
+.tab svg{width:12px;height:12px;flex-shrink:0}
 .tab.a{font-weight:700}
+/* ROI CALC */
+.roi-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:.5px solid #f0f0f0;font-size:13px}
+.roi-val{font-weight:700;color:#1a73e8}
+.roi-green{color:#34a853}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-box{background:#f8f9fa;border-radius:10px;padding:12px;text-align:center}
+.stat-num{font-size:22px;font-weight:800;color:#1a73e8;line-height:1.1}
+.stat-lbl{font-size:11px;color:#888;margin-top:2px}
+.prospect-card{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;padding:14px;margin-bottom:8px}
+.btn-primary{width:100%;padding:13px;background:#1a73e8;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .15s}
+.btn-primary:active{opacity:.85}
+.btn-sec{width:100%;padding:11px;background:#f8f9fa;color:#1a73e8;border:.5px solid #1a73e8;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-sec:active{opacity:.8}
+.result-box{background:#f8f9fa;border-radius:12px;padding:14px;margin-top:12px;font-size:13px;color:#202124;line-height:1.6}
+.score-ring{width:80px;height:80px;border-radius:50%;background:conic-gradient(#1a73e8 var(--p), #e8eaed var(--p));display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+.score-inner{width:62px;height:62px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.wa-float-btn{display:flex;align-items:center;gap:8px;padding:12px 16px;background:#25D366;color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;justify-content:center}
+.channel-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid #f0f0f0}
+.channel-badge{padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700}
+.badge-alta{background:#fce8e6;color:#ea4335}
+.badge-media{background:#fef7e0;color:#f9ab00}
+.badge-baixa{background:#e6f4ea;color:#34a853}
 
 /* QUIZ */
 .qopt{display:flex;align-items:center;gap:11px;padding:11px 14px;border:.5px solid rgba(0,0,0,.08);border-radius:8px;margin-bottom:8px;cursor:pointer;background:#fff;transition:all .15s;font-family:inherit;width:100%;text-align:left}
@@ -997,7 +1020,7 @@ function renderMore(tab){
   _moreTab=tab;
   var el=document.getElementById('s-more');
   var h='<div class="tabs">';
-  [{v:'scripts',l:'Scripts',i:'msg'},{v:'tools',l:'Ferramentas',i:'search'},{v:'prompts',l:'Prompts IA',i:'bot'},{v:'criativos',l:'Criativos IA',i:'image'}].forEach(function(t){
+  [{v:'scripts',l:'Scripts',i:'msg'},{v:'tools',l:'Ferramentas',i:'search'},{v:'prompts',l:'Prompts IA',i:'bot'},{v:'criativos',l:'Criativos',i:'image'},{v:'anuncios',l:'Anuncios',i:'trend'},{v:'prospectar',l:'Prospectar',i:'search'},{v:'analise',l:'Analise IA',i:'cpu'},{v:'landing',l:'Landing Page',i:'layout'},{v:'whatsapp',l:'WhatsApp',i:'msg'}].forEach(function(t){
     var a=tab===t.v;
     h+='<button class="tab'+(a?' a':'')+'" style="'+(a?'border-color:#1a73e850;background:#e8f0fe;color:#1a73e8':'color:#888')+'" onclick="renderMore(\''+t.v+'\')">'+svg(t.i,'13',a?'#1a73e8':'#aaa')+' '+t.l+'</button>';
   });
@@ -1087,6 +1110,162 @@ function renderMore(tab){
       });
       h+='</div>';
     }
+  }
+
+  /* ══ ANUNCIOS ══ */
+  if(tab==='anuncios'){
+    h+='<p style="font-size:13px;color:#888;margin:0 0 14px">Calculadoras e ferramentas para anuncios pagos.</p>';
+
+    /* ROI Calculator */
+    h+='<div class="cd" style="margin-bottom:10px">';
+    h+='<p style="font-size:14px;font-weight:700;color:#202124;margin-bottom:12px">'+svg('trend','14','#1a73e8')+' Calculadora de ROI de Anuncio</p>';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Investimento mensal (R$)</label>';
+    h+='<input id="roi-inv" class="inp mb" type="number" placeholder="500" value="500" oninput="calcROI()">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Custo por clique estimado (R$)</label>';
+    h+='<input id="roi-cpc" class="inp mb" type="number" placeholder="1.50" value="1.50" step="0.01" oninput="calcROI()">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Taxa de conversao do site (%)</label>';
+    h+='<input id="roi-cvr" class="inp mb" type="number" placeholder="3" value="3" step="0.1" oninput="calcROI()">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Ticket medio do cliente (R$)</label>';
+    h+='<input id="roi-ticket" class="inp mb" type="number" placeholder="300" value="300" oninput="calcROI()">';
+    h+='<div id="roi-result" style="margin-top:12px"></div></div>';
+
+    /* Plataformas */
+    h+='<p class="slbl" style="margin-top:4px">Plataformas de anuncio</p>';
+    var plats=[
+      {n:'Google Ads',url:'https://ads.google.com',c:'#1a73e8',desc:'Anuncios de busca e display local',ic:'search'},
+      {n:'Meta Ads',url:'https://business.facebook.com',c:'#1877f2',desc:'Facebook + Instagram — melhor para B2C local',ic:'meta'},
+      {n:'TikTok Ads',url:'https://ads.tiktok.com',c:'#000',desc:'Melhor alcance organico + pago para jovens',ic:'video'},
+      {n:'Google Meu Negocio',url:'https://business.google.com',c:'#ea4335',desc:'Aparecer no Maps — gratis e essencial',ic:'pin'},
+      {n:'Gestor de Anuncios Meta',url:'https://www.facebook.com/adsmanager',c:'#1877f2',desc:'Criar e otimizar campanhas Facebook/IG',ic:'bar'}
+    ];
+    plats.forEach(function(p){
+      h+='<a href="'+p.url+'" target="_blank" class="tool-link"><div style="width:36px;height:36px;min-width:36px;border-radius:8px;background:'+p.c+'18;display:flex;align-items:center;justify-content:center">'+svg(p.ic,'16',p.c)+'</div><div class="flex1"><p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#202124">'+p.n+'</p><p style="margin:0;font-size:12px;color:#888">'+p.desc+'</p></div>'+svg('link','13','#ccc')+'</a>';
+    });
+
+    /* Estrategia por orcamento */
+    h+='<div class="cd" style="margin-top:10px"><p style="font-size:13px;font-weight:700;margin-bottom:10px">'+svg('zap','13','#f9ab00')+' Estrategia por orcamento</p>';
+    [{orcamento:'Ate R$300/mes',foco:'Google Meu Negocio (gratis) + 1 campanha Google Ads local',canal:'Google'},{orcamento:'R$300-800/mes',foco:'Google Ads local + Meta Ads com retargeting',canal:'Google + Meta'},{orcamento:'R$800-2000/mes',foco:'Google + Meta + TikTok + remarketing completo',canal:'Multicanal'},{orcamento:'R$2000+/mes',foco:'Multicanal + automacao + criativo profissional semanal',canal:'Full Stack'}].forEach(function(e){
+      h+='<div style="padding:8px 0;border-bottom:.5px solid #f0f0f0"><p style="font-size:12px;font-weight:700;color:#1a73e8;margin:0 0 2px">'+e.orcamento+'</p><p style="font-size:12px;color:#555;margin:0">'+e.foco+'</p></div>';
+    });
+    h+='</div>';
+  }
+
+  /* ══ PROSPECTAR ══ */
+  if(tab==='prospectar'){
+    h+='<p style="font-size:13px;color:#888;margin:0 0 14px">Ferramentas para encontrar e abordar clientes ideais.</p>';
+
+    /* Meta de prospecção */
+    h+='<div class="cd" style="margin-bottom:10px"><p style="font-size:14px;font-weight:700;color:#202124;margin-bottom:12px">'+svg('target','14','#34a853')+' Calculadora de Meta</p>';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Quantos clientes novos voce quer esse mes?</label>';
+    h+='<input id="p-meta" class="inp mb" type="number" placeholder="3" value="3" oninput="calcProspect()">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Sua taxa de conversao atual (%)</label>';
+    h+='<input id="p-conv" class="inp mb" type="number" placeholder="10" value="10" step="1" oninput="calcProspect()">';
+    h+='<div id="prospect-result"></div></div>';
+
+    /* Gerador de script de abordagem */
+    h+='<div class="cd" style="margin-bottom:10px"><p style="font-size:14px;font-weight:700;margin-bottom:10px">'+svg('msg','14','#1a73e8')+' Script de Abordagem</p>';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Nicho do cliente</label>';
+    var nichosList=['Barbearia','Restaurante','Clinica','Academia','Salao de Beleza','Pet Shop','Pizzaria','Escola','Farmacia','Advocacia','Outro'];
+    h+='<select id="p-nicho" class="inp mb"><option value="">Selecione...</option>';
+    nichosList.forEach(function(n){h+='<option>'+n+'</option>';});
+    h+='</select>';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Nome da empresa (opcional)</label>';
+    h+='<input id="p-nome" class="inp mb" type="text" placeholder="Ex: Barbearia do Joao">';
+    h+='<button onclick="gerarScriptProspect()" class="btn-primary">'+svg('msg','14','#fff')+' Gerar Script</button>';
+    h+='<div id="script-result" style="margin-top:10px"></div></div>';
+
+    /* Checklist */
+    h+='<div class="cd"><p style="font-size:13px;font-weight:700;margin-bottom:10px">'+svg('check','13','#34a853')+' Checklist de Qualificacao</p>';
+    ['Menos de 20 avaliacoes no Google Maps','Perfil sem foto de capa ou galeria','Site ausente ou desatualizado','Instagram com menos de 500 seguidores ou parado','Sem resposta as avaliacoes existentes','Concorrentes aparecem antes no Google','Sem Google Ads rodando','Nao tem WhatsApp Business configurado'].forEach(function(item,i){
+      h+='<div class="chkrow" onclick="toggleCheck(this)"><span id="chkpq'+i+'">'+svg('sq','15','#ccc')+'</span><span style="font-size:13px;color:#444">'+item+'</span></div>';
+    });
+    h+='<div style="margin-top:10px;padding:10px;background:#e8f0fe;border-radius:8px;font-size:12px;color:#1a73e8;font-weight:600">Quanto mais itens marcados = mais urgente e qualificado o prospect</div></div>';
+
+    h+='<p class="slbl" style="margin-top:14px">Ferramentas de prospecção</p>';
+    [{n:'Google Maps — Buscar empresas',url:'https://maps.google.com',c:'#1a73e8',d:'Pesquise nicho + cidade e veja quais tem perfil fraco'},{n:'Instagram — Buscar locais',url:'https://instagram.com/explore/locations',c:'#c13584',d:'Encontre empresas com pouco engajamento'},{n:'LinkedIn Local',url:'https://linkedin.com/search/results/companies',c:'#0077b5',d:'B2B — encontrar socios e decisores'},{n:'Google — Site:',url:'https://google.com/search?q=barbearia+sp+site:instagram.com',c:'#34a853',d:'Encontrar empresas por nicho via busca avancada'}].forEach(function(t){
+      h+='<a href="'+t.url+'" target="_blank" class="tool-link"><div style="width:36px;height:36px;min-width:36px;border-radius:8px;background:'+t.c+'18;display:flex;align-items:center;justify-content:center">'+svg('search','16',t.c)+'</div><div class="flex1"><p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#202124">'+t.n+'</p><p style="margin:0;font-size:12px;color:#888">'+t.d+'</p></div>'+svg('link','13','#ccc')+'</a>';
+    });
+  }
+
+  /* ══ ANALISE IA ══ */
+  if(tab==='analise'){
+    h+='<p style="font-size:13px;color:#888;margin:0 0 14px">Analise a presenca digital de qualquer empresa com IA.</p>';
+    h+='<div class="cd">';
+    h+='<p style="font-size:14px;font-weight:700;margin-bottom:12px">'+svg('cpu','14','#7c3aed')+' Analise de Empresa com IA</p>';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Nome da empresa</label>';
+    h+='<input id="an-nome" class="inp mb" type="text" placeholder="Ex: Barbearia do Joao">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Segmento</label>';
+    h+='<input id="an-seg" class="inp mb" type="text" placeholder="Ex: barbearia, restaurante, clinica...">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Cidade</label>';
+    h+='<input id="an-cidade" class="inp mb" type="text" placeholder="Ex: Sao Paulo SP">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Principal problema (opcional)</label>';
+    h+='<input id="an-prob" class="inp mb" type="text" placeholder="Ex: poucas avaliacoes, sem site...">';
+    h+='<button onclick="rodarAnalise()" class="btn-primary" id="an-btn">'+svg('cpu','14','#fff')+' Analisar com IA</button>';
+    h+='<div id="analise-result" style="margin-top:12px"></div></div>';
+  }
+
+  /* ══ LANDING PAGE ══ */
+  if(tab==='landing'){
+    h+='<p style="font-size:13px;color:#888;margin:0 0 14px">Gere uma landing page profissional completa para seu cliente com IA.</p>';
+    h+='<div class="cd">';
+    h+='<p style="font-size:14px;font-weight:700;margin-bottom:12px">'+svg('layout','14','#ea4335')+' Gerar Landing Page</p>';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Nome do negocio</label>';
+    h+='<input id="lp-nome" class="inp mb" type="text" placeholder="Ex: Barbearia do Joao">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Segmento</label>';
+    h+='<input id="lp-seg" class="inp mb" type="text" placeholder="Ex: barbearia masculina premium">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Cidade</label>';
+    h+='<input id="lp-cidade" class="inp mb" type="text" placeholder="Ex: Sao Paulo SP">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">WhatsApp (so numeros)</label>';
+    h+='<input id="lp-wa" class="inp mb" type="tel" placeholder="11999999999">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Servicos principais</label>';
+    h+='<input id="lp-servicos" class="inp mb" type="text" placeholder="Ex: corte, barba, pigmentacao">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Cor principal</label>';
+    h+='<div style="display:flex;gap:8px;margin-bottom:10px"><input id="lp-cor" class="inp" type="color" value="#1a73e8" style="width:50px;height:40px;padding:2px;cursor:pointer"><span style="font-size:12px;color:#888;line-height:1.4;align-self:center">Escolha a cor da marca do cliente</span></div>';
+    h+='<button onclick="gerarLanding()" class="btn-primary" id="lp-btn">'+svg('layout','14','#fff')+' Gerar Landing Page</button>';
+    h+='<div id="landing-result" style="margin-top:12px"></div></div>';
+  }
+
+  /* ══ WHATSAPP ══ */
+  if(tab==='whatsapp'){
+    h+='<p style="font-size:13px;color:#888;margin:0 0 14px">Automatize mensagens do WhatsApp para seus clientes.</p>';
+
+    /* Status */
+    h+='<div class="cd" style="margin-bottom:10px"><p style="font-size:14px;font-weight:700;margin-bottom:10px">'+svg('msg','14','#25D366')+' Status da Conexao</p>';
+    h+='<div id="wa-status"><div style="text-align:center;padding:16px"><div style="width:24px;height:24px;border:2px solid #e8e8e8;border-top-color:#25D366;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div><p style="font-size:13px;color:#888">Verificando...</p></div></div>';
+    h+='<button onclick="verificarWA()" class="btn-sec" style="margin-top:10px">Verificar conexao</button></div>';
+
+    /* Envio rapido */
+    h+='<div class="cd" style="margin-bottom:10px"><p style="font-size:14px;font-weight:700;margin-bottom:10px">'+svg('msg','14','#25D366')+' Envio Rapido</p>';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Numero (com DDD)</label>';
+    h+='<input id="wa-num" class="inp mb" type="tel" placeholder="11999999999">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Mensagem</label>';
+    h+='<textarea id="wa-msg" class="inp mb" rows="4" placeholder="Ola! Vi que voce tem um negocio incrivel..."></textarea>';
+    h+='<button onclick="enviarWA()" class="wa-float-btn">'+svg('msg','14','#fff')+' Enviar via WhatsApp</button></div>';
+
+    /* Templates */
+    h+='<p class="slbl">Templates prontos</p>';
+    var waTpls=[
+      {t:'Primeiro contato',m:'Ola! Fiz uma analise rapida do perfil da {EMPRESA} no Google e encontrei 3 pontos que estao fazendo voces perder clientes todo dia. Posso te mostrar em 10 minutos? E de graca.'},
+      {t:'Apos diagnostico',m:'Obrigado pela conversa! Conforme combinado, vou enviar a proposta com os servicos que vao fazer a {EMPRESA} aparecer no topo do Google na sua regiao. Posso mandar hoje?'},
+      {t:'Follow-up 3 dias',m:'Oi! Passando para verificar se voce teve a chance de analisar o que conversamos. Ja identifiquei 2 concorrentes seus que estao usando as mesmas estrategias que eu proponho. Quer que eu mostre?'},
+      {t:'Confirmacao de pagamento',m:'Perfeito! Pagamento confirmado. Vou comecar os trabalhos agora e em ate 48 horas voce ja vai ver as primeiras melhorias no perfil da {EMPRESA}. Qualquer duvida estou aqui!'}
+    ];
+    waTpls.forEach(function(t,i){
+      h+='<div class="prospect-card"><p style="font-size:12px;font-weight:700;color:#1a73e8;margin:0 0 6px">'+t.t+'</p>';
+      h+='<p style="font-size:12px;color:#555;margin:0 0 10px;line-height:1.6">'+t.m+'</p>';
+      h+='<div style="display:flex;gap:8px"><button onclick="usarTemplate('+i+')" style="flex:1;padding:8px;border:none;background:#e8f0fe;color:#1a73e8;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">Usar</button><button onclick="abrirWADireto(\''+encodeURIComponent(t.m)+'\')" style="flex:1;padding:8px;border:none;background:#e6f4ea;color:#34a853;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer">Abrir WA</button></div></div>';
+    });
+    window._waTpls=waTpls;
+
+    /* Setup */
+    h+='<div class="cd" style="margin-top:10px"><p style="font-size:13px;font-weight:700;margin-bottom:8px">Como configurar o WhatsApp Bot</p>';
+    h+='<div style="font-size:12px;color:#555;line-height:1.8">';
+    h+='<div style="padding:6px 0;border-bottom:.5px solid #f0f0f0"><strong>1.</strong> Acesse <a href="https://railway.app/template/evolution-api" target="_blank" style="color:#1a73e8">railway.app/template/evolution-api</a></div>';
+    h+='<div style="padding:6px 0;border-bottom:.5px solid #f0f0f0"><strong>2.</strong> Clique Deploy e crie conta gratuita</div>';
+    h+='<div style="padding:6px 0;border-bottom:.5px solid #f0f0f0"><strong>3.</strong> Copie a URL do servico (ex: sua-app.railway.app)</div>';
+    h+='<div style="padding:6px 0;border-bottom:.5px solid #f0f0f0"><strong>4.</strong> No Vercel Dashboard, adicione:<br><code style="background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:11px">EVOLUTION_URL = https://sua-app.railway.app</code><br><code style="background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:11px">EVOLUTION_API_KEY = sua-chave</code></div>';
+    h+='<div style="padding:6px 0"><strong>5.</strong> Volte aqui e clique em "Verificar conexao"</div>';
+    h+='</div></div>';
   }
 
   el.innerHTML=h;
@@ -1182,6 +1361,228 @@ function copyPrompt(pid,text){
   showToast('Prompt copiado!');
   var btn=document.getElementById(pid);
   if(btn){btn.classList.add('done');btn.innerHTML=svg('check','13','#188038')+' Copiado';setTimeout(function(){btn.classList.remove('done');btn.innerHTML=svg('copy','13','#666')+' Copiar prompt completo';},2000);}
+}
+
+/* ═══════ ANUNCIOS — ROI CALC ═══════ */
+function calcROI(){
+  var inv=parseFloat(document.getElementById('roi-inv').value)||500;
+  var cpc=parseFloat(document.getElementById('roi-cpc').value)||1.5;
+  var cvr=parseFloat(document.getElementById('roi-cvr').value)||3;
+  var ticket=parseFloat(document.getElementById('roi-ticket').value)||300;
+  var clicks=Math.floor(inv/cpc);
+  var leads=Math.floor(clicks*(cvr/100));
+  var revenue=leads*ticket;
+  var roi=revenue>0?Math.round(((revenue-inv)/inv)*100):0;
+  var el=document.getElementById('roi-result');
+  if(!el)return;
+  el.innerHTML='<div style="background:#f8f9fa;border-radius:10px;padding:12px">'
+    +'<div class="roi-row"><span>Cliques estimados</span><span class="roi-val">'+clicks.toLocaleString('pt-BR')+'</span></div>'
+    +'<div class="roi-row"><span>Leads gerados</span><span class="roi-val">'+leads+'</span></div>'
+    +'<div class="roi-row"><span>Faturamento estimado</span><span class="roi-val">R$'+revenue.toLocaleString('pt-BR')+'</span></div>'
+    +'<div class="roi-row" style="border:none"><span style="font-weight:700">ROI do anuncio</span><span class="roi-green" style="font-size:18px;font-weight:800">'+roi+'%</span></div>'
+    +'</div>'
+    +'<p style="font-size:11px;color:#aaa;margin-top:6px;text-align:center">Estimativa — varia por nicho e qualidade do criativo</p>';
+}
+
+/* ═══════ PROSPECTAR ═══════ */
+function calcProspect(){
+  var meta=parseInt(document.getElementById('p-meta').value)||3;
+  var conv=parseFloat(document.getElementById('p-conv').value)||10;
+  var abordagens=Math.ceil(meta/(conv/100));
+  var contatos=Math.ceil(abordagens*2.5);
+  var el=document.getElementById('prospect-result');
+  if(!el)return;
+  el.innerHTML='<div class="stat-grid">'
+    +'<div class="stat-box"><div class="stat-num">'+abordagens+'</div><div class="stat-lbl">Abordagens/mes</div></div>'
+    +'<div class="stat-box"><div class="stat-num">'+contatos+'</div><div class="stat-lbl">Contatos para levantar</div></div>'
+    +'<div class="stat-box"><div class="stat-num">'+Math.ceil(abordagens/22)+'</div><div class="stat-lbl">Abordagens/dia</div></div>'
+    +'<div class="stat-box"><div class="stat-num">'+meta+'</div><div class="stat-lbl">Clientes novos</div></div>'
+    +'</div>';
+}
+
+var PROSPECT_SCRIPTS={
+  'Barbearia':'Ola! Vi o perfil da {NOME} no Google Maps e notei que voces tem apenas {N} avaliacoes — isso faz aparecer depois dos concorrentes quando alguem busca barbearia em {CIDADE}. Tenho um metodo que aumenta isso em 60 dias. Posso te mostrar em 10 minutos?',
+  'Restaurante':'Ola! Pesquisei restaurantes em {CIDADE} e vi que o {NOME} nao aparece entre os primeiros do Google Maps. Isso significa que clientes famintos passando pela sua regiao estao indo para a concorrencia. Posso te mostrar como mudar isso?',
+  'Clinica':'Ola! Analisei o perfil da {NOME} no Google e identifiquei 3 lacunas que estao fazendo pacientes escolherem outras clinicas na hora da busca. Sao ajustes simples que farei em poucos dias. Quando podemos conversar?',
+  'Academia':'Ola! Vi que a {NOME} tem potencial enorme de crescimento digital em {CIDADE}. Academias bem posicionadas no Google recebem em media 40% mais ligacoes. Tenho um caso real que posso te mostrar. Topa?',
+  'Salao de Beleza':'Ola! Estava pesquisando saloes em {CIDADE} e o {NOME} nao apareceu nas primeiras opcoes. Clientes que buscam "salao perto de mim" nao te acham — e estao indo para a concorrencia. Posso ajudar com isso, quer ver como?',
+  'default':'Ola! Fiz uma analise rapida do {NOME} no Google e encontrei 3 pontos criticos que estao custando clientes todo dia. Sao ajustes que resolvo em menos de uma semana. Posso te mostrar de graca em 10 minutos?'
+};
+
+function gerarScriptProspect(){
+  var nicho=document.getElementById('p-nicho').value;
+  var nome=document.getElementById('p-nome').value||'sua empresa';
+  if(!nicho){showToast('Selecione o nicho');return;}
+  SFX.generate();
+  var template=PROSPECT_SCRIPTS[nicho]||PROSPECT_SCRIPTS['default'];
+  var script=template.replace(/{NOME}/g,nome).replace(/{CIDADE}/g,'sua cidade').replace(/{N}/g,String(Math.floor(Math.random()*15)+3));
+  var el=document.getElementById('script-result');
+  if(!el)return;
+  el.innerHTML='<div class="cd" style="background:#f8f9fa">'
+    +'<p style="font-size:13px;color:#202124;line-height:1.6;margin-bottom:10px">'+script+'</p>'
+    +'<div style="display:flex;gap:8px">'
+    +'<button onclick="try{navigator.clipboard.writeText('+JSON.stringify(script)+')}catch(e){}SFX.success();addXP(10,\'Script copiado!\')" style="flex:1;padding:9px;background:#e8f0fe;color:#1a73e8;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">Copiar</button>'
+    +'<a href="https://wa.me/?text='+encodeURIComponent(script)+'" target="_blank" style="flex:1;padding:9px;background:#e6f4ea;color:#34a853;border-radius:8px;font-size:12px;font-weight:700;text-align:center;text-decoration:none">Enviar WA</a>'
+    +'</div></div>';
+  addXP(10,'Script gerado!');
+}
+
+function toggleCheck(el){
+  el.classList.toggle('checked');
+  var ico=el.querySelector('span');
+  if(el.classList.contains('checked')){ico.innerHTML=svg('checksq','15','#34a853');}
+  else{ico.innerHTML=svg('sq','15','#ccc');}
+  SFX.click();
+}
+
+/* ═══════ ANALISE IA ═══════ */
+function rodarAnalise(){
+  var nome=document.getElementById('an-nome').value.trim();
+  var seg=document.getElementById('an-seg').value.trim();
+  var cidade=document.getElementById('an-cidade').value.trim();
+  var prob=document.getElementById('an-prob').value.trim();
+  if(!nome||!seg||!cidade){showToast('Preencha nome, segmento e cidade');SFX.error();return;}
+  var btn=document.getElementById('an-btn');
+  var res=document.getElementById('analise-result');
+  btn.disabled=true;btn.textContent='Analisando...';
+  SFX.generate();
+  res.innerHTML='<div style="text-align:center;padding:24px"><div style="width:28px;height:28px;border:3px solid #e8e8e8;border-top-color:#7c3aed;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px"></div><p style="font-size:13px;color:#888">IA analisando a empresa... 15-30s</p></div>';
+  fetch('/api/analisar-empresa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:nome,segmento:seg,cidade:cidade,problema:prob})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    btn.disabled=false;btn.innerHTML=svg('cpu','14','#fff')+' Analisar com IA';
+    if(!d.ok||!d.analise){res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="color:#ea4335;font-size:13px">'+(d.error||'Erro desconhecido')+'. Verifique se ANTHROPIC_API_KEY esta configurada no Vercel.</p></div>';SFX.error();return;}
+    var a=d.analise;
+    SFX.complete();addXP(30,'Analise concluida!');
+    var scorePercent=Math.round((a.score/100)*360)+'deg';
+    var scoreColor=a.score<40?'#ea4335':a.score<70?'#f9ab00':'#34a853';
+    var html='<div style="--p:'+a.score+'%;background:conic-gradient('+scoreColor+' '+Math.round(a.score*3.6)+'deg,#e8eaed 0);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">'
+      +'<div style="width:58px;height:58px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center">'
+      +'<span style="font-size:18px;font-weight:800;color:'+scoreColor+'">'+a.score+'</span>'
+      +'<span style="font-size:9px;color:#888">'+a.scoreLabel+'</span>'
+      +'</div></div>';
+    html+='<p class="slbl">Problemas identificados</p>';
+    (a.problemas||[]).forEach(function(p){html+='<div style="display:flex;gap:8px;padding:6px 0;border-bottom:.5px solid #f0f0f0"><span style="color:#ea4335;font-size:14px">•</span><span style="font-size:13px;color:#444">'+p+'</span></div>';});
+    html+='<p class="slbl" style="margin-top:12px">Oportunidades</p>';
+    (a.oportunidades||[]).forEach(function(o){html+='<div style="display:flex;gap:8px;padding:6px 0;border-bottom:.5px solid #f0f0f0"><span style="color:#34a853;font-size:14px">•</span><span style="font-size:13px;color:#444">'+o+'</span></div>';});
+    if(a.canais&&a.canais.length){
+      html+='<p class="slbl" style="margin-top:12px">Canais recomendados</p>';
+      a.canais.forEach(function(c){
+        var bc=c.prioridade==='ALTA'?'badge-alta':c.prioridade==='MEDIA'?'badge-media':'badge-baixa';
+        html+='<div class="channel-row"><span style="font-size:13px;font-weight:600;flex:1">'+c.canal+'</span><span class="channel-badge '+bc+'">'+c.prioridade+'</span></div>';
+      });
+    }
+    if(a.proposta_de_valor){
+      html+='<p class="slbl" style="margin-top:12px">Proposta de valor</p>';
+      html+='<div class="result-box">'+a.proposta_de_valor+'</div>';
+    }
+    if(a.script_abordagem){
+      html+='<p class="slbl" style="margin-top:12px">Script de abordagem pronto</p>';
+      html+='<div class="result-box" style="background:#e8f0fe;color:#1a73e8">'+a.script_abordagem+'</div>';
+      html+='<a href="https://wa.me/?text='+encodeURIComponent(a.script_abordagem)+'" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;padding:11px;background:#25D366;color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700">'+svg('msg','13','#fff')+' Enviar pelo WhatsApp</a>';
+    }
+    if(a.preco_sugerido){
+      html+='<p class="slbl" style="margin-top:12px">Preco sugerido</p>';
+      html+='<div class="stat-grid"><div class="stat-box"><div class="stat-num" style="font-size:16px">R$'+a.preco_sugerido.basico+'</div><div class="stat-lbl">Basico/mes</div></div><div class="stat-box"><div class="stat-num" style="font-size:16px">R$'+a.preco_sugerido.completo+'</div><div class="stat-lbl">Completo/mes</div></div></div>';
+    }
+    if(a.leads_estimados_mes){
+      html+='<div style="text-align:center;padding:12px;background:#e6f4ea;border-radius:10px;margin-top:4px"><p style="font-size:24px;font-weight:800;color:#34a853;margin:0">+'+a.leads_estimados_mes+'</p><p style="font-size:12px;color:#555;margin:0">leads extras/mes com otimizacao</p></div>';
+    }
+    res.innerHTML=html;
+  })
+  .catch(function(e){
+    btn.disabled=false;btn.innerHTML=svg('cpu','14','#fff')+' Analisar com IA';
+    res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="color:#ea4335;font-size:13px">Erro: '+e.message+'</p></div>';
+    SFX.error();
+  });
+}
+
+/* ═══════ LANDING PAGE ═══════ */
+function gerarLanding(){
+  var nome=document.getElementById('lp-nome').value.trim();
+  var seg=document.getElementById('lp-seg').value.trim();
+  var cidade=document.getElementById('lp-cidade').value.trim();
+  var wa=document.getElementById('lp-wa').value.trim();
+  var servicos=document.getElementById('lp-servicos').value.trim();
+  var cor=document.getElementById('lp-cor').value||'#1a73e8';
+  if(!nome||!cidade||!wa){showToast('Preencha nome, cidade e WhatsApp');SFX.error();return;}
+  var btn=document.getElementById('lp-btn');
+  var res=document.getElementById('landing-result');
+  btn.disabled=true;btn.textContent='Gerando pagina...';
+  SFX.generate();
+  res.innerHTML='<div style="text-align:center;padding:24px"><div style="width:28px;height:28px;border:3px solid #e8e8e8;border-top-color:#ea4335;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px"></div><p style="font-size:13px;color:#888">IA criando landing page profissional... 20-40s</p></div>';
+  fetch('/api/gerar-landing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({negocio:nome,segmento:seg,cidade:cidade,whatsapp:wa,servicos:servicos,cor:cor})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    btn.disabled=false;btn.innerHTML=svg('layout','14','#fff')+' Gerar Landing Page';
+    if(!d.ok||!d.html){res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="color:#ea4335;font-size:13px">'+(d.error||'Erro desconhecido')+'. Verifique ANTHROPIC_API_KEY no Vercel.</p></div>';SFX.error();return;}
+    SFX.levelup();addXP(50,'Landing page criada!');addCash(10,'Landing gerada');
+    var blob=new Blob([d.html],{type:'text/html'});
+    var url=URL.createObjectURL(blob);
+    var slug=nome.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+    res.innerHTML='<div class="cd" style="border-color:#34a853">'
+      +'<p style="font-size:14px;font-weight:700;color:#34a853;margin-bottom:8px">Landing page pronta!</p>'
+      +'<p style="font-size:12px;color:#555;margin-bottom:12px">'+d.html.length.toLocaleString('pt-BR')+' caracteres — pagina completa e responsiva</p>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+      +'<a href="'+url+'" target="_blank" style="flex:1;min-width:120px;padding:10px;background:#1a73e8;color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:700;text-align:center">Abrir Preview</a>'
+      +'<a href="'+url+'" download="'+slug+'.html" style="flex:1;min-width:120px;padding:10px;background:#34a853;color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:700;text-align:center">Baixar HTML</a>'
+      +'</div>'
+      +'<p style="font-size:11px;color:#aaa;margin-top:8px">Suba o arquivo no Vercel, Netlify ou envie diretamente para o cliente.</p>'
+      +'</div>';
+  })
+  .catch(function(e){
+    btn.disabled=false;btn.innerHTML=svg('layout','14','#fff')+' Gerar Landing Page';
+    res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="color:#ea4335;font-size:13px">Erro: '+e.message+'</p></div>';
+    SFX.error();
+  });
+}
+
+/* ═══════ WHATSAPP ═══════ */
+function verificarWA(){
+  fetch('/api/whatsapp?action=status')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var el=document.getElementById('wa-status');
+    if(!el)return;
+    if(d.configured){
+      el.innerHTML='<div style="display:flex;align-items:center;gap:10px;padding:10px;background:#e6f4ea;border-radius:8px"><div style="width:10px;height:10px;border-radius:50%;background:#34a853"></div><span style="font-size:13px;color:#34a853;font-weight:600">Conectado — '+d.url+'</span></div>';
+    } else {
+      el.innerHTML='<div style="padding:10px;background:#fce8e6;border-radius:8px"><p style="font-size:12px;color:#ea4335;margin:0">Nao configurado. Siga os passos abaixo.</p></div>';
+    }
+    SFX.click();
+  })
+  .catch(function(){
+    var el=document.getElementById('wa-status');
+    if(el)el.innerHTML='<div style="font-size:12px;color:#aaa;padding:8px">Nao foi possivel verificar.</div>';
+  });
+}
+
+function enviarWA(){
+  var num=document.getElementById('wa-num').value.trim();
+  var msg=document.getElementById('wa-msg').value.trim();
+  if(!num||!msg){showToast('Preencha numero e mensagem');SFX.error();return;}
+  SFX.generate();
+  fetch('/api/whatsapp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'send',numero:num,mensagem:msg})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.ok||d.key){SFX.success();showToast('Mensagem enviada!');addXP(10,'Mensagem enviada via WA');}
+    else{SFX.error();showToast(d.error||'Erro ao enviar');}
+  })
+  .catch(function(e){SFX.error();showToast('Erro: '+e.message);});
+}
+
+function usarTemplate(i){
+  var t=window._waTpls&&window._waTpls[i];
+  if(!t)return;
+  var el=document.getElementById('wa-msg');
+  if(el){el.value=t.m;}
+  SFX.click();
+  showToast('Template carregado');
+}
+
+function abrirWADireto(encoded){
+  window.open('https://wa.me/?text='+encoded,'_blank');
+  SFX.click();
 }
 
 /* ═══════ LGPD ═══════ */
