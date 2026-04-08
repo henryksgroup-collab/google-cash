@@ -8,7 +8,7 @@
     "fetch": {
       "command": "npx",
       "args": ["-y", "mcp-server-fetch"],
-      "description": "HTTP requests — verifica sites de clientes, busca dados publicos, testa endpoints"
+      "description": "HTTP requests — verifica sites de clientes, busca dados publicos, testa endpoints da API"
     },
     "filesystem": {
       "command": "npx",
@@ -52,6 +52,16 @@
         "GOOGLE_MAPS_API_KEY": "${GOOGLE_MAPS_API_KEY}"
       },
       "description": "Google Maps — busca concorrentes no raio, analisa localizacao, prospecta empresas"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "description": "Raciocinio encadeado — resolve problemas complexos passo a passo com reflexao"
+    },
+    "everything": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-everything"],
+      "description": "Servidor MCP completo para testes e desenvolvimento — busca, arquivos, eco"
     }
   }
 }

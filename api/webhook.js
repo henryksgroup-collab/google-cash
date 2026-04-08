@@ -104,7 +104,7 @@ module.exports = async (req, res) => {
       try {
         const subs = await db.smembers('push:subs');
         const payload = JSON.stringify({
-          title: `🤑 Venda — R$ ${Number(amount).toFixed(2).replace('.', ',')}!`,
+          title: `Nova venda — R$ ${Number(amount).toFixed(2).replace('.', ',')}`,
           body: `${buyer} acabou de comprar o Google Cash`,
           amount,
           buyer

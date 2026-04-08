@@ -8,15 +8,21 @@
 <title>Carregando...</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
-html,body{height:100%;overflow-x:hidden;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+html,body{height:100%;overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background-color:#f0f4ff;
+  background-image:
+    linear-gradient(rgba(26,115,232,.07) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(26,115,232,.07) 1px,transparent 1px);
+  background-size:22px 22px;
+}
 
 /* GATE */
-#__gate{display:flex;align-items:center;justify-content:center;height:100vh;background:#f5f5f5;flex-direction:column;gap:16px}
-.gate-spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:#1a73e8;border-radius:50%;animation:spin .8s linear infinite}
-.gate-txt{font-size:13px;color:#aaa}
+#__gate{display:flex;align-items:center;justify-content:center;height:100vh;background:transparent;flex-direction:column;gap:16px}
+.gate-spinner{width:36px;height:36px;border:3px solid #dbe4ff;border-top-color:#1a73e8;border-radius:50%;animation:spin .8s linear infinite}
+.gate-txt{font-size:13px;color:#9eabc8}
 
 /* APP */
-#__app{display:none;max-width:480px;margin:0 auto;min-height:100vh;background:#f5f5f5;position:relative}
+#__app{display:none;max-width:480px;margin:0 auto;min-height:100vh;background:rgba(240,244,255,.88);position:relative;backdrop-filter:blur(0px)}
 
 /* HEADER */
 #hdr{background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
@@ -1051,18 +1057,82 @@ function renderMore(tab){
   }
 
   if(tab==='tools'){
+    /* ── IA no app ── */
+    h+='<p class="slbl">Ferramentas de IA integradas</p>';
+    var iaTools=[
+      {l:'Gerar Criativo',desc:'Imagem de anuncio gratis com Pollinations.AI',tab:'criativos',ic:'image',c:'#7c3aed',badge:'100% Gratis'},
+      {l:'Analise de Empresa',desc:'Relatorio completo com score, palavras-chave e script',tab:'analise',ic:'cpu',c:'#1a73e8',badge:'10 cr'},
+      {l:'Landing Page IA',desc:'Pagina completa HTML para o cliente em 30s',tab:'landing',ic:'layout',c:'#ea4335',badge:'15 cr'},
+      {l:'Script WhatsApp',desc:'Gerar e enviar mensagem de abordagem',tab:'whatsapp',ic:'msg',c:'#34a853',badge:'1 cr'}
+    ];
+    iaTools.forEach(function(t){
+      h+='<div class="tool-link" style="cursor:pointer" onclick="renderMore(\''+t.tab+'\')">'
+        +'<div style="width:38px;height:38px;min-width:38px;border-radius:10px;background:'+t.c+'18;display:flex;align-items:center;justify-content:center">'+svg(t.ic,'17',t.c)+'</div>'
+        +'<div class="flex1"><p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#202124">'+t.l+'</p><p style="margin:0;font-size:12px;color:#888">'+t.desc+'</p></div>'
+        +'<span style="font-size:10px;font-weight:700;background:'+t.c+'18;color:'+t.c+';padding:3px 8px;border-radius:99px;white-space:nowrap">'+t.badge+'</span>'
+        +'</div>';
+    });
+
+    /* ── Geracao de video ── */
+    h+='<div class="cd" style="margin:12px 0 4px;border-color:#f9ab0030">'
+      +'<p style="font-size:13px;font-weight:700;margin-bottom:6px">'+svg('video','14','#f9ab00')+' Gerar Video de Anuncio</p>'
+      +'<p style="font-size:12px;color:#888;margin-bottom:10px;line-height:1.6">Video de 5s com IA via Replicate. Configure <code style="background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:11px">REPLICATE_API_TOKEN</code> no Vercel para ativar.</p>'
+      +'<div style="display:flex;gap:8px">'
+      +'<select id="vid-nicho" style="flex:1;padding:9px 10px;border-radius:10px;border:.5px solid #e8e8e8;font-size:12px;font-family:inherit;outline:none">'
+      +'<option value="barbearia">Barbearia</option><option value="restaurante">Restaurante</option><option value="clinica">Clinica</option>'
+      +'<option value="academia">Academia</option><option value="salao">Salao de Beleza</option><option value="pet">Pet Shop</option>'
+      +'<option value="pizzaria">Pizzaria</option><option value="escola">Escola</option>'
+      +'</select>'
+      +'<select id="vid-fmt" style="flex:1;padding:9px 10px;border-radius:10px;border:.5px solid #e8e8e8;font-size:12px;font-family:inherit;outline:none">'
+      +'<option value="vertical">Vertical 9:16</option><option value="quadrado">Quadrado 1:1</option><option value="horizontal">Horizontal 16:9</option>'
+      +'</select>'
+      +'</div>'
+      +'<button onclick="gerarVideo()" style="width:100%;margin-top:8px;padding:11px;background:#f9ab00;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer">'+svg('video','14','#fff')+' Gerar Video (20 cr)</button>'
+      +'<div id="vid-result" style="margin-top:8px"></div>'
+      +'</div>';
+
+    /* ── Links externos ── */
+    h+='<p class="slbl" style="margin-top:16px">Ferramentas externas</p>';
     var tools=[
-      {name:'Google Meu Negócio',url:'https://business.google.com',desc:'Gerenciar perfis de clientes',icon:'pin',color:'#ea4335'},
+      {name:'Google Meu Negocio',url:'https://business.google.com',desc:'Gerenciar perfis de clientes',icon:'pin',color:'#ea4335'},
       {name:'Google Maps',url:'https://maps.google.com',desc:'Prospectar empresas locais',icon:'search',color:'#1a73e8'},
-      {name:'Google Ads',url:'https://ads.google.com',desc:'Criar anúncios locais',icon:'trend',color:'#f9ab00'},
-      {name:'Canva',url:'https://canva.com',desc:'Criar posts e imagens',icon:'image',color:'#00c4cc'},
-      {name:'ChatGPT',url:'https://chat.openai.com',desc:'Gerar textos com IA',icon:'bot',color:'#34a853'},
-      {name:'Meta Business Suite',url:'https://business.facebook.com',desc:'Gerenciar anúncios Meta',icon:'meta',color:'#1877f2'},
-      {name:'Carrd.co',url:'https://carrd.co',desc:'Criar landing pages gratuitas',icon:'layout',color:'#7c3aed'},
-      {name:'n8n',url:'https://n8n.io',desc:'Automatizar tarefas',icon:'layout',color:'#ea4335'}
+      {name:'Google Ads',url:'https://ads.google.com',desc:'Criar anuncios de busca local',icon:'trend',color:'#f9ab00'},
+      {name:'Meta Business Suite',url:'https://business.facebook.com',desc:'Facebook + Instagram Ads',icon:'meta',color:'#1877f2'},
+      {name:'TikTok for Business',url:'https://ads.tiktok.com',desc:'Anuncios TikTok',icon:'video',color:'#010101'},
+      {name:'Canva',url:'https://canva.com',desc:'Criar posts e imagens no navegador',icon:'image',color:'#00c4cc'},
+      {name:'Groq Console',url:'https://console.groq.com',desc:'Chave de IA gratuita para o app',icon:'cpu',color:'#ff6b35'},
+      {name:'Railway — Evolution API',url:'https://railway.app/template/evolution-api',desc:'WhatsApp automation gratis',icon:'msg',color:'#34a853'},
+      {name:'Replicate',url:'https://replicate.com',desc:'Geracao de video com IA',icon:'video',color:'#7c3aed'}
     ];
     tools.forEach(function(t){
-      h+='<a href="'+t.url+'" target="_blank" class="tool-link"><div style="width:36px;height:36px;min-width:36px;border-radius:8px;background:'+t.color+'18;display:flex;align-items:center;justify-content:center">'+svg(t.icon,'16',t.color)+'</div><div class="flex1"><p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#202124">'+esc(t.name)+'</p><p style="margin:0;font-size:12px;color:#888">'+esc(t.desc)+'</p></div>'+svg('link','13','#ccc')+'</a>';
+      h+='<a href="'+t.url+'" target="_blank" class="tool-link"><div style="width:36px;height:36px;min-width:36px;border-radius:8px;background:'+t.color+'18;display:flex;align-items:center;justify-content:center">'+svg(t.icon,'16',t.color)+'</div><div class="flex1"><p style="margin:0 0 2px;font-size:13px;font-weight:700;color:#202124">'+t.name+'</p><p style="margin:0;font-size:12px;color:#888">'+t.desc+'</p></div>'+svg('link','13','#ccc')+'</a>';
+    });
+
+    /* ── MCPs para o consultor instalar ── */
+    h+='<p class="slbl" style="margin-top:16px">MCPs para Claude Code / OpenClaude</p>';
+    h+='<p style="font-size:12px;color:#888;margin-bottom:10px;line-height:1.6">Instale estes servidores MCP para ter superpoderes de IA no terminal: pesquisa web, Google Maps, GitHub e mais.</p>';
+    var mcps=[
+      {name:'Memory',desc:'Lembra clientes e estrategias entre sessoes',pkg:'@modelcontextprotocol/server-memory',c:'#1a73e8'},
+      {name:'Filesystem',desc:'Acesso a arquivos do projeto sem perguntar',pkg:'@modelcontextprotocol/server-filesystem',c:'#34a853'},
+      {name:'Fetch / Web',desc:'Verifica sites de clientes e APIs',pkg:'mcp-server-fetch',c:'#7c3aed'},
+      {name:'Brave Search',desc:'Pesquisa web — concorrentes, mercado',pkg:'@modelcontextprotocol/server-brave-search',c:'#ea4335'},
+      {name:'Google Maps',desc:'Prospeccao local, raio de concorrentes',pkg:'@modelcontextprotocol/server-google-maps',c:'#f9ab00'},
+      {name:'GitHub',desc:'Commits, PRs, gerencia repositorios',pkg:'@modelcontextprotocol/server-github',c:'#24292f'},
+      {name:'Context7',desc:'Docs atualizadas de qualquer biblioteca',pkg:'@upstash/context7-mcp',c:'#00c4cc'}
+    ];
+    mcps.forEach(function(m){
+      var cmd='npx -y '+m.pkg;
+      h+='<div class="cd" style="margin-bottom:8px;padding:11px 13px">'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px">'
+        +'<p style="margin:0;font-size:13px;font-weight:700;color:'+m.c+'">'+m.name+'</p>'
+        +'<span style="font-size:10px;color:#888">MCP</span>'
+        +'</div>'
+        +'<p style="margin:0 0 7px;font-size:12px;color:#666">'+m.desc+'</p>'
+        +'<div style="display:flex;align-items:center;gap:6px;background:#f8f9fa;border-radius:7px;padding:7px 10px">'
+        +'<code style="flex:1;font-size:11px;color:#444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">npx -y '+m.pkg+'</code>'
+        +'<button onclick="copiarTexto(\'mcp-'+m.name.replace(/\s/g,'')+'\',\''+cmd+'\')" id="mcp-'+m.name.replace(/\s/g,'')+'" style="flex-shrink:0;padding:4px 10px;background:'+m.c+';color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">'+svg('copy','11','#fff')+'</button>'
+        +'</div>'
+        +'</div>';
     });
   }
 
@@ -1369,18 +1439,38 @@ function renderMore(tab){
       h+='</div>';
     });
 
-    /* Download all tools */
-    h+='<div class="cd" style="margin-top:4px"><p style="font-size:14px;font-weight:700;margin-bottom:10px">'+svg('pkg','14','#34a853')+' Instalar tudo em 1 clique</p>'
-      +'<p style="font-size:12px;color:#555;margin-bottom:10px;line-height:1.6">Instala o OpenClaude + configura com as skills e prompts do Google Cash otimizados.</p>'
-      +'<div style="background:#1a1a2e;border-radius:10px;padding:12px;margin-bottom:10px;font-family:monospace;font-size:11px;color:#fff;line-height:2">'
-      +'<span style="color:#a8ff78"># Instalar OpenClaude</span><br>'
+    /* Instalar OpenClaude + MCPs */
+    h+='<p class="slbl" style="margin-top:4px">Instalar ferramentas (PC / Mac)</p>';
+    h+='<div class="cd" style="margin-bottom:10px;border-color:#7c3aed20">'
+      +'<p style="font-size:13px;font-weight:700;color:#7c3aed;margin-bottom:4px">'+svg('cpu','13','#7c3aed')+' OpenClaude — IA no terminal</p>'
+      +'<p style="font-size:12px;color:#555;margin-bottom:8px;line-height:1.6">Usa Claude Code com qualquer modelo gratis (Groq, Gemini, DeepSeek, Ollama). Cole no terminal:</p>'
+      +'<div style="background:#0d0d1a;border-radius:8px;padding:10px 12px;margin-bottom:8px;font-family:monospace;font-size:11.5px;color:#a8ff78;line-height:1.9">'
       +'npm install -g @gitlawb/openclaude@latest<br>'
-      +'<span style="color:#a8ff78"># Clonar skills Google Cash</span><br>'
-      +'git clone https://github.com/henryksgroup-collab/google-cash-skills.git ~/.openclaude/skills<br>'
-      +'<span style="color:#a8ff78"># Abrir</span><br>'
-      +'openclaude'
+      +'<span style="color:#60a5fa">openclaude</span>'
       +'</div>'
-      +'<button onclick="copiarSetupCmd()" class="btn-sec">'+svg('copy','13','#1a73e8')+' Copiar comando de instalacao</button>'
+      +'<div style="display:flex;gap:8px">'
+      +'<button onclick="copiarSetupCmd()" id="btn-openclaude" style="flex:1;padding:9px;background:#7c3aed;color:#fff;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">'+svg('copy','12','#fff')+' Copiar</button>'
+      +'<a href="https://console.groq.com" target="_blank" style="flex:1;padding:9px;background:#e8f0fe;color:#1a73e8;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">Chave Groq Gratis</a>'
+      +'</div>'
+      +'</div>';
+
+    h+='<div class="cd" style="margin-bottom:10px">'
+      +'<p style="font-size:13px;font-weight:700;margin-bottom:4px">'+svg('pkg','13','#34a853')+' MCPs recomendados</p>'
+      +'<p style="font-size:12px;color:#555;margin-bottom:8px;line-height:1.6">Superpoderes para o OpenClaude. Cole cada linha no terminal:</p>';
+    var setupMCPs=[
+      {l:'Memory (lembrar clientes)',cmd:'npx -y @modelcontextprotocol/server-memory'},
+      {l:'Fetch (verificar sites)',cmd:'npx -y mcp-server-fetch'},
+      {l:'Raciocinio avancado',cmd:'npx -y @modelcontextprotocol/server-sequential-thinking'},
+      {l:'Tudo em 1 (para devs)',cmd:'npx -y @modelcontextprotocol/server-everything'}
+    ];
+    setupMCPs.forEach(function(m,i){
+      var bid='smcp'+i;
+      h+='<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:.5px solid #f0f0f0">'
+        +'<span style="font-size:12px;color:#555;flex:1">'+m.l+'</span>'
+        +'<button onclick="copiarTexto(\''+bid+'\',\''+m.cmd+'\')" id="'+bid+'" style="padding:4px 10px;background:#e8f0fe;color:#1a73e8;border:none;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">'+svg('copy','11','#1a73e8')+'</button>'
+        +'</div>';
+    });
+    h+='<a href="/mcp-setup.json" download style="display:block;margin-top:10px;padding:9px;background:#f8f9fa;border:.5px solid #e8e8e8;color:#444;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">Baixar mcp-setup.json (config pronta)</a>'
       +'</div>';
   }
 
@@ -1460,23 +1550,100 @@ function gcGerar(){
   img.src=url;
 }
 
+/* copia qualquer texto para clipboard com fallback robusto */
+function _copiar(text){
+  if(navigator.clipboard&&window.isSecureContext){
+    return navigator.clipboard.writeText(text).catch(function(){_copiarFallback(text);});
+  }
+  _copiarFallback(text);
+}
+function _copiarFallback(text){
+  var ta=document.createElement('textarea');
+  ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.focus();ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+}
+function _btnDone(btnId,labelOriginal){
+  var btn=document.getElementById(btnId);
+  if(!btn)return;
+  var orig=btn.innerHTML;
+  btn.innerHTML=svg('check','13','#188038')+' Copiado!';
+  btn.style.background='#e6f4ea';btn.style.color='#188038';
+  setTimeout(function(){btn.innerHTML=labelOriginal||orig;btn.style.background='';btn.style.color='';},2200);
+}
+
+/* copia texto generico — usado nos MCPs e botoes de codigo */
+function copiarTexto(btnId,text){
+  _copiar(text);
+  SFX.success();
+  showToast('Copiado!');
+  _btnDone(btnId);
+}
+
 function copyScript(id){
   var s=SCRIPTS.find(function(x){return x.id===id;});
   if(!s)return;
-  try{navigator.clipboard.writeText(s.text);}catch(e){}
+  _copiar(s.text);
   S.scriptCopies++;save();
   SFX.success();
   addXP(15,'Script copiado!');
   var btn=document.getElementById('cp-'+id);
-  if(btn){btn.classList.add('done');btn.innerHTML=svg('check','13','#188038')+' Copiado';setTimeout(function(){btn.classList.remove('done');btn.innerHTML=svg('copy','13','#666')+' Copiar';},2000);}
+  if(btn){btn.classList.add('done');btn.innerHTML=svg('check','13','#188038')+' Copiado';setTimeout(function(){btn.classList.remove('done');btn.innerHTML=svg('copy','13','#666')+' Copiar';},2200);}
 }
 
 function copyPrompt(pid,text){
-  try{navigator.clipboard.writeText(text);}catch(e){}
+  _copiar(text);
   SFX.success();
   showToast('Prompt copiado!');
   var btn=document.getElementById(pid);
-  if(btn){btn.classList.add('done');btn.innerHTML=svg('check','13','#188038')+' Copiado';setTimeout(function(){btn.classList.remove('done');btn.innerHTML=svg('copy','13','#666')+' Copiar prompt completo';},2000);}
+  if(btn){btn.classList.add('done');btn.innerHTML=svg('check','13','#188038')+' Copiado';setTimeout(function(){btn.classList.remove('done');btn.innerHTML=svg('copy','13','#666')+' Copiar prompt completo';},2200);}
+}
+
+/* ═══════ GERAR VIDEO ═══════ */
+function gerarVideo(){
+  var nicho=(document.getElementById('vid-nicho')||{}).value||'barbearia';
+  var formato=(document.getElementById('vid-fmt')||{}).value||'vertical';
+  var res=document.getElementById('vid-result');
+  if(!res)return;
+  if(S.credits<20&&!S.aiKey){
+    res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="color:#ea4335;font-size:12px;margin:0">Creditos insuficientes. Necessario: 20 cr. Adicione sua chave Groq em Setup IA ou compre um plano.</p></div>';
+    return;
+  }
+  res.innerHTML='<div style="text-align:center;padding:20px"><div style="width:26px;height:26px;border:3px solid #e8e8e8;border-top-color:#f9ab00;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div><p style="font-size:12px;color:#888">Gerando video... 30-60s</p></div>';
+  var h2={'Content-Type':'application/json'};
+  if(S.userToken) h2['x-user-token']=S.userToken;
+  fetch('/api/gerar-video',{method:'POST',headers:h2,body:JSON.stringify({nicho:nicho,formato:formato})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!d.ok){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">'+(d.error||'Erro ao gerar video')+'</p></div>';SFX.error();return;}
+    if(!S.aiKey){S.credits=Math.max(0,S.credits-20);save();updateHeader();}
+    SFX.generate();addXP(40,'Video iniciado!');
+    if(d.output){
+      res.innerHTML='<div class="cd" style="border-color:#34a85340;padding:12px"><p style="font-size:13px;font-weight:700;color:#34a853;margin-bottom:8px">Video pronto!</p><video src="'+d.output+'" controls style="width:100%;border-radius:8px;max-height:280px"></video><a href="'+d.output+'" target="_blank" download style="display:block;margin-top:8px;padding:9px;background:#34a853;color:#fff;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">Baixar video</a></div>';
+    } else {
+      var pollUrl=d.pollUrl;var maxPoll=24;var polls=0;
+      res.innerHTML='<div class="cd" style="padding:12px" id="vid-poll"><p style="font-size:12px;color:#888;margin-bottom:6px">Video em processamento. Verificando...</p><div style="height:4px;background:#e8eaed;border-radius:99px;overflow:hidden"><div id="vid-bar" style="height:100%;background:#f9ab00;border-radius:99px;width:5%;transition:width .5s"></div></div></div>';
+      var pollInterval=setInterval(function(){
+        polls++;var pct=Math.min(95,Math.round((polls/maxPoll)*100));
+        var bar=document.getElementById('vid-bar');if(bar)bar.style.width=pct+'%';
+        fetch(pollUrl,{headers:{Authorization:'Token '+d.pollToken||''}})
+        .then(function(r){return r.json();})
+        .then(function(pd){
+          if(pd.status==='succeeded'&&pd.output){
+            clearInterval(pollInterval);
+            var vurl=Array.isArray(pd.output)?pd.output[0]:pd.output;
+            res.innerHTML='<div class="cd" style="border-color:#34a85340;padding:12px"><p style="font-size:13px;font-weight:700;color:#34a853;margin-bottom:8px">Video pronto!</p><video src="'+vurl+'" controls style="width:100%;border-radius:8px;max-height:280px"></video><a href="'+vurl+'" target="_blank" download style="display:block;margin-top:8px;padding:9px;background:#34a853;color:#fff;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">Baixar video</a></div>';
+            SFX.levelup();addXP(20,'Video concluido!');
+          } else if(pd.status==='failed'||polls>=maxPoll){
+            clearInterval(pollInterval);
+            res.innerHTML='<div class="cd" style="border-color:#e8e8e8;padding:10px"><p style="font-size:12px;color:#888;margin:0">Processamento demorado. Acesse o <a href="'+pollUrl+'" target="_blank" style="color:#1a73e8">link direto</a> para verificar o video.</p></div>';
+          }
+        }).catch(function(){if(polls>=maxPoll)clearInterval(pollInterval);});
+      },5000);
+    }
+  })
+  .catch(function(){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">Erro de conexao.</p></div>';SFX.error();});
 }
 
 /* ═══════ ANUNCIOS — ROI CALC ═══════ */
@@ -1736,8 +1903,9 @@ function recuperarAcesso(){
 }
 
 function copiarToken(){
-  try{navigator.clipboard.writeText(S.userToken);}catch(e){}
+  _copiar(S.userToken);
   SFX.success();
+  showToast('Token copiado!');
 }
 
 function sincronizarCreditos(){
@@ -1773,10 +1941,11 @@ function salvarChaveIA(){
 }
 
 function copiarSetupCmd(){
-  var cmd='npm install -g @gitlawb/openclaude@latest\nopenclaude';
-  try{navigator.clipboard.writeText(cmd);}catch(e){}
+  var cmd='npm install -g @gitlawb/openclaude@latest && openclaude';
+  _copiar(cmd);
   SFX.success();
   showToast('Comando copiado!');
+  _btnDone('btn-openclaude',svg('copy','12','#fff')+' Copiar');
 }
 
 /* ═══════ LGPD ═══════ */

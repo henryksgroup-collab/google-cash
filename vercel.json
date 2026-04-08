@@ -9,7 +9,7 @@
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": "Content-Type,Authorization,x-admin-token" }
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type,Authorization,x-admin-token,x-user-token,x-api-key,x-ai-provider" }
       ]
     },
     {
@@ -27,6 +27,17 @@
         { "key": "Pragma",        "value": "no-cache" },
         { "key": "Expires",       "value": "0" }
       ]
+    },
+    {
+      "source": "/mcp-setup.json",
+      "headers": [
+        { "key": "Content-Type", "value": "application/json" },
+        { "key": "Content-Disposition", "value": "attachment; filename=\"mcp-setup.json\"" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
     }
+  ],
+  "rewrites": [
+    { "source": "/mcp-setup.json", "destination": "/public/mcp-setup.json" }
   ]
 }
