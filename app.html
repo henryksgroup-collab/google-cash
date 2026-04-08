@@ -211,9 +211,9 @@ select.inp{cursor:pointer}
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
         <span id="xp-val">0</span> XP
       </div>
-      <div class="hbdg cash" id="hcash">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-        R$<span id="cash-val">0</span>
+      <div class="hbdg" style="background:#fff3e0;color:#e65100;cursor:pointer" id="hcredits" onclick="nav('more');setTimeout(function(){renderMore('setup');},50)" title="Creditos de IA">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4l3 3"></path></svg>
+        <span id="credits-val">50</span>cr
       </div>
     </div>
   </div>
@@ -359,6 +359,10 @@ function todayKey(){return new Date().toISOString().slice(0,10);}
 var S={
   xp:parseInt(localStorage.getItem('gc_xp')||'0',10),
   cash:parseInt(localStorage.getItem('gc_cash')||'0',10),
+  credits:parseInt(localStorage.getItem('gc_credits')||'50',10),
+  aiKey:localStorage.getItem('gc_aikey')||'',
+  aiProvider:localStorage.getItem('gc_aiprov')||'groq',
+  plan:localStorage.getItem('gc_plan')||'starter',
   completedMods:JSON.parse(localStorage.getItem('gc_cm')||'[]'),
   clients:JSON.parse(localStorage.getItem('gc_cl')||'[]'),
   notes:JSON.parse(localStorage.getItem('gc_notes')||'[]'),
@@ -385,6 +389,10 @@ function save(){
   localStorage.setItem('gc_dm_'+todayKey(),JSON.stringify(S.doneMissions));
   if(S.simDone) localStorage.setItem('gc_simd_'+todayKey(),'1');
   localStorage.setItem('gc_genh',JSON.stringify(S.genHistory.slice(0,8)));
+  localStorage.setItem('gc_credits',S.credits);
+  if(S.aiKey) localStorage.setItem('gc_aikey',S.aiKey);
+  if(S.aiProvider) localStorage.setItem('gc_aiprov',S.aiProvider);
+  localStorage.setItem('gc_plan',S.plan);
 }
 
 var LEVELS=[
@@ -433,7 +441,14 @@ function showFloat(txt,cls){
 
 function updateHeader(){
   document.getElementById('xp-val').textContent=S.xp;
-  document.getElementById('cash-val').textContent=S.cash;
+  var cv=document.getElementById('credits-val');
+  if(cv) cv.textContent=S.credits>=9999?'INF':S.credits;
+  var hc=document.getElementById('hcredits');
+  if(hc){
+    if(S.credits<=0){hc.style.background='#fce8e6';hc.style.color='#ea4335';}
+    else if(S.credits<=10){hc.style.background='#fff3e0';hc.style.color='#e65100';}
+    else{hc.style.background='#e8f0fe';hc.style.color='#1a73e8';}
+  }
 }
 
 function showToast(msg){
@@ -1020,7 +1035,7 @@ function renderMore(tab){
   _moreTab=tab;
   var el=document.getElementById('s-more');
   var h='<div class="tabs">';
-  [{v:'scripts',l:'Scripts',i:'msg'},{v:'tools',l:'Ferramentas',i:'search'},{v:'prompts',l:'Prompts IA',i:'bot'},{v:'criativos',l:'Criativos',i:'image'},{v:'anuncios',l:'Anuncios',i:'trend'},{v:'prospectar',l:'Prospectar',i:'search'},{v:'analise',l:'Analise IA',i:'cpu'},{v:'landing',l:'Landing Page',i:'layout'},{v:'whatsapp',l:'WhatsApp',i:'msg'}].forEach(function(t){
+  [{v:'scripts',l:'Scripts',i:'msg'},{v:'tools',l:'Ferramentas',i:'search'},{v:'prompts',l:'Prompts IA',i:'bot'},{v:'criativos',l:'Criativos',i:'image'},{v:'anuncios',l:'Anuncios',i:'trend'},{v:'prospectar',l:'Prospectar',i:'search'},{v:'analise',l:'Analise IA',i:'cpu'},{v:'landing',l:'Landing Page',i:'layout'},{v:'whatsapp',l:'WhatsApp',i:'msg'},{v:'setup',l:'Setup IA',i:'zap'}].forEach(function(t){
     var a=tab===t.v;
     h+='<button class="tab'+(a?' a':'')+'" style="'+(a?'border-color:#1a73e850;background:#e8f0fe;color:#1a73e8':'color:#888')+'" onclick="renderMore(\''+t.v+'\')">'+svg(t.i,'13',a?'#1a73e8':'#aaa')+' '+t.l+'</button>';
   });
@@ -1268,6 +1283,86 @@ function renderMore(tab){
     h+='</div></div>';
   }
 
+  /* ══ SETUP IA ══ */
+  if(tab==='setup'){
+    var planInfo={starter:{l:'Starter',cr:50,c:'#888'},basic:{l:'Basic',cr:200,c:'#1a73e8'},pro:{l:'Pro',cr:600,c:'#7c3aed'},unlimited:{l:'Unlimited',cr:'INF',c:'#f9ab00'}};
+    var cur=planInfo[S.plan]||planInfo.starter;
+    h+='<div class="cd" style="border-color:'+cur.c+';margin-bottom:10px">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+      +'<p style="font-size:14px;font-weight:800;color:'+cur.c+';margin:0">Plano '+cur.l+'</p>'
+      +'<span style="font-size:22px;font-weight:800;color:'+cur.c+'">'+S.credits+'<span style="font-size:11px;font-weight:500;color:#888"> cr</span></span>'
+      +'</div>'
+      +'<div style="height:6px;background:#e8eaed;border-radius:99px;overflow:hidden;margin-bottom:10px"><div style="height:100%;background:'+cur.c+';border-radius:99px;width:'+Math.min(100,Math.round((S.credits/(cur.cr==='INF'?600:cur.cr))*100))+'%"></div></div>'
+      +'<p style="font-size:12px;color:#888;margin:0">Creditos sao usados para funcoes de IA (Analise, Landing Page, etc.)</p>'
+      +'</div>';
+
+    /* Chave de IA do usuario */
+    h+='<div class="cd" style="margin-bottom:10px">'
+      +'<p style="font-size:14px;font-weight:700;margin-bottom:4px">'+svg('zap','14','#34a853')+' Sua Chave de IA (Gratis)</p>'
+      +'<p style="font-size:12px;color:#555;margin-bottom:10px;line-height:1.6">Use sua propria chave <strong>Groq</strong> (gratuita) e use IA <strong>sem gastar creditos</strong>. Crie em <a href="https://console.groq.com" target="_blank" style="color:#1a73e8">console.groq.com</a></p>'
+      +'<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Provedor</label>'
+      +'<select id="ai-prov" class="inp mb" onchange="S.aiProvider=this.value;save()">'
+      +'<option value="groq"'+(S.aiProvider==='groq'?' selected':'')+'>Groq — Gratis, rapido (recomendado)</option>'
+      +'<option value="openai"'+(S.aiProvider==='openai'?' selected':'')+'>OpenAI (GPT-4o-mini)</option>'
+      +'<option value="anthropic"'+(S.aiProvider==='anthropic'?' selected':'')+'>Anthropic (Claude Haiku)</option>'
+      +'</select>'
+      +'<label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Chave de API</label>'
+      +'<input id="ai-key-input" class="inp mb" type="password" placeholder="gsk_... ou sk-..." value="'+esc(S.aiKey||'')+'">'
+      +'<button onclick="salvarChaveIA()" class="btn-primary">'+svg('check','14','#fff')+' Salvar Chave</button>'
+      +'<p style="font-size:11px;color:#aaa;margin-top:6px">Sua chave fica salva apenas no seu dispositivo. Nunca enviamos para nossos servidores.</p>'
+      +'</div>';
+
+    /* OpenClaude */
+    h+='<div class="cd" style="margin-bottom:10px;border-color:#7c3aed20;background:linear-gradient(135deg,#f5f3ff,#fff)">'
+      +'<p style="font-size:14px;font-weight:700;color:#7c3aed;margin-bottom:6px">'+svg('cpu','14','#7c3aed')+' OpenClaude — IA no seu PC/Mac</p>'
+      +'<p style="font-size:12px;color:#555;margin-bottom:10px;line-height:1.6">Ferramenta profissional para usar IA no terminal com qualquer modelo (Groq, Gemini, DeepSeek, Ollama — gratis). Igual ao Claude Code mas aberto.</p>'
+      +'<div style="background:#1a1a2e;border-radius:10px;padding:12px;margin-bottom:10px;font-family:monospace;font-size:12px;color:#a8ff78">'
+      +'npm install -g @gitlawb/openclaude@latest<br><span style="color:#fff">openclaude</span>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<a href="https://github.com/gitlawb/openclaude" target="_blank" style="flex:1;padding:10px;background:#7c3aed;color:#fff;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">GitHub</a>'
+      +'<a href="https://console.groq.com" target="_blank" style="flex:1;padding:10px;background:#e8f0fe;color:#1a73e8;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">Chave Groq Gratis</a>'
+      +'</div>'
+      +'</div>';
+
+    /* Planos */
+    h+='<p class="slbl">Planos de creditos</p>';
+    var planos=[
+      {k:'starter',l:'Starter',cr:50,preco:'Incluso',desc:'50 creditos iniciais com sua compra',cor:'#888'},
+      {k:'basic',l:'Basic',cr:200,preco:'R$47',desc:'200 creditos — para consultores iniciantes',cor:'#1a73e8'},
+      {k:'pro',l:'Pro',cr:600,preco:'R$97',desc:'600 creditos — para quem escala clientes',cor:'#7c3aed'},
+      {k:'unlimited',l:'Unlimited',cr:'INF',preco:'R$197',desc:'Creditos ilimitados + suporte prioritario',cor:'#f9ab00'}
+    ];
+    planos.forEach(function(p){
+      var isAtual=S.plan===p.k;
+      h+='<div class="plan-card" style="border-color:'+p.cor+(isAtual?';background:'+p.cor+'08':'')+'">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">'
+        +'<div><p style="margin:0;font-size:14px;font-weight:700;color:'+p.cor+'">'+p.l+'</p><p style="margin:2px 0 0;font-size:12px;color:#888">'+p.desc+'</p></div>'
+        +'<div style="text-align:right"><p style="margin:0;font-size:16px;font-weight:800;color:'+p.cor+'">'+p.preco+'</p><p style="margin:0;font-size:11px;color:#aaa">'+p.cr+' creditos</p></div>'
+        +'</div>';
+      if(isAtual){
+        h+='<div style="padding:7px;background:'+p.cor+'20;border-radius:8px;font-size:12px;font-weight:700;color:'+p.cor+';text-align:center">Plano atual</div>';
+      } else if(p.k!=='starter'){
+        h+='<a href="https://wa.me/5511999999999?text=Quero+o+plano+'+encodeURIComponent(p.l)+'+do+Google+Cash" target="_blank" style="display:block;padding:9px;background:'+p.cor+';color:#fff;border-radius:10px;text-decoration:none;font-size:13px;font-weight:700;text-align:center">Quero esse plano</a>';
+      }
+      h+='</div>';
+    });
+
+    /* Download all tools */
+    h+='<div class="cd" style="margin-top:4px"><p style="font-size:14px;font-weight:700;margin-bottom:10px">'+svg('pkg','14','#34a853')+' Instalar tudo em 1 clique</p>'
+      +'<p style="font-size:12px;color:#555;margin-bottom:10px;line-height:1.6">Instala o OpenClaude + configura com as skills e prompts do Google Cash otimizados.</p>'
+      +'<div style="background:#1a1a2e;border-radius:10px;padding:12px;margin-bottom:10px;font-family:monospace;font-size:11px;color:#fff;line-height:2">'
+      +'<span style="color:#a8ff78"># Instalar OpenClaude</span><br>'
+      +'npm install -g @gitlawb/openclaude@latest<br>'
+      +'<span style="color:#a8ff78"># Clonar skills Google Cash</span><br>'
+      +'git clone https://github.com/henryksgroup-collab/google-cash-skills.git ~/.openclaude/skills<br>'
+      +'<span style="color:#a8ff78"># Abrir</span><br>'
+      +'openclaude'
+      +'</div>'
+      +'<button onclick="copiarSetupCmd()" class="btn-sec">'+svg('copy','13','#1a73e8')+' Copiar comando de instalacao</button>'
+      +'</div>';
+  }
+
   el.innerHTML=h;
 
   if(tab==='criativos'){
@@ -1447,11 +1542,15 @@ function rodarAnalise(){
   btn.disabled=true;btn.textContent='Analisando...';
   SFX.generate();
   res.innerHTML='<div style="text-align:center;padding:24px"><div style="width:28px;height:28px;border:3px solid #e8e8e8;border-top-color:#7c3aed;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px"></div><p style="font-size:13px;color:#888">IA analisando a empresa... 15-30s</p></div>';
-  fetch('/api/analisar-empresa',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:nome,segmento:seg,cidade:cidade,problema:prob})})
+  if(S.credits<10&&!S.aiKey){res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="font-size:13px;font-weight:700;color:#ea4335;margin-bottom:8px">Creditos insuficientes</p><p style="font-size:12px;color:#555;margin-bottom:10px">Voce precisa de 10 creditos ou sua propria chave Groq gratuita.</p><button onclick="nav(\'more\');setTimeout(function(){renderMore(\'setup\');},50)" style="padding:10px 16px;background:#1a73e8;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Ver Planos e Configurar</button></div>';btn.disabled=false;btn.innerHTML=svg('cpu','14','#fff')+' Analisar com IA';return;}
+  var iaHeaders={'Content-Type':'application/json'};
+  if(S.aiKey){iaHeaders['x-api-key']=S.aiKey;iaHeaders['x-ai-provider']=S.aiProvider;}
+  fetch('/api/ia?action=analisar',{method:'POST',headers:iaHeaders,body:JSON.stringify({nome:nome,segmento:seg,cidade:cidade,problema:prob})})
   .then(function(r){return r.json();})
   .then(function(d){
     btn.disabled=false;btn.innerHTML=svg('cpu','14','#fff')+' Analisar com IA';
-    if(!d.ok||!d.analise){res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="color:#ea4335;font-size:13px">'+(d.error||'Erro desconhecido')+'. Verifique se ANTHROPIC_API_KEY esta configurada no Vercel.</p></div>';SFX.error();return;}
+    if(!d.ok||!d.analise){res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="color:#ea4335;font-size:13px">'+(d.error||'Erro desconhecido')+'</p>'+(d.instrucoes?'<p style="font-size:12px;color:#555;margin-top:6px">Configure sua chave Groq gratuita em Configuracoes.</p>':'')+'</div>';SFX.error();return;}
+    if(d.credits!==null&&d.credits!==undefined){S.credits=d.credits;save();updateHeader();}else if(!S.aiKey){S.credits=Math.max(0,S.credits-10);save();updateHeader();}
     var a=d.analise;
     SFX.complete();addXP(30,'Analise concluida!');
     var scorePercent=Math.round((a.score/100)*360)+'deg';
@@ -1511,11 +1610,15 @@ function gerarLanding(){
   btn.disabled=true;btn.textContent='Gerando pagina...';
   SFX.generate();
   res.innerHTML='<div style="text-align:center;padding:24px"><div style="width:28px;height:28px;border:3px solid #e8e8e8;border-top-color:#ea4335;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px"></div><p style="font-size:13px;color:#888">IA criando landing page profissional... 20-40s</p></div>';
-  fetch('/api/gerar-landing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({negocio:nome,segmento:seg,cidade:cidade,whatsapp:wa,servicos:servicos,cor:cor})})
+  if(S.credits<15&&!S.aiKey){res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="font-size:13px;font-weight:700;color:#ea4335;margin-bottom:8px">Creditos insuficientes (precisa 15)</p><button onclick="nav(\'more\');setTimeout(function(){renderMore(\'setup\');},50)" style="padding:10px 16px;background:#1a73e8;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">Ver Planos</button></div>';btn.disabled=false;btn.innerHTML=svg('layout','14','#fff')+' Gerar Landing Page';return;}
+  var iaHdrs={'Content-Type':'application/json'};
+  if(S.aiKey){iaHdrs['x-api-key']=S.aiKey;iaHdrs['x-ai-provider']=S.aiProvider;}
+  fetch('/api/ia?action=landing',{method:'POST',headers:iaHdrs,body:JSON.stringify({negocio:nome,segmento:seg,cidade:cidade,whatsapp:wa,servicos:servicos,cor:cor})})
   .then(function(r){return r.json();})
   .then(function(d){
     btn.disabled=false;btn.innerHTML=svg('layout','14','#fff')+' Gerar Landing Page';
-    if(!d.ok||!d.html){res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="color:#ea4335;font-size:13px">'+(d.error||'Erro desconhecido')+'. Verifique ANTHROPIC_API_KEY no Vercel.</p></div>';SFX.error();return;}
+    if(!d.ok||!d.html){res.innerHTML='<div class="cd" style="border-color:#ea4335"><p style="color:#ea4335;font-size:13px">'+(d.error||'Erro desconhecido')+'</p></div>';SFX.error();return;}
+    if(d.credits!==null&&d.credits!==undefined){S.credits=d.credits;save();updateHeader();}else if(!S.aiKey){S.credits=Math.max(0,S.credits-15);save();updateHeader();}
     SFX.levelup();addXP(50,'Landing page criada!');addCash(10,'Landing gerada');
     var blob=new Blob([d.html],{type:'text/html'});
     var url=URL.createObjectURL(blob);
@@ -1583,6 +1686,29 @@ function usarTemplate(i){
 function abrirWADireto(encoded){
   window.open('https://wa.me/?text='+encoded,'_blank');
   SFX.click();
+}
+
+/* ═══════ SETUP IA ═══════ */
+function salvarChaveIA(){
+  var key=(document.getElementById('ai-key-input')||{}).value||'';
+  var prov=(document.getElementById('ai-prov')||{}).value||'groq';
+  S.aiKey=key.trim();
+  S.aiProvider=prov;
+  save();
+  SFX.success();
+  if(S.aiKey){
+    showToast('Chave salva! IA ilimitada ativada.');
+    addXP(20,'Chave de IA configurada');
+  } else {
+    showToast('Chave removida. Usando creditos.');
+  }
+}
+
+function copiarSetupCmd(){
+  var cmd='npm install -g @gitlawb/openclaude@latest\nopenclaude';
+  try{navigator.clipboard.writeText(cmd);}catch(e){}
+  SFX.success();
+  showToast('Comando copiado!');
 }
 
 /* ═══════ LGPD ═══════ */
