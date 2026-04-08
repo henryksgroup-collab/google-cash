@@ -6,7 +6,23 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@upstash/redis": "^1.34.0"
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
+    "@modelcontextprotocol/server-brave-search": "^0.6.2",
+    "@modelcontextprotocol/server-filesystem": "^2026.1.14",
+    "@modelcontextprotocol/server-github": "^2025.4.8",
+    "@modelcontextprotocol/server-google-maps": "^0.6.2",
+    "@modelcontextprotocol/server-memory": "^2026.1.26",
+    "@modelcontextprotocol/server-slack": "^2025.4.25",
+    "@upstash/context7-mcp": "^2.1.7",
+    "@upstash/redis": "^1.34.0",
+    "@wppconnect-team/wppconnect": "^1.41.1",
+    "deepl-node": "^1.25.0",
+    "elevenlabs": "^1.59.0",
+    "fabric": "^7.2.0",
+    "lottie-web": "^5.13.0",
+    "posthog-js": "^1.365.1",
+    "replicate": "^1.4.0"
   },
   "devDependencies": {
     "web-push": "^3.6.7"

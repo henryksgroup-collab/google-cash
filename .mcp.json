@@ -3,12 +3,12 @@
     "memory": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-memory"],
-      "description": "Persistent knowledge graph memory — lembra de tudo sobre clientes e o projeto"
+      "description": "Grafo de conhecimento persistente — lembra clientes, estrategias, contexto entre sessoes"
     },
     "fetch": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-fetch"],
-      "description": "Faz requisicoes HTTP — busca precos, verifica sites de clientes, scraping leve"
+      "args": ["-y", "mcp-server-fetch"],
+      "description": "HTTP requests — verifica sites de clientes, busca dados publicos, testa endpoints"
     },
     "filesystem": {
       "command": "npx",
@@ -17,17 +17,41 @@
         "@modelcontextprotocol/server-filesystem",
         "C:\\Users\\craft\\Desktop\\Google Cash"
       ],
-      "description": "Acesso ao sistema de arquivos do projeto"
+      "description": "Acesso completo ao projeto — ler, editar, criar qualquer arquivo sem perguntar"
     },
     "context7": {
       "command": "npx",
       "args": ["-y", "@upstash/context7-mcp"],
-      "description": "Documentacao atualizada de qualquer biblioteca — zero hallucination"
+      "description": "Docs atualizadas de qualquer biblioteca — usa SEMPRE antes de implementar algo novo"
     },
     "playwright": {
       "command": "npx",
       "args": ["-y", "@playwright/mcp"],
-      "description": "Automacao de browser — testa o app, scraping, screenshots automaticos"
+      "description": "Browser automation — testa o app, tira screenshots, scraping de GMB e concorrentes"
+    },
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "GitHub — cria PRs, commita codigo, gerencia issues, acessa repositorios"
+    },
+    "brave-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": "${BRAVE_API_KEY}"
+      },
+      "description": "Pesquisa web — busca concorrentes, pesquisa mercado, encontra informacoes de clientes"
+    },
+    "google-maps": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-google-maps"],
+      "env": {
+        "GOOGLE_MAPS_API_KEY": "${GOOGLE_MAPS_API_KEY}"
+      },
+      "description": "Google Maps — busca concorrentes no raio, analisa localizacao, prospecta empresas"
     }
   }
 }
