@@ -5,7 +5,7 @@
 */
 const { Redis } = require('@upstash/redis');
 
-const COSTS = { analisar: 10, landing: 15, video: 20 };
+const COSTS = { analisar: 10, landing: 15, video: 20, chat: 5 };
 
 // Modelos Groq gratuitos (sem custo para o usuario, sem custo para o dono)
 const GROQ_MODELS = {
@@ -219,6 +219,66 @@ Retorne APENAS o HTML completo iniciando com <!DOCTYPE html>`;
         meta: { negocio, cidade, whatsapp: waNum, waLink, cor: corPrimaria },
         credits: creditsRemaining
       });
+    }
+
+    /* ── CHAT COM CLAUDE ── */
+    if (action === 'chat') {
+      const { messages } = body;
+      if (!messages || !messages.length) return res.status(400).json({ error: 'messages obrigatorio' });
+
+      const anthropicKey = process.env.ANTHROPIC_API_KEY;
+      if (!anthropicKey) return res.status(500).json({
+        ok: false,
+        error: 'ANTHROPIC_API_KEY nao configurada. Va em Vercel Dashboard > Settings > Environment Variables e adicione ANTHROPIC_API_KEY com sua chave de https://console.anthropic.com',
+        setup: true
+      });
+
+      const system = `Voce e o assistente IA do Google Cash — plataforma brasileira para consultores de marketing digital local.
+
+CAPACIDADES:
+1. IMAGENS: Quando pedido criativo/imagem, crie prompt descritivo em ingles e exiba assim:
+![Criativo](https://image.pollinations.ai/prompt/PROMPT_URL_ENCODED?width=1080&height=1080&model=flux&nologo=true&seed=NUMERO_ALEATORIO)
+Substitua PROMPT_URL_ENCODED pelo prompt codificado (encodeURIComponent) e NUMERO_ALEATORIO por numero aleatorio de 5 digitos. Sempre inclua: advertisement poster high quality photorealistic text-free no text no watermark
+
+2. LANDING PAGES: Quando pedido, retorne HTML COMPLETO iniciando com \`\`\`html e terminando com \`\`\`. Deve ser pagina profissional mobile-first com CSS inline, sem dependencias externas.
+
+3. ANALISE: Score de presenca digital (0-100), problemas encontrados, oportunidades, proposta de valor pronta e script de WhatsApp.
+
+4. ESTRATEGIA: Google Ads, Meta Ads, TikTok Ads, Google Meu Negocio para negocios locais brasileiros.
+
+5. SCRIPTS: Mensagens de prospeccao e abordagem via WhatsApp.
+
+REGRAS:
+- Responda SEMPRE em portugues brasileiro
+- Seja direto, pratico e amigavel
+- Para imagens, SEMPRE inclua a URL do Pollinations como imagem markdown completa
+- Foque em pequenos negocios locais do Brasil
+- Seja especifico com exemplos praticos`;
+
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': anthropicKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'claude-opus-4-5',
+          max_tokens: 4096,
+          system,
+          messages: messages.slice(-12).map(function(m) { return { role: m.role, content: m.content }; })
+        })
+      });
+
+      if (!r.ok) {
+        const errTxt = await r.text();
+        console.error('[IA:chat] Anthropic error:', r.status, errTxt.slice(0, 200));
+        return res.status(500).json({ ok: false, error: 'Erro Claude ' + r.status + '. Verifique sua ANTHROPIC_API_KEY.' });
+      }
+
+      const d = await r.json();
+      const text = d?.content?.[0]?.text || '';
+      return res.status(200).json({ ok: true, text, credits: creditsRemaining });
     }
 
     return res.status(400).json({ error: 'Action nao implementado: ' + action });

@@ -385,6 +385,7 @@ var S={
   doneMissions:JSON.parse(localStorage.getItem('gc_dm_'+todayKey())||'[]'),
   simDone:localStorage.getItem('gc_simd_'+todayKey())==='1',
   genHistory:JSON.parse(localStorage.getItem('gc_genh')||'[]'),
+  chatHistory:JSON.parse(localStorage.getItem('gc_chat')||'[]'),
   lgpdOk:localStorage.getItem('gc_lgpd')==='1',
   currentView:'home',
   selectedMod:null
@@ -402,6 +403,8 @@ function save(){
   localStorage.setItem('gc_dm_'+todayKey(),JSON.stringify(S.doneMissions));
   if(S.simDone) localStorage.setItem('gc_simd_'+todayKey(),'1');
   localStorage.setItem('gc_genh',JSON.stringify(S.genHistory.slice(0,8)));
+  localStorage.setItem('gc_chat',JSON.stringify((S.chatHistory||[]).slice(-50)));
+  localStorage.setItem('gc_chat',JSON.stringify((S.chatHistory||[]).slice(-50)));
   localStorage.setItem('gc_credits',S.credits);
   if(S.aiKey) localStorage.setItem('gc_aikey',S.aiKey);
   if(S.aiProvider) localStorage.setItem('gc_aiprov',S.aiProvider);
@@ -486,7 +489,7 @@ function nav(v){
   document.querySelectorAll('.nb').forEach(function(el){el.classList.toggle('a',el.dataset.v===v);});
   if(v==='home') renderHome();
   else if(v==='modules') renderModulesList();
-  else if(v==='criar') renderCriar('imagem');
+  else if(v==='criar') renderCriar();
   else if(v==='clients') renderClients();
   else if(v==='plan') renderPlan('notes');
   else if(v==='more') renderMore('scripts');
@@ -681,266 +684,120 @@ var PROMPTS=[
   ]}
 ];
 
-/* ═══════ CRIAR IA ═══════ */
-var _criarTab='imagem';
-function renderCriar(tab){
-  _criarTab=tab||_criarTab;
-  var el=document.getElementById('s-criar');
-  var tabs=[
-    {v:'imagem',l:'Criativo',ic:'image',c:'#7c3aed'},
-    {v:'video',l:'Video',ic:'video',c:'#f9ab00'},
-    {v:'landing',l:'Landing',ic:'layout',c:'#ea4335'},
-    {v:'analise',l:'Analise',ic:'cpu',c:'#1a73e8'}
-  ];
-  var h='<div style="padding-bottom:2px">';
-  h+='<p style="font-size:18px;font-weight:800;color:#202124;margin-bottom:4px">Criar com IA</p>';
-  h+='<p style="font-size:12px;color:#888;margin-bottom:14px">Gere imagens, videos, landing pages e analises para seus clientes</p>';
-  h+='<div style="display:flex;gap:6px;margin-bottom:16px">';
-  tabs.forEach(function(t){
-    var a=_criarTab===t.v;
-    h+='<button onclick="renderCriar(\''+t.v+'\')" style="flex:1;padding:9px 4px;border-radius:10px;border:.5px solid '+(a?t.c:'#e8e8e8')+';background:'+(a?t.c+'15':'#fff')+';color:'+(a?t.c:'#888')+';font-size:11px;font-weight:'+(a?'800':'500')+';cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:4px">'+svg(t.ic,'14',a?t.c:'#bbb')+t.l+'</button>';
-  });
-  h+='</div>';
+/* === CRIAR IA - CHAT COM CLAUDE === */
+window._chatTyping=false;
 
-  /* ── IMAGEM ── */
-  if(_criarTab==='imagem'){
-    h+='<div class="cd" style="margin-bottom:10px;border-color:#7c3aed30">';
-    h+='<p style="font-size:14px;font-weight:700;margin-bottom:4px">'+svg('image','14','#7c3aed')+' Criativo de Anuncio</p>';
-    h+='<div style="background:#f5f3ff;border-radius:8px;padding:10px 12px;margin-bottom:12px;border-left:3px solid #7c3aed">';
-    h+='<p style="font-size:11px;font-weight:700;color:#7c3aed;margin:0 0 3px">Como usar</p>';
-    h+='<p style="font-size:12px;color:#555;margin:0;line-height:1.6">1. Escolha o nicho do cliente<br>2. Selecione o formato e estilo<br>3. Clique em Gerar — aparece em segundos<br>4. Baixe a imagem e use no Instagram, Stories ou Canva<br><strong>Custo: Gratis, sem limite de geracao</strong></p>';
-    h+='</div>';
-    var nichos=[{l:'Barbearia',p:'barbershop storefront professional'},{l:'Restaurante',p:'restaurant food advertisement gourmet'},{l:'Clinica',p:'medical clinic professional clean'},{l:'Pet Shop',p:'pet shop advertisement cute animals'},{l:'Academia',p:'gym fitness advertisement motivational'},{l:'Salao de Beleza',p:'beauty salon elegant glamour'},{l:'Farmacia',p:'pharmacy professional health'},{l:'Pizzaria',p:'pizza restaurant italian style'},{l:'Escola',p:'school education bright inspiring'},{l:'Advocacia',p:'law firm professional navy gold'}];
-    var fmts=[{l:'Instagram 1:1',w:1080,h:1080},{l:'Stories 9:16',w:1080,h:1920},{l:'Capa 16:9',w:1920,h:1080}];
-    var estilos=[{l:'Profissional',p:'professional corporate minimal'},{l:'Vibrante',p:'vibrant colorful energetic'},{l:'Elegante',p:'elegant luxury premium'},{l:'Moderno',p:'modern futuristic gradient'}];
-    h+='<p class="slbl">Nicho</p><div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">';
-    nichos.forEach(function(n,i){h+='<button onclick="gcSetNicho('+i+')" id="gn'+i+'" style="padding:5px 9px;border-radius:20px;border:.5px solid #e8e8e8;font-size:11.5px;cursor:pointer;background:#f8f9fa;color:#444;transition:all .15s;font-family:inherit">'+n.l+'</button>';});
-    h+='</div><p class="slbl">Formato</p><div style="display:flex;gap:5px;margin-bottom:10px">';
-    fmts.forEach(function(f,i){h+='<button onclick="gcSetFmt('+i+')" id="gf'+i+'" style="flex:1;padding:6px 4px;border-radius:8px;border:.5px solid '+(i===0?'#7c3aed':'#e8e8e8')+';font-size:11px;cursor:pointer;background:'+(i===0?'#f5f3ff':'#f8f9fa')+';color:'+(i===0?'#7c3aed':'#444')+';transition:all .15s;font-family:inherit">'+f.l+'</button>';});
-    h+='</div><p class="slbl">Estilo</p><div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">';
-    estilos.forEach(function(e,i){h+='<button onclick="gcSetEstilo('+i+')" id="ge'+i+'" style="padding:5px 9px;border-radius:20px;border:.5px solid '+(i===0?'#7c3aed':'#e8e8e8')+';font-size:11.5px;cursor:pointer;background:'+(i===0?'#f5f3ff':'#f8f9fa')+';color:'+(i===0?'#7c3aed':'#444')+';transition:all .15s;font-family:inherit">'+e.l+'</button>';});
-    h+='</div>';
-    h+='<input id="gc-custom-prompt" type="text" placeholder="Detalhe extra: fundo preto, logo branca..." style="width:100%;padding:9px 12px;border-radius:10px;border:.5px solid #e8e8e8;font-size:13px;margin-bottom:10px;outline:none;font-family:inherit;box-sizing:border-box">';
-    h+='<button onclick="gcGerarCriar()" style="width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#1a73e8);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">'+svg('image','14','#fff')+' Gerar Criativo Gratis</button>';
-    h+='<div id="gc-result" style="margin-top:12px"></div></div>';
-    if(S.genHistory&&S.genHistory.length>0){
-      h+='<div class="cd" style="margin-bottom:10px"><p style="font-size:13px;font-weight:700;margin-bottom:8px">Historico</p><div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">';
-      S.genHistory.slice(0,6).forEach(function(u){h+='<a href="'+u+'" target="_blank"><img src="'+u+'" style="width:72px;height:72px;object-fit:cover;border-radius:10px;border:.5px solid #e8e8e8;flex-shrink:0"></a>';});
-      h+='</div></div>';
-    }
+function renderCriar(){
+  var el=document.getElementById("s-criar");
+  if(!S.chatHistory)S.chatHistory=[];
+  var h="<div style=\"display:flex;flex-direction:column;height:calc(100vh - 116px)\">";
+  h+="<div style=\"padding:12px 16px 10px;background:#fff;border-bottom:.5px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0\">";
+  h+="<div><p style=\"font-size:17px;font-weight:800;color:#202124;margin:0 0 1px\">Assistente Claude</p><p style=\"font-size:11px;color:#888;margin:0\">Criativos, landing pages, analises e mais</p></div>";
+  h+="<span style=\"background:#e8f5e9;border:.5px solid #34a853;border-radius:99px;padding:4px 10px;font-size:11px;font-weight:700;color:#34a853\">Claude ativo</span>";
+  h+="<button onclick=\"showMcpSetup()\" style=\"background:#f0f0f0;border:none;border-radius:99px;padding:5px 11px;font-size:11px;color:#555;cursor:pointer;font-family:inherit;margin-left:6px\">Ferramentas</button>";
+  h+="</div>";
+  h+="<div id=\"chat-msgs\" style=\"flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f7f8fc\">";
+  if(S.chatHistory.length===0){
+    h+=gcBubble("Ola! Sou o assistente Claude. Posso:<br><strong>Criar criativos</strong> &mdash; imagens para Instagram, Stories e Reels<br><strong>Gerar landing pages</strong> &mdash; HTML completo, baixe e hospede gratis<br><strong>Analisar empresas</strong> &mdash; score digital, problemas, proposta pronta<br><strong>Escrever scripts</strong> &mdash; mensagens de prospeccao para WhatsApp<br><br>O que voce precisa hoje?");
+  } else { S.chatHistory.forEach(function(m){h+=gcRenderMsg(m);}); }
+  if(window._chatTyping){
+    h+="<div style=\"display:flex;gap:8px;align-items:flex-end\"><div style=\"width:30px;height:30px;background:linear-gradient(135deg,#1a73e8,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0\">"+svg("cpu","12","#fff")+"</div><div style=\"background:#fff;border-radius:16px 16px 16px 2px;padding:12px 16px;box-shadow:0 1px 6px rgba(0,0,0,.08)\"><span style=\"width:7px;height:7px;background:#1a73e8;border-radius:50%;display:inline-block;animation:chatdot .7s .0s infinite alternate;margin:0 2px\"></span><span style=\"width:7px;height:7px;background:#1a73e8;border-radius:50%;display:inline-block;animation:chatdot .7s .15s infinite alternate;margin:0 2px\"></span><span style=\"width:7px;height:7px;background:#1a73e8;border-radius:50%;display:inline-block;animation:chatdot .7s .3s infinite alternate;margin:0 2px\"></span></div></div>";
   }
-
-  /* ── VIDEO ── */
-  if(_criarTab==='video'){
-    h+='<div class="cd" style="margin-bottom:10px;border-color:#f9ab0030">';
-    h+='<p style="font-size:14px;font-weight:700;margin-bottom:4px">'+svg('video','14','#f9ab00')+' Video de Anuncio</p>';
-    h+='<div style="background:#fffbf0;border-radius:8px;padding:10px 12px;margin-bottom:12px;border-left:3px solid #f9ab00">';
-    h+='<p style="font-size:11px;font-weight:700;color:#f9ab00;margin:0 0 3px">Como usar + Ativar</p>';
-    h+='<p style="font-size:12px;color:#555;margin:0;line-height:1.6">1. Va em <a href="https://replicate.com" target="_blank" style="color:#1a73e8">replicate.com</a> e crie conta gratis<br>2. Gere um API Token em <strong>Account &gt; API Tokens</strong><br>3. No <a href="https://vercel.com/dashboard" target="_blank" style="color:#1a73e8">Vercel Dashboard</a> va em Settings &gt; Env Vars<br>4. Adicione: <code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:10px">REPLICATE_API_TOKEN = r8_xxx</code><br>5. Volte aqui e gere o video<br><strong>Custo: 20 creditos por video</strong></p>';
-    h+='</div>';
-    h+='<p class="slbl">Nicho do cliente</p>';
-    h+='<select id="vid-nicho" style="width:100%;padding:10px;border-radius:10px;border:.5px solid #e8e8e8;font-size:13px;font-family:inherit;margin-bottom:10px;outline:none">';
-    ['Barbearia','Restaurante','Clinica','Academia','Salao de Beleza','Pet Shop','Pizzaria','Escola','Farmacia'].forEach(function(n){h+='<option>'+n+'</option>';});
-    h+='</select>';
-    h+='<p class="slbl">Formato do video</p>';
-    h+='<div style="display:flex;gap:6px;margin-bottom:12px">';
-    [{l:'Vertical 9:16',v:'vertical'},{l:'Quadrado 1:1',v:'quadrado'},{l:'Horizontal 16:9',v:'horizontal'}].forEach(function(f,i){
-      h+='<button onclick="document.querySelectorAll(\'.vid-fmt-btn\').forEach(function(b){b.style.background=\'#f8f9fa\';b.style.borderColor=\'#e8e8e8\';b.style.color=\'#444\'});this.style.background=\'#fffbf0\';this.style.borderColor=\'#f9ab00\';this.style.color=\'#f9ab00\';window._vidFmt=\''+f.v+'\';" class="vid-fmt-btn" style="flex:1;padding:8px 4px;border-radius:8px;border:.5px solid '+(i===0?'#f9ab00':'#e8e8e8')+';font-size:11px;cursor:pointer;background:'+(i===0?'#fffbf0':'#f8f9fa')+';color:'+(i===0?'#f9ab00':'#444')+';font-family:inherit">'+f.l+'</button>';
-    });
-    h+='</div>';
-    h+='<button onclick="gerarVideoCriar()" style="width:100%;padding:13px;background:linear-gradient(135deg,#f9ab00,#ea4335);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">'+svg('video','14','#fff')+' Gerar Video (20 cr)</button>';
-    h+='<div id="vid-result" style="margin-top:10px"></div></div>';
+  h+="</div>";
+  if(S.chatHistory.length===0){
+    var sugs=["Criativo barbearia Instagram","Landing page restaurante SP","Analise academia em BH","Script WhatsApp para clinicas"];
+    h+="<div style=\"display:flex;gap:5px;overflow-x:auto;padding:8px 12px;border-top:.5px solid #eee;background:#fafafa;flex-shrink:0\">";
+    sugs.forEach(function(sug){h+='<button onclick="gcSendSuggestion('+JSON.stringify(sug)+')" style="white-space:nowrap;padding:6px 12px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#444;font-size:11.5px;cursor:pointer;font-family:inherit;flex-shrink:0">'+sug+'</button>';});
+    h+="</div>";
   }
-
-  /* ── LANDING ── */
-  if(_criarTab==='landing'){
-    h+='<div class="cd" style="margin-bottom:10px;border-color:#ea433530">';
-    h+='<p style="font-size:14px;font-weight:700;margin-bottom:4px">'+svg('layout','14','#ea4335')+' Landing Page com IA</p>';
-    h+='<div style="background:#fef2f2;border-radius:8px;padding:10px 12px;margin-bottom:12px;border-left:3px solid #ea4335">';
-    h+='<p style="font-size:11px;font-weight:700;color:#ea4335;margin:0 0 3px">Como usar + Ativar</p>';
-    h+='<p style="font-size:12px;color:#555;margin:0;line-height:1.6">1. Preencha os dados do cliente<br>2. A IA gera uma pagina HTML completa em 30s<br>3. Baixe o arquivo e hospede no <a href="https://netlify.com" target="_blank" style="color:#1a73e8">Netlify</a> (gratis, arraste e solte)<br>4. Mostre o link pro cliente — isso fecha vendas!<br><strong>Ativar:</strong> configure <code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:10px">GROQ_API_KEY</code> no Vercel<br><strong>Custo: 15 creditos</strong></p>';
-    h+='</div>';
-    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Nome da empresa</label>';
-    h+='<input id="lp-nome" class="inp mb" type="text" placeholder="Ex: Barbearia do Joao">';
-    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Segmento</label>';
-    h+='<input id="lp-seg" class="inp mb" type="text" placeholder="Ex: Barbearia, Clinica...">';
-    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Cidade</label>';
-    h+='<input id="lp-cidade" class="inp mb" type="text" placeholder="Ex: Sao Paulo, SP">';
-    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">WhatsApp do cliente</label>';
-    h+='<input id="lp-wa" class="inp mb" type="text" placeholder="Ex: 11999999999">';
-    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Servicos (separados por virgula)</label>';
-    h+='<input id="lp-servicos" class="inp mb" type="text" placeholder="Ex: Corte, Barba, Sobrancelha">';
-    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Cor principal</label>';
-    h+='<select id="lp-cor" class="inp mb"><option value="#1a73e8">Azul profissional</option><option value="#ea4335">Vermelho vibrante</option><option value="#34a853">Verde moderno</option><option value="#202124">Preto elegante</option><option value="#7c3aed">Roxo premium</option><option value="#f9ab00">Amarelo energetico</option></select>';
-    h+='<button onclick="gerarLandingCriar()" style="width:100%;padding:13px;background:linear-gradient(135deg,#ea4335,#f9ab00);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">'+svg('layout','14','#fff')+' Gerar Landing Page (15 cr)</button>';
-    h+='<div id="lp-result" style="margin-top:10px"></div></div>';
-  }
-
-  /* ── ANALISE ── */
-  if(_criarTab==='analise'){
-    h+='<div class="cd" style="margin-bottom:10px;border-color:#1a73e830">';
-    h+='<p style="font-size:14px;font-weight:700;margin-bottom:4px">'+svg('cpu','14','#1a73e8')+' Analise de Empresa com IA</p>';
-    h+='<div style="background:#e8f0fe;border-radius:8px;padding:10px 12px;margin-bottom:12px;border-left:3px solid #1a73e8">';
-    h+='<p style="font-size:11px;font-weight:700;color:#1a73e8;margin:0 0 3px">Como usar + Ativar</p>';
-    h+='<p style="font-size:12px;color:#555;margin:0;line-height:1.6">1. Preencha os dados da empresa<br>2. A IA gera: score de presenca digital, problemas encontrados, palavras-chave, proposta pronta e script de WhatsApp<br>3. Use a proposta para fechar o cliente<br><strong>Ativar:</strong> configure <code style="background:#dde8fc;padding:1px 5px;border-radius:3px;font-size:10px">GROQ_API_KEY</code> no Vercel ou use sua chave propria em Setup<br><strong>Custo: 10 creditos</strong></p>';
-    h+='</div>';
-    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Nome da empresa</label>';
-    h+='<input id="an-nome" class="inp mb" type="text" placeholder="Ex: Barbearia do Joao">';
-    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Segmento</label>';
-    h+='<input id="an-seg" class="inp mb" type="text" placeholder="Ex: Barbearia">';
-    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Cidade</label>';
-    h+='<input id="an-cidade" class="inp mb" type="text" placeholder="Ex: Campinas, SP">';
-    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Problema principal do cliente (opcional)</label>';
-    h+='<input id="an-prob" class="inp mb" type="text" placeholder="Ex: nao aparece no Google">';
-    h+='<button onclick="rodarAnaliseCriar()" id="an-btn" style="width:100%;padding:13px;background:linear-gradient(135deg,#1a73e8,#34a853);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">'+svg('cpu','14','#fff')+' Analisar Empresa (10 cr)</button>';
-    h+='<div id="an-result" style="margin-top:10px"></div></div>';
-  }
-
-  h+='</div>';
+  h+="<div style=\"display:flex;gap:8px;padding:10px 12px;border-top:.5px solid #eee;background:#fff;align-items:flex-end;flex-shrink:0\">";
+  if(S.chatHistory.length>0)h+="<button onclick=\"gcLimparChat()\" style=\"background:#f5f5f5;border:none;border-radius:10px;padding:9px;cursor:pointer;flex-shrink:0\" title=\"Novo chat\">"+svg("trash","14","#aaa")+"</button>";
+  h+="<textarea id=\"chat-inp\" placeholder=\"Peca um criativo, landing page, analise...\" rows=\"2\" style=\"flex:1;padding:10px 13px;border-radius:14px;border:.5px solid #e0e0e0;font-size:13px;font-family:inherit;resize:none;outline:none;background:#f7f8fa;line-height:1.4;max-height:80px\" onkeydown=\"if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();gcSendChat();}\"></textarea>";
+  h+="<button onclick=\"gcSendChat()\" style=\"width:42px;height:42px;min-width:42px;background:linear-gradient(135deg,#1a73e8,#7c3aed);border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center\">"+svg("zap","16","#fff")+"</button></div></div>";
   el.innerHTML=h;
-  if(_criarTab==='imagem'){window._gcNichos=[{l:"Barbearia",p:"barbershop storefront professional"},{l:"Restaurante",p:"restaurant food advertisement gourmet"},{l:"Clinica",p:"medical clinic professional clean"},{l:"Pet Shop",p:"pet shop advertisement cute animals"},{l:"Academia",p:"gym fitness advertisement motivational"},{l:"Salao de Beleza",p:"beauty salon elegant glamour"},{l:"Farmacia",p:"pharmacy professional health"},{l:"Pizzaria",p:"pizza restaurant italian style"},{l:"Escola",p:"school education bright inspiring"},{l:"Advocacia",p:"law firm professional navy gold"}];window._gcFmts=[{l:"Instagram 1:1",w:1080,h:1080},{l:"Stories 9:16",w:1080,h:1920},{l:"Capa 16:9",w:1920,h:1080}];window._gcEstilos=[{l:"Profissional",p:"professional corporate minimal"},{l:"Vibrante",p:"vibrant colorful energetic"},{l:"Elegante",p:"elegant luxury premium"},{l:"Moderno",p:"modern futuristic gradient"}];window._gcSelN=null;window._gcSelF=0;window._gcSelE=0;}
-  if(_criarTab==='video'){window._vidFmt='vertical';}
+  if(!document.getElementById("chat-css")){var st=document.createElement("style");st.id="chat-css";st.textContent="@keyframes chatdot{0%{opacity:.3;transform:translateY(0)}100%{opacity:1;transform:translateY(-4px)}}";document.head.appendChild(st);}
+  requestAnimationFrame(function(){var m=document.getElementById("chat-msgs");if(m)m.scrollTop=m.scrollHeight;});
 }
 
-/* gerar criativo da secao Criar */
-function gcGerarCriar(){
-  var res=document.getElementById('gc-result');
-  if(!res)return;
-  if(window._gcSelN===null){showToast('Escolha um nicho primeiro');return;}
-  var nicho=window._gcNichos[window._gcSelN];
-  var fmt=window._gcFmts[window._gcSelF||0];
-  var estilo=window._gcEstilos[window._gcSelE||0];
-  var custom=(document.getElementById('gc-custom-prompt')||{}).value||'';
-  var prompt=nicho.p+', '+estilo.p+(custom?', '+custom:'')+', advertisement poster, high quality, photorealistic, text-free no text no watermark';
-  var seed=Math.floor(Math.random()*99999);
-  var url='https://image.pollinations.ai/prompt/'+encodeURIComponent(prompt)+'?width='+fmt.w+'&height='+fmt.h+'&model=flux&nologo=true&seed='+seed;
-  res.innerHTML='<div style="text-align:center;padding:20px"><div style="width:28px;height:28px;border:3px solid #e8e8e8;border-top-color:#7c3aed;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div><p style="font-size:12px;color:#888">Gerando imagem gratis...</p></div>';
-  SFX.generate();
-  var img=new Image();
-  img.onload=function(){
-    if(!S.genHistory) S.genHistory=[];
-    S.genHistory.unshift(url);S.genHistory=S.genHistory.slice(0,8);save();
-    addXP(5,'Criativo gerado!');SFX.success();
-    res.innerHTML='<div style="border-radius:12px;overflow:hidden;margin-bottom:10px"><img src="'+url+'" style="width:100%;display:block;border-radius:12px"></div>'
-      +'<div style="display:flex;gap:8px">'
-      +'<a href="'+url+'" target="_blank" download style="flex:1;padding:10px;background:#7c3aed;color:#fff;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">Baixar imagem</a>'
-      +'<button onclick="gcGerarCriar()" style="flex:1;padding:10px;background:#e8f0fe;color:#1a73e8;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">Gerar outra</button>'
-      +'</div>';
-  };
-  img.onerror=function(){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">Erro ao gerar. Tente novamente.</p></div>';SFX.error();};
-  img.src=url;
+function gcBubble(html){
+  return "<div style=\"display:flex;gap:8px;align-items:flex-end\"><div style=\"width:30px;height:30px;background:linear-gradient(135deg,#1a73e8,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0\">"+svg("cpu","12","#fff")+"</div><div style=\"background:#fff;border-radius:16px 16px 16px 2px;padding:12px 14px;max-width:84%;box-shadow:0 1px 6px rgba(0,0,0,.07)\"><div style=\"font-size:13px;color:#202124;line-height:1.6\">"+html+"</div></div></div>";
 }
 
-/* gerar video da secao Criar */
-function gerarVideoCriar(){
-  var nicho=(document.getElementById('vid-nicho')||{}).value||'barbearia';
-  var formato=window._vidFmt||'vertical';
-  var res=document.getElementById('vid-result');
-  if(!res)return;
-  if(S.credits<20&&!S.aiKey){
-    res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="color:#ea4335;font-size:12px;margin:0">Creditos insuficientes (20 cr). Configure sua chave Groq gratis em Mais > Setup IA.</p></div>';return;
-  }
-  res.innerHTML='<div style="text-align:center;padding:20px"><div style="width:26px;height:26px;border:3px solid #e8e8e8;border-top-color:#f9ab00;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div><p style="font-size:12px;color:#888">Gerando video... 30-60s</p></div>';
-  var h2={'Content-Type':'application/json'};
-  if(S.userToken) h2['x-user-token']=S.userToken;
-  fetch('/api/gerar-video',{method:'POST',headers:h2,body:JSON.stringify({nicho:nicho,formato:formato})})
+function gcRenderMsg(m){
+  if(m.role==="user"){return "<div style=\"display:flex;justify-content:flex-end\"><div style=\"background:linear-gradient(135deg,#1a73e8,#7c3aed);border-radius:16px 16px 2px 16px;padding:10px 14px;max-width:82%\"><p style=\"font-size:13px;color:#fff;margin:0;line-height:1.5;white-space:pre-wrap\">"+gcEsc(m.content)+"</p></div></div>";}
+  return gcBubble(gcMarkdown(m.content));
+}
+
+function gcMarkdown(text){
+  text=text.replace(/```html\n?([\s\S]*?)```/g,function(match,html){
+    try{var blob=new Blob([html],{type:"text/html"});var burl=URL.createObjectURL(blob);
+      return "<div style=\"margin:8px 0;background:#e8f0fe;border-radius:10px;padding:12px\"><p style=\"font-size:11px;font-weight:700;color:#1a73e8;margin:0 0 8px\">Landing Page gerada</p><div style=\"display:flex;gap:6px\">"+"<a href=\""+burl+"\" target=\"_blank\" style=\"flex:1;padding:8px;background:#1a73e8;color:#fff;text-decoration:none;border-radius:8px;font-size:12px;font-weight:700;text-align:center\">Visualizar</a>"+"<a href=\""+burl+"\" download=\"landing.html\" style=\"flex:1;padding:8px;background:#fff;color:#1a73e8;text-decoration:none;border-radius:8px;font-size:12px;font-weight:700;text-align:center;border:.5px solid #1a73e8\">Baixar HTML</a>"+"</div></div>";
+    }catch(e){return "<p style=\"font-size:12px;color:#1a73e8\">Landing page gerada.</p>";}
+  });
+  text=text.replace(/```[\w]*\n?([\s\S]*?)```/g,"<pre style=\"background:#f5f5f5;border-radius:8px;padding:10px;font-size:12px;overflow-x:auto;white-space:pre-wrap;margin:6px 0\">$1</pre>");
+  text=text.replace(/!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g,function(mt,alt,url){return "<div style=\"margin:8px 0\">"+"<img src=\""+url+"\" alt=\""+gcEsc(alt)+"\" style=\"width:100%;border-radius:10px;display:block;max-height:280px;object-fit:cover\" onerror=\"this.style.display='none'\">"+"<div style=\"display:flex;gap:6px;margin-top:6px\">"+"<a href=\""+url+"\" target=\"_blank\" download style=\"flex:1;padding:7px;background:#7c3aed;color:#fff;text-decoration:none;border-radius:8px;font-size:12px;font-weight:700;text-align:center\">Baixar</a>"+"<button onclick=\"gcSendSuggestion('Gere outra variacao com estilo diferente')\" style=\"flex:1;padding:7px;background:#f5f3ff;color:#7c3aed;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit\">Variar</button></div></div>";});
+  text=text.replace(/\*\*([^*\n]+)\*\*/g,"<strong>$1</strong>");
+  text=text.replace(/\*([^*\n]+)\*/g,"<em>$1</em>");
+  text=text.replace(/`([^`\n]+)`/g,q("<code style=\"background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;font-family:monospace\">$1</code>"));
+  text=text.replace(/^[*-] (.+)$/gm,q("<div style=\"display:flex;gap:5px;margin:1px 0\"><span style=\"color:#1a73e8\">&#8226;</span><span>$1</span></div>"));
+  text=text.replace(/^\d+\. (.+)$/gm,"<div style=\\"margin:2px 0\\">$1</div>");
+  text=text.replace(/\n\n/g,"<br><br>");text=text.replace(/\n/g,"<br>");return text;
+}
+function gcEsc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function gcSendSuggestion(text){var inp=document.getElementById("chat-inp");if(inp)inp.value=text;gcSendChat();}
+function gcLimparChat(){if(!confirm("Limpar conversa?"))return;S.chatHistory=[];save();renderCriar();}
+function gcSendChat(){
+  var inp=document.getElementById("chat-inp");var text=inp?inp.value.trim():"";
+  if(!text||window._chatTyping)return;
+  if(!S.chatHistory)S.chatHistory=[];
+  if(S.credits<5&&!S.userToken){showToast("Creditos insuficientes.");return;}
+  S.chatHistory.push({role:"user",content:text});save();if(inp)inp.value="";
+  window._chatTyping=true;renderCriar();SFX.click();
+  var hdr={"Content-Type":"application/json"};if(S.userToken)hdr["x-user-token"]=S.userToken;
+  fetch("/api/ia?action=chat",{method:"POST",headers:hdr,body:JSON.stringify({messages:S.chatHistory.slice(-12)})})
   .then(function(r){return r.json();})
   .then(function(d){
-    if(!d.ok){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">'+(d.error||'Erro. Configure REPLICATE_API_TOKEN no Vercel.')+'</p><a href="https://vercel.com/dashboard" target="_blank" style="display:block;margin-top:6px;font-size:12px;color:#1a73e8">Abrir Vercel Dashboard</a></div>';SFX.error();return;}
-    if(!S.aiKey){S.credits=Math.max(0,S.credits-20);save();updateHeader();}
-    SFX.generate();addXP(40,'Video iniciado!');
-    if(d.output){
-      res.innerHTML='<div class="cd" style="border-color:#34a85340;padding:12px"><p style="font-size:13px;font-weight:700;color:#34a853;margin-bottom:8px">Video pronto!</p><video src="'+d.output+'" controls style="width:100%;border-radius:8px;max-height:300px"></video><a href="'+d.output+'" target="_blank" download style="display:block;margin-top:8px;padding:10px;background:#34a853;color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:700;text-align:center">Baixar video</a></div>';
-    } else if(d.pollUrl){
-      var polls=0;var maxPoll=24;
-      res.innerHTML='<div class="cd" style="padding:12px"><p style="font-size:12px;color:#888;margin-bottom:8px">Video em processamento...</p><div style="height:4px;background:#e8eaed;border-radius:99px;overflow:hidden"><div id="vid-bar" style="height:100%;background:#f9ab00;border-radius:99px;width:5%;transition:width .5s"></div></div></div>';
-      var iv=setInterval(function(){
-        polls++;var pct=Math.min(95,Math.round((polls/maxPoll)*100));
-        var bar=document.getElementById('vid-bar');if(bar)bar.style.width=pct+'%';
-        fetch(d.pollUrl).then(function(r){return r.json();}).then(function(pd){
-          if(pd.status==='succeeded'&&pd.output){
-            clearInterval(iv);
-            var vurl=Array.isArray(pd.output)?pd.output[0]:pd.output;
-            res.innerHTML='<div class="cd" style="border-color:#34a85340;padding:12px"><p style="font-size:13px;font-weight:700;color:#34a853;margin-bottom:8px">Video pronto!</p><video src="'+vurl+'" controls style="width:100%;border-radius:8px;max-height:300px"></video><a href="'+vurl+'" target="_blank" download style="display:block;margin-top:8px;padding:10px;background:#34a853;color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:700;text-align:center">Baixar video</a></div>';
-            SFX.levelup();addXP(20,'Video concluido!');
-          } else if(pd.status==='failed'||polls>=maxPoll){clearInterval(iv);res.innerHTML='<div class="cd" style="padding:10px"><p style="font-size:12px;color:#888;margin:0">Processamento demorado. <a href="'+d.pollUrl+'" target="_blank" style="color:#1a73e8">Verificar status</a></p></div>';}
-        }).catch(function(){if(polls>=maxPoll)clearInterval(iv);});
-      },5000);
-    }
-  })
-  .catch(function(){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">Erro de conexao.</p></div>';SFX.error();});
+    window._chatTyping=false;
+    if(!d.ok){var err="Erro: "+(d.error||"Tente novamente.");if(d.setup)err="Configure ANTHROPIC_API_KEY no Vercel Dashboard (console.anthropic.com).";S.chatHistory.push({role:"assistant",content:err});}
+    else{S.chatHistory.push({role:"assistant",content:d.text});if(d.credits!=null){S.credits=d.credits;}else{S.credits=Math.max(0,(S.credits||0)-5);}updateHeader();SFX.success();addXP(5,"Chat IA!");}
+    save();renderCriar();
+  }).catch(function(){window._chatTyping=false;S.chatHistory.push({role:"assistant",content:"Erro de conexao."});save();renderCriar();});
 }
-
-/* landing page da secao Criar */
-function gerarLandingCriar(){
-  var nome=(document.getElementById('lp-nome')||{}).value||'';
-  var seg=(document.getElementById('lp-seg')||{}).value||'';
-  var cidade=(document.getElementById('lp-cidade')||{}).value||'';
-  var wa=(document.getElementById('lp-wa')||{}).value||'';
-  var servicos=(document.getElementById('lp-servicos')||{}).value||'';
-  var cor=(document.getElementById('lp-cor')||{}).value||'#1a73e8';
-  var res=document.getElementById('lp-result');
-  if(!nome||!seg){showToast('Preencha nome e segmento');return;}
-  if(S.credits<15&&!S.aiKey){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="color:#ea4335;font-size:12px;margin:0">Creditos insuficientes (15 cr). Configure sua chave em Mais > Setup IA.</p></div>';return;}
-  res.innerHTML='<div style="text-align:center;padding:20px"><div style="width:26px;height:26px;border:3px solid #e8e8e8;border-top-color:#ea4335;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div><p style="font-size:12px;color:#888">IA criando landing page... 20-40s</p></div>';
-  var hdr={'Content-Type':'application/json'};
-  if(S.aiKey){hdr['x-api-key']=S.aiKey;hdr['x-ai-provider']=S.aiProvider;}
-  if(S.userToken) hdr['x-user-token']=S.userToken;
-  fetch('/api/ia?action=landing',{method:'POST',headers:hdr,body:JSON.stringify({negocio:nome,segmento:seg,cidade:cidade,whatsapp:wa,servicos:servicos,cor:cor})})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(!d.ok||!d.html){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">'+(d.error||'Configure GROQ_API_KEY no Vercel ou adicione sua chave em Setup IA.')+'</p><a href="https://console.groq.com" target="_blank" style="display:block;margin-top:6px;font-size:12px;color:#1a73e8">Criar chave Groq gratis</a></div>';SFX.error();return;}
-    if(d.credits!=null){S.credits=d.credits;save();updateHeader();}else if(!S.aiKey){S.credits=Math.max(0,S.credits-15);save();updateHeader();}
-    SFX.levelup();addXP(50,'Landing criada!');addCash(10,'Landing gerada');
-    var blob=new Blob([d.html],{type:'text/html'});var url=URL.createObjectURL(blob);
-    res.innerHTML='<div class="cd" style="border-color:#34a85340;padding:12px"><p style="font-size:13px;font-weight:700;color:#34a853;margin-bottom:8px">Landing page pronta!</p><a href="'+url+'" target="_blank" style="display:block;margin-bottom:8px;padding:10px;background:#1a73e8;color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:700;text-align:center">Visualizar pagina</a><a href="'+url+'" download="landing-'+nome.replace(/\s/g,'-').toLowerCase()+'.html" style="display:block;padding:10px;background:#e8f0fe;color:#1a73e8;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">Baixar HTML</a><p style="font-size:11px;color:#888;margin-top:8px;margin-bottom:0">Hospede gratis no Netlify: arraste o arquivo HTML para app.netlify.com/drop</p></div>';
-  })
-  .catch(function(){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">Erro de conexao.</p></div>';SFX.error();});
+function downloadMcpInstaller(){
+  var nc=["const fs=require('fs'),pa=require('path'),os=require('os');","const pl=os.platform();",
+    "const cfg=pl==='win32'?pa.join(process.env.APPDATA||os.homedir(),'Claude','claude_desktop_config.json'):pl==='darwin'?pa.join(os.homedir(),'Library','Application Support','Claude','claude_desktop_config.json'):pa.join(os.homedir(),'.config','Claude','claude_desktop_config.json');",
+    "fs.mkdirSync(pa.dirname(cfg),{recursive:true});","let c={};try{c=JSON.parse(fs.readFileSync(cfg,'utf8'))}catch(e){}","if(!c.mcpServers)c.mcpServers={};",
+    "Object.assign(c.mcpServers,{memory:{command:'npx',args:['DASHY','@modelcontextprotocol/server-memory']},fetch:{command:'npx',args:['DASHY','mcp-server-fetch']},'sequential-thinking':{command:'npx',args:['DASHY','@modelcontextprotocol/server-sequential-thinking']}});",
+    "fs.writeFileSync(cfg,JSON.stringify(c,null,2));","console.log('MCPs instalados! Reinicie o Claude Desktop.');"].join("").replace(/DASHY/g,"-y");
+  var bat="@echo off\r\ntitle Google Cash MCPs\r\necho.\r\nnode -e \""+nc+"\"\r\necho.\r\npause\r\n";
+  var blob=new Blob([bat],{type:"application/octet-stream"});var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");a.href=url;a.download="instalar-mcps-google-cash.bat";document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},2000);showToast("Baixado! Clique duas vezes no .bat para instalar.");
 }
-
-/* analise da secao Criar */
-function rodarAnaliseCriar(){
-  var nome=(document.getElementById('an-nome')||{}).value||'';
-  var seg=(document.getElementById('an-seg')||{}).value||'';
-  var cidade=(document.getElementById('an-cidade')||{}).value||'';
-  var prob=(document.getElementById('an-prob')||{}).value||'';
-  var res=document.getElementById('an-result');
-  var btn=document.getElementById('an-btn');
-  if(!nome||!seg){showToast('Preencha nome e segmento');return;}
-  if(S.credits<10&&!S.aiKey){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="color:#ea4335;font-size:12px;margin:0">Creditos insuficientes (10 cr). Configure sua chave em Mais > Setup IA.</p></div>';return;}
-  if(btn){btn.disabled=true;btn.textContent='Analisando...';}
-  res.innerHTML='<div style="text-align:center;padding:20px"><div style="width:26px;height:26px;border:3px solid #e8e8e8;border-top-color:#1a73e8;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div><p style="font-size:12px;color:#888">IA analisando... 15-30s</p></div>';
-  SFX.generate();
-  var hdr={'Content-Type':'application/json'};
-  if(S.aiKey){hdr['x-api-key']=S.aiKey;hdr['x-ai-provider']=S.aiProvider;}
-  if(S.userToken) hdr['x-user-token']=S.userToken;
-  fetch('/api/ia?action=analisar',{method:'POST',headers:hdr,body:JSON.stringify({nome:nome,segmento:seg,cidade:cidade,problema:prob})})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    if(btn){btn.disabled=false;btn.innerHTML=svg('cpu','14','#fff')+' Analisar Empresa (10 cr)';}
-    if(!d.ok||!d.analise){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">'+(d.error||'Configure GROQ_API_KEY no Vercel ou use sua chave em Setup IA.')+'</p><a href="https://console.groq.com" target="_blank" style="display:block;margin-top:6px;font-size:12px;color:#1a73e8">Criar chave Groq gratis</a></div>';SFX.error();return;}
-    if(d.credits!=null){S.credits=d.credits;save();updateHeader();}else if(!S.aiKey){S.credits=Math.max(0,S.credits-10);save();updateHeader();}
-    SFX.complete();addXP(30,'Analise concluida!');
-    var a=d.analise;
-    var scoreColor=a.score>=70?'#34a853':a.score>=40?'#f9ab00':'#ea4335';
-    var r2='<div class="cd" style="border-color:'+scoreColor+'40;margin-bottom:10px">';
-    r2+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
-    r2+='<p style="margin:0;font-size:14px;font-weight:700">'+esc(a.nome||nome)+'</p>';
-    r2+='<div style="text-align:center"><p style="margin:0;font-size:28px;font-weight:900;color:'+scoreColor+'">'+a.score+'</p><p style="margin:0;font-size:10px;color:#888">Score</p></div></div>';
-    if(a.problemas&&a.problemas.length){r2+='<p style="font-size:11px;font-weight:700;color:#ea4335;margin:0 0 4px">Problemas encontrados</p><ul style="margin:0 0 10px;padding-left:16px">';a.problemas.forEach(function(p){r2+='<li style="font-size:12px;color:#555;margin-bottom:2px">'+esc(p)+'</li>';});r2+='</ul>';}
-    if(a.keywords&&a.keywords.length){r2+='<p style="font-size:11px;font-weight:700;color:#1a73e8;margin:0 0 4px">Palavras-chave</p><div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">';a.keywords.forEach(function(k){r2+='<span style="font-size:11px;background:#e8f0fe;color:#1a73e8;padding:2px 8px;border-radius:99px">'+esc(k)+'</span>';});r2+='</div>';}
-    if(a.proposta){r2+='<p style="font-size:11px;font-weight:700;color:#34a853;margin:0 0 4px">Proposta de valor</p><p style="font-size:12px;color:#555;background:#e6f4ea;padding:8px 10px;border-radius:8px;margin:0 0 10px">'+esc(a.proposta)+'</p>';}
-    if(a.script_whatsapp){
-      r2+='<p style="font-size:11px;font-weight:700;color:#128c7e;margin:0 0 4px">Script WhatsApp pronto</p>';
-      r2+='<p style="font-size:12px;color:#555;background:#e7fde8;padding:8px 10px;border-radius:8px;margin:0 0 8px;white-space:pre-line">'+esc(a.script_whatsapp)+'</p>';
-      r2+='<button onclick="_copiar(\''+a.script_whatsapp.replace(/'/g,"\\'").replace(/\n/g,'\\n')+'\');SFX.success();showToast(\'Script copiado!\')" style="width:100%;padding:9px;background:#e7fde8;color:#128c7e;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">'+svg('copy','13','#128c7e')+' Copiar Script WhatsApp</button>';
-    }
-    r2+='</div>';
-    res.innerHTML=r2;
-  })
-  .catch(function(){if(btn){btn.disabled=false;btn.innerHTML=svg('cpu','14','#fff')+' Analisar Empresa (10 cr)';}res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">Erro de conexao.</p></div>';SFX.error();});
+function showMcpSetup(){
+  var ov=document.createElement("div");ov.setAttribute("data-overlay","1");
+  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:9000;display:flex;align-items:flex-end;justify-content:center";
+  ov.onclick=function(e){if(e.target===ov)ov.remove();};
+  var md=document.createElement("div");md.style.cssText="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 36px;max-height:88vh;overflow-y:auto";
+  var chatted=!!(S.chatHistory&&S.chatHistory.length>0);
+  var steps=[{done:true,title:"Claude Desktop",desc:"App nativo para PC e Mac",btn:"Baixar Claude Desktop",act:"window.open('https://claude.ai/download','_blank')"},
+    {done:false,title:"MCPs instalados",desc:"Memoria de clientes, busca e raciocinio",btn:"Instalar MCPs automaticamente",act:"downloadMcpInstaller()"},
+    {done:!!S.userToken,title:"Conta ativada",desc:"Login realizado ou creditos ativados"},
+    {done:chatted,title:"Primeiro chat",desc:"Conversa com o assistente Claude",btn:"Ir para o chat",act:"document.querySelector('[data-overlay]').remove()"}];
+  var h="<div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:16px\"><p style=\"font-size:17px;font-weight:800;color:#202124;margin:0\">Ferramentas e Setup</p>";
+  h+='<button onclick="document.querySelector(\'[data-overlay]\').remove()" style="background:#f0f0f0;border:none;border-radius:99px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center">'+svg("x","16","#555")+'</button></div>';
+  h+="<p style=\"font-size:11px;font-weight:700;color:#bbb;letter-spacing:.5px;margin:0 0 10px\">CHECKLIST</p>";
+  steps.forEach(function(s){
+    h+="<div style=\"display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:.5px solid #f0f0f0\">"+(s.done?svg("checksq","20","#34a853"):svg("sq","20","#ccc"))+" <div style='flex:1'><p style='font-size:13px;font-weight:700;color:"+(s.done?"#34a853":"#202124")+";margin:0 0 2px'> "+s.title+"</p><p style='font-size:12px;color:#888;margin:0 0 6px'> "+s.desc+"</p>";
+    if(!s.done&&s.btn)h+='<button onclick="'+s.act+'" style="font-size:12px;font-weight:700;color:#fff;background:#1a73e8;border:none;border-radius:8px;padding:7px 13px;cursor:pointer;font-family:inherit">'+s.btn+'</button>';
+    h+="</div></div>";
+  });
+  h+="<div style=\"background:#e8f0fe;border-radius:12px;padding:14px;margin-top:16px\"><p style=\"font-size:13px;font-weight:700;color:#1a73e8;margin:0 0 5px\">Instalar MCPs automaticamente</p><p style=\"font-size:12px;color:#555;line-height:1.5;margin:0 0 10px\">Clique para baixar. Depois clique duas vezes no .bat — MCPs configurados automaticamente no Claude Desktop.</p>";
+  h+='<button onclick="downloadMcpInstaller()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1a73e8,#7c3aed);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">'+svg("pkg","14","#fff")+' Baixar Instalador de MCPs (.bat)</button>';
+  h+="<p style=\"font-size:11px;color:#888;margin:7px 0 0;text-align:center\">Windows: clique duas vezes no .bat</p></div>";
+  h+="<a href=\"https://claude.ai/download\" target=\"_blank\" style=\"display:block;margin-top:10px;padding:11px;background:#202124;color:#fff;text-decoration:none;border-radius:12px;font-size:13px;font-weight:700;text-align:center\">Baixar Claude Desktop gratis</a>";
+  md.innerHTML=h;ov.appendChild(md);document.body.appendChild(ov);
 }
-
 /* ═══════ RENDER HOME ═══════ */
 function renderHome(){
   var lvl=getLvl(S.xp);
