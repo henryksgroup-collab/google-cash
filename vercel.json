@@ -16,28 +16,17 @@
       "source": "/(.*)\\.html",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
-        { "key": "Pragma",        "value": "no-cache" },
-        { "key": "Expires",       "value": "0" }
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
       ]
     },
     {
       "source": "/",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
-        { "key": "Pragma",        "value": "no-cache" },
-        { "key": "Expires",       "value": "0" }
-      ]
-    },
-    {
-      "source": "/mcp-setup.json",
-      "headers": [
-        { "key": "Content-Type", "value": "application/json" },
-        { "key": "Content-Disposition", "value": "attachment; filename=\"mcp-setup.json\"" },
-        { "key": "Access-Control-Allow-Origin", "value": "*" }
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
       ]
     }
-  ],
-  "rewrites": [
-    { "source": "/mcp-setup.json", "destination": "/public/mcp-setup.json" }
   ]
 }

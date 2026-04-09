@@ -45,6 +45,9 @@ html,body{height:100%;overflow-x:hidden;font-family:-apple-system,BlinkMacSystem
 .nb span{font-size:9.5px;color:#999;font-weight:500;transition:color .15s,font-weight .15s}
 .nb.a svg{stroke-width:2.2;color:#1a73e8}
 .nb.a span{color:#1a73e8;font-weight:700}
+#nb-criar{padding-top:4px}
+#nb-criar span{color:#7c3aed;font-weight:700}
+#nb-criar.a span{color:#1a73e8}
 
 /* CONTENT */
 #cnt{padding:16px 16px 110px;min-height:calc(100vh - 52px);overflow-y:auto}
@@ -227,6 +230,7 @@ select.inp{cursor:pointer}
   <div id="cnt">
     <div id="s-home" class="section active"></div>
     <div id="s-modules" class="section"></div>
+    <div id="s-criar" class="section"></div>
     <div id="s-clients" class="section"></div>
     <div id="s-plan" class="section"></div>
     <div id="s-more" class="section"></div>
@@ -241,13 +245,15 @@ select.inp{cursor:pointer}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
       <span>Módulos</span>
     </button>
+    <button class="nb" data-v="criar" onclick="nav('criar')" id="nb-criar" style="position:relative">
+      <div style="position:absolute;top:6px;width:32px;height:32px;background:linear-gradient(135deg,#1a73e8,#7c3aed);border-radius:10px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(26,115,232,.35)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </div>
+      <span style="margin-top:22px">Criar</span>
+    </button>
     <button class="nb" data-v="clients" onclick="nav('clients')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
       <span>Clientes</span>
-    </button>
-    <button class="nb" data-v="plan" onclick="nav('plan')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-      <span>Planejar</span>
     </button>
     <button class="nb" data-v="more" onclick="nav('more')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
@@ -480,6 +486,7 @@ function nav(v){
   document.querySelectorAll('.nb').forEach(function(el){el.classList.toggle('a',el.dataset.v===v);});
   if(v==='home') renderHome();
   else if(v==='modules') renderModulesList();
+  else if(v==='criar') renderCriar('imagem');
   else if(v==='clients') renderClients();
   else if(v==='plan') renderPlan('notes');
   else if(v==='more') renderMore('scripts');
@@ -673,6 +680,266 @@ var PROMPTS=[
     {title:'Follow-up sem parecer insistente',text:'Crie uma sequência de 3 mensagens de follow-up para um prospect que demonstrou interesse mas não respondeu. Mensagem 1: no dia seguinte (casual, sem pressão). Mensagem 2: 3 dias depois (entrega valor gratuito — uma dica sobre o negócio dele). Mensagem 3: 7 dias depois (última tentativa com escassez leve). Cada mensagem deve ter no máximo 3 linhas e tom amigável e profissional.'}
   ]}
 ];
+
+/* ═══════ CRIAR IA ═══════ */
+var _criarTab='imagem';
+function renderCriar(tab){
+  _criarTab=tab||_criarTab;
+  var el=document.getElementById('s-criar');
+  var tabs=[
+    {v:'imagem',l:'Criativo',ic:'image',c:'#7c3aed'},
+    {v:'video',l:'Video',ic:'video',c:'#f9ab00'},
+    {v:'landing',l:'Landing',ic:'layout',c:'#ea4335'},
+    {v:'analise',l:'Analise',ic:'cpu',c:'#1a73e8'}
+  ];
+  var h='<div style="padding-bottom:2px">';
+  h+='<p style="font-size:18px;font-weight:800;color:#202124;margin-bottom:4px">Criar com IA</p>';
+  h+='<p style="font-size:12px;color:#888;margin-bottom:14px">Gere imagens, videos, landing pages e analises para seus clientes</p>';
+  h+='<div style="display:flex;gap:6px;margin-bottom:16px">';
+  tabs.forEach(function(t){
+    var a=_criarTab===t.v;
+    h+='<button onclick="renderCriar(\''+t.v+'\')" style="flex:1;padding:9px 4px;border-radius:10px;border:.5px solid '+(a?t.c:'#e8e8e8')+';background:'+(a?t.c+'15':'#fff')+';color:'+(a?t.c:'#888')+';font-size:11px;font-weight:'+(a?'800':'500')+';cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:4px">'+svg(t.ic,'14',a?t.c:'#bbb')+t.l+'</button>';
+  });
+  h+='</div>';
+
+  /* ── IMAGEM ── */
+  if(_criarTab==='imagem'){
+    h+='<div class="cd" style="margin-bottom:10px;border-color:#7c3aed30">';
+    h+='<p style="font-size:14px;font-weight:700;margin-bottom:4px">'+svg('image','14','#7c3aed')+' Criativo de Anuncio</p>';
+    h+='<div style="background:#f5f3ff;border-radius:8px;padding:10px 12px;margin-bottom:12px;border-left:3px solid #7c3aed">';
+    h+='<p style="font-size:11px;font-weight:700;color:#7c3aed;margin:0 0 3px">Como usar</p>';
+    h+='<p style="font-size:12px;color:#555;margin:0;line-height:1.6">1. Escolha o nicho do cliente<br>2. Selecione o formato e estilo<br>3. Clique em Gerar — aparece em segundos<br>4. Baixe a imagem e use no Instagram, Stories ou Canva<br><strong>Custo: Gratis, sem limite de geracao</strong></p>';
+    h+='</div>';
+    var nichos=[{l:'Barbearia',p:'barbershop storefront professional'},{l:'Restaurante',p:'restaurant food advertisement gourmet'},{l:'Clinica',p:'medical clinic professional clean'},{l:'Pet Shop',p:'pet shop advertisement cute animals'},{l:'Academia',p:'gym fitness advertisement motivational'},{l:'Salao de Beleza',p:'beauty salon elegant glamour'},{l:'Farmacia',p:'pharmacy professional health'},{l:'Pizzaria',p:'pizza restaurant italian style'},{l:'Escola',p:'school education bright inspiring'},{l:'Advocacia',p:'law firm professional navy gold'}];
+    var fmts=[{l:'Instagram 1:1',w:1080,h:1080},{l:'Stories 9:16',w:1080,h:1920},{l:'Capa 16:9',w:1920,h:1080}];
+    var estilos=[{l:'Profissional',p:'professional corporate minimal'},{l:'Vibrante',p:'vibrant colorful energetic'},{l:'Elegante',p:'elegant luxury premium'},{l:'Moderno',p:'modern futuristic gradient'}];
+    h+='<p class="slbl">Nicho</p><div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">';
+    nichos.forEach(function(n,i){h+='<button onclick="gcSetNicho('+i+')" id="gn'+i+'" style="padding:5px 9px;border-radius:20px;border:.5px solid #e8e8e8;font-size:11.5px;cursor:pointer;background:#f8f9fa;color:#444;transition:all .15s;font-family:inherit">'+n.l+'</button>';});
+    h+='</div><p class="slbl">Formato</p><div style="display:flex;gap:5px;margin-bottom:10px">';
+    fmts.forEach(function(f,i){h+='<button onclick="gcSetFmt('+i+')" id="gf'+i+'" style="flex:1;padding:6px 4px;border-radius:8px;border:.5px solid '+(i===0?'#7c3aed':'#e8e8e8')+';font-size:11px;cursor:pointer;background:'+(i===0?'#f5f3ff':'#f8f9fa')+';color:'+(i===0?'#7c3aed':'#444')+';transition:all .15s;font-family:inherit">'+f.l+'</button>';});
+    h+='</div><p class="slbl">Estilo</p><div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">';
+    estilos.forEach(function(e,i){h+='<button onclick="gcSetEstilo('+i+')" id="ge'+i+'" style="padding:5px 9px;border-radius:20px;border:.5px solid '+(i===0?'#7c3aed':'#e8e8e8')+';font-size:11.5px;cursor:pointer;background:'+(i===0?'#f5f3ff':'#f8f9fa')+';color:'+(i===0?'#7c3aed':'#444')+';transition:all .15s;font-family:inherit">'+e.l+'</button>';});
+    h+='</div>';
+    h+='<input id="gc-custom-prompt" type="text" placeholder="Detalhe extra: fundo preto, logo branca..." style="width:100%;padding:9px 12px;border-radius:10px;border:.5px solid #e8e8e8;font-size:13px;margin-bottom:10px;outline:none;font-family:inherit;box-sizing:border-box">';
+    h+='<button onclick="gcGerarCriar()" style="width:100%;padding:13px;background:linear-gradient(135deg,#7c3aed,#1a73e8);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">'+svg('image','14','#fff')+' Gerar Criativo Gratis</button>';
+    h+='<div id="gc-result" style="margin-top:12px"></div></div>';
+    if(S.genHistory&&S.genHistory.length>0){
+      h+='<div class="cd" style="margin-bottom:10px"><p style="font-size:13px;font-weight:700;margin-bottom:8px">Historico</p><div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px">';
+      S.genHistory.slice(0,6).forEach(function(u){h+='<a href="'+u+'" target="_blank"><img src="'+u+'" style="width:72px;height:72px;object-fit:cover;border-radius:10px;border:.5px solid #e8e8e8;flex-shrink:0"></a>';});
+      h+='</div></div>';
+    }
+  }
+
+  /* ── VIDEO ── */
+  if(_criarTab==='video'){
+    h+='<div class="cd" style="margin-bottom:10px;border-color:#f9ab0030">';
+    h+='<p style="font-size:14px;font-weight:700;margin-bottom:4px">'+svg('video','14','#f9ab00')+' Video de Anuncio</p>';
+    h+='<div style="background:#fffbf0;border-radius:8px;padding:10px 12px;margin-bottom:12px;border-left:3px solid #f9ab00">';
+    h+='<p style="font-size:11px;font-weight:700;color:#f9ab00;margin:0 0 3px">Como usar + Ativar</p>';
+    h+='<p style="font-size:12px;color:#555;margin:0;line-height:1.6">1. Va em <a href="https://replicate.com" target="_blank" style="color:#1a73e8">replicate.com</a> e crie conta gratis<br>2. Gere um API Token em <strong>Account &gt; API Tokens</strong><br>3. No <a href="https://vercel.com/dashboard" target="_blank" style="color:#1a73e8">Vercel Dashboard</a> va em Settings &gt; Env Vars<br>4. Adicione: <code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:10px">REPLICATE_API_TOKEN = r8_xxx</code><br>5. Volte aqui e gere o video<br><strong>Custo: 20 creditos por video</strong></p>';
+    h+='</div>';
+    h+='<p class="slbl">Nicho do cliente</p>';
+    h+='<select id="vid-nicho" style="width:100%;padding:10px;border-radius:10px;border:.5px solid #e8e8e8;font-size:13px;font-family:inherit;margin-bottom:10px;outline:none">';
+    ['Barbearia','Restaurante','Clinica','Academia','Salao de Beleza','Pet Shop','Pizzaria','Escola','Farmacia'].forEach(function(n){h+='<option>'+n+'</option>';});
+    h+='</select>';
+    h+='<p class="slbl">Formato do video</p>';
+    h+='<div style="display:flex;gap:6px;margin-bottom:12px">';
+    [{l:'Vertical 9:16',v:'vertical'},{l:'Quadrado 1:1',v:'quadrado'},{l:'Horizontal 16:9',v:'horizontal'}].forEach(function(f,i){
+      h+='<button onclick="document.querySelectorAll(\'.vid-fmt-btn\').forEach(function(b){b.style.background=\'#f8f9fa\';b.style.borderColor=\'#e8e8e8\';b.style.color=\'#444\'});this.style.background=\'#fffbf0\';this.style.borderColor=\'#f9ab00\';this.style.color=\'#f9ab00\';window._vidFmt=\''+f.v+'\';" class="vid-fmt-btn" style="flex:1;padding:8px 4px;border-radius:8px;border:.5px solid '+(i===0?'#f9ab00':'#e8e8e8')+';font-size:11px;cursor:pointer;background:'+(i===0?'#fffbf0':'#f8f9fa')+';color:'+(i===0?'#f9ab00':'#444')+';font-family:inherit">'+f.l+'</button>';
+    });
+    h+='</div>';
+    h+='<button onclick="gerarVideoCriar()" style="width:100%;padding:13px;background:linear-gradient(135deg,#f9ab00,#ea4335);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">'+svg('video','14','#fff')+' Gerar Video (20 cr)</button>';
+    h+='<div id="vid-result" style="margin-top:10px"></div></div>';
+  }
+
+  /* ── LANDING ── */
+  if(_criarTab==='landing'){
+    h+='<div class="cd" style="margin-bottom:10px;border-color:#ea433530">';
+    h+='<p style="font-size:14px;font-weight:700;margin-bottom:4px">'+svg('layout','14','#ea4335')+' Landing Page com IA</p>';
+    h+='<div style="background:#fef2f2;border-radius:8px;padding:10px 12px;margin-bottom:12px;border-left:3px solid #ea4335">';
+    h+='<p style="font-size:11px;font-weight:700;color:#ea4335;margin:0 0 3px">Como usar + Ativar</p>';
+    h+='<p style="font-size:12px;color:#555;margin:0;line-height:1.6">1. Preencha os dados do cliente<br>2. A IA gera uma pagina HTML completa em 30s<br>3. Baixe o arquivo e hospede no <a href="https://netlify.com" target="_blank" style="color:#1a73e8">Netlify</a> (gratis, arraste e solte)<br>4. Mostre o link pro cliente — isso fecha vendas!<br><strong>Ativar:</strong> configure <code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:10px">GROQ_API_KEY</code> no Vercel<br><strong>Custo: 15 creditos</strong></p>';
+    h+='</div>';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Nome da empresa</label>';
+    h+='<input id="lp-nome" class="inp mb" type="text" placeholder="Ex: Barbearia do Joao">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Segmento</label>';
+    h+='<input id="lp-seg" class="inp mb" type="text" placeholder="Ex: Barbearia, Clinica...">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Cidade</label>';
+    h+='<input id="lp-cidade" class="inp mb" type="text" placeholder="Ex: Sao Paulo, SP">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">WhatsApp do cliente</label>';
+    h+='<input id="lp-wa" class="inp mb" type="text" placeholder="Ex: 11999999999">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Servicos (separados por virgula)</label>';
+    h+='<input id="lp-servicos" class="inp mb" type="text" placeholder="Ex: Corte, Barba, Sobrancelha">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Cor principal</label>';
+    h+='<select id="lp-cor" class="inp mb"><option value="#1a73e8">Azul profissional</option><option value="#ea4335">Vermelho vibrante</option><option value="#34a853">Verde moderno</option><option value="#202124">Preto elegante</option><option value="#7c3aed">Roxo premium</option><option value="#f9ab00">Amarelo energetico</option></select>';
+    h+='<button onclick="gerarLandingCriar()" style="width:100%;padding:13px;background:linear-gradient(135deg,#ea4335,#f9ab00);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">'+svg('layout','14','#fff')+' Gerar Landing Page (15 cr)</button>';
+    h+='<div id="lp-result" style="margin-top:10px"></div></div>';
+  }
+
+  /* ── ANALISE ── */
+  if(_criarTab==='analise'){
+    h+='<div class="cd" style="margin-bottom:10px;border-color:#1a73e830">';
+    h+='<p style="font-size:14px;font-weight:700;margin-bottom:4px">'+svg('cpu','14','#1a73e8')+' Analise de Empresa com IA</p>';
+    h+='<div style="background:#e8f0fe;border-radius:8px;padding:10px 12px;margin-bottom:12px;border-left:3px solid #1a73e8">';
+    h+='<p style="font-size:11px;font-weight:700;color:#1a73e8;margin:0 0 3px">Como usar + Ativar</p>';
+    h+='<p style="font-size:12px;color:#555;margin:0;line-height:1.6">1. Preencha os dados da empresa<br>2. A IA gera: score de presenca digital, problemas encontrados, palavras-chave, proposta pronta e script de WhatsApp<br>3. Use a proposta para fechar o cliente<br><strong>Ativar:</strong> configure <code style="background:#dde8fc;padding:1px 5px;border-radius:3px;font-size:10px">GROQ_API_KEY</code> no Vercel ou use sua chave propria em Setup<br><strong>Custo: 10 creditos</strong></p>';
+    h+='</div>';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Nome da empresa</label>';
+    h+='<input id="an-nome" class="inp mb" type="text" placeholder="Ex: Barbearia do Joao">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Segmento</label>';
+    h+='<input id="an-seg" class="inp mb" type="text" placeholder="Ex: Barbearia">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Cidade</label>';
+    h+='<input id="an-cidade" class="inp mb" type="text" placeholder="Ex: Campinas, SP">';
+    h+='<label style="font-size:12px;color:#888;display:block;margin-bottom:3px">Problema principal do cliente (opcional)</label>';
+    h+='<input id="an-prob" class="inp mb" type="text" placeholder="Ex: nao aparece no Google">';
+    h+='<button onclick="rodarAnaliseCriar()" id="an-btn" style="width:100%;padding:13px;background:linear-gradient(135deg,#1a73e8,#34a853);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">'+svg('cpu','14','#fff')+' Analisar Empresa (10 cr)</button>';
+    h+='<div id="an-result" style="margin-top:10px"></div></div>';
+  }
+
+  h+='</div>';
+  el.innerHTML=h;
+  if(_criarTab==='imagem'){window._gcNichos=[{l:"Barbearia",p:"barbershop storefront professional"},{l:"Restaurante",p:"restaurant food advertisement gourmet"},{l:"Clinica",p:"medical clinic professional clean"},{l:"Pet Shop",p:"pet shop advertisement cute animals"},{l:"Academia",p:"gym fitness advertisement motivational"},{l:"Salao de Beleza",p:"beauty salon elegant glamour"},{l:"Farmacia",p:"pharmacy professional health"},{l:"Pizzaria",p:"pizza restaurant italian style"},{l:"Escola",p:"school education bright inspiring"},{l:"Advocacia",p:"law firm professional navy gold"}];window._gcFmts=[{l:"Instagram 1:1",w:1080,h:1080},{l:"Stories 9:16",w:1080,h:1920},{l:"Capa 16:9",w:1920,h:1080}];window._gcEstilos=[{l:"Profissional",p:"professional corporate minimal"},{l:"Vibrante",p:"vibrant colorful energetic"},{l:"Elegante",p:"elegant luxury premium"},{l:"Moderno",p:"modern futuristic gradient"}];window._gcSelN=null;window._gcSelF=0;window._gcSelE=0;}
+  if(_criarTab==='video'){window._vidFmt='vertical';}
+}
+
+/* gerar criativo da secao Criar */
+function gcGerarCriar(){
+  var res=document.getElementById('gc-result');
+  if(!res)return;
+  if(window._gcSelN===null){showToast('Escolha um nicho primeiro');return;}
+  var nicho=window._gcNichos[window._gcSelN];
+  var fmt=window._gcFmts[window._gcSelF||0];
+  var estilo=window._gcEstilos[window._gcSelE||0];
+  var custom=(document.getElementById('gc-custom-prompt')||{}).value||'';
+  var prompt=nicho.p+', '+estilo.p+(custom?', '+custom:'')+', advertisement poster, high quality, photorealistic, text-free no text no watermark';
+  var seed=Math.floor(Math.random()*99999);
+  var url='https://image.pollinations.ai/prompt/'+encodeURIComponent(prompt)+'?width='+fmt.w+'&height='+fmt.h+'&model=flux&nologo=true&seed='+seed;
+  res.innerHTML='<div style="text-align:center;padding:20px"><div style="width:28px;height:28px;border:3px solid #e8e8e8;border-top-color:#7c3aed;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div><p style="font-size:12px;color:#888">Gerando imagem gratis...</p></div>';
+  SFX.generate();
+  var img=new Image();
+  img.onload=function(){
+    if(!S.genHistory) S.genHistory=[];
+    S.genHistory.unshift(url);S.genHistory=S.genHistory.slice(0,8);save();
+    addXP(5,'Criativo gerado!');SFX.success();
+    res.innerHTML='<div style="border-radius:12px;overflow:hidden;margin-bottom:10px"><img src="'+url+'" style="width:100%;display:block;border-radius:12px"></div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<a href="'+url+'" target="_blank" download style="flex:1;padding:10px;background:#7c3aed;color:#fff;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">Baixar imagem</a>'
+      +'<button onclick="gcGerarCriar()" style="flex:1;padding:10px;background:#e8f0fe;color:#1a73e8;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">Gerar outra</button>'
+      +'</div>';
+  };
+  img.onerror=function(){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">Erro ao gerar. Tente novamente.</p></div>';SFX.error();};
+  img.src=url;
+}
+
+/* gerar video da secao Criar */
+function gerarVideoCriar(){
+  var nicho=(document.getElementById('vid-nicho')||{}).value||'barbearia';
+  var formato=window._vidFmt||'vertical';
+  var res=document.getElementById('vid-result');
+  if(!res)return;
+  if(S.credits<20&&!S.aiKey){
+    res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="color:#ea4335;font-size:12px;margin:0">Creditos insuficientes (20 cr). Configure sua chave Groq gratis em Mais > Setup IA.</p></div>';return;
+  }
+  res.innerHTML='<div style="text-align:center;padding:20px"><div style="width:26px;height:26px;border:3px solid #e8e8e8;border-top-color:#f9ab00;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div><p style="font-size:12px;color:#888">Gerando video... 30-60s</p></div>';
+  var h2={'Content-Type':'application/json'};
+  if(S.userToken) h2['x-user-token']=S.userToken;
+  fetch('/api/gerar-video',{method:'POST',headers:h2,body:JSON.stringify({nicho:nicho,formato:formato})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!d.ok){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">'+(d.error||'Erro. Configure REPLICATE_API_TOKEN no Vercel.')+'</p><a href="https://vercel.com/dashboard" target="_blank" style="display:block;margin-top:6px;font-size:12px;color:#1a73e8">Abrir Vercel Dashboard</a></div>';SFX.error();return;}
+    if(!S.aiKey){S.credits=Math.max(0,S.credits-20);save();updateHeader();}
+    SFX.generate();addXP(40,'Video iniciado!');
+    if(d.output){
+      res.innerHTML='<div class="cd" style="border-color:#34a85340;padding:12px"><p style="font-size:13px;font-weight:700;color:#34a853;margin-bottom:8px">Video pronto!</p><video src="'+d.output+'" controls style="width:100%;border-radius:8px;max-height:300px"></video><a href="'+d.output+'" target="_blank" download style="display:block;margin-top:8px;padding:10px;background:#34a853;color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:700;text-align:center">Baixar video</a></div>';
+    } else if(d.pollUrl){
+      var polls=0;var maxPoll=24;
+      res.innerHTML='<div class="cd" style="padding:12px"><p style="font-size:12px;color:#888;margin-bottom:8px">Video em processamento...</p><div style="height:4px;background:#e8eaed;border-radius:99px;overflow:hidden"><div id="vid-bar" style="height:100%;background:#f9ab00;border-radius:99px;width:5%;transition:width .5s"></div></div></div>';
+      var iv=setInterval(function(){
+        polls++;var pct=Math.min(95,Math.round((polls/maxPoll)*100));
+        var bar=document.getElementById('vid-bar');if(bar)bar.style.width=pct+'%';
+        fetch(d.pollUrl).then(function(r){return r.json();}).then(function(pd){
+          if(pd.status==='succeeded'&&pd.output){
+            clearInterval(iv);
+            var vurl=Array.isArray(pd.output)?pd.output[0]:pd.output;
+            res.innerHTML='<div class="cd" style="border-color:#34a85340;padding:12px"><p style="font-size:13px;font-weight:700;color:#34a853;margin-bottom:8px">Video pronto!</p><video src="'+vurl+'" controls style="width:100%;border-radius:8px;max-height:300px"></video><a href="'+vurl+'" target="_blank" download style="display:block;margin-top:8px;padding:10px;background:#34a853;color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:700;text-align:center">Baixar video</a></div>';
+            SFX.levelup();addXP(20,'Video concluido!');
+          } else if(pd.status==='failed'||polls>=maxPoll){clearInterval(iv);res.innerHTML='<div class="cd" style="padding:10px"><p style="font-size:12px;color:#888;margin:0">Processamento demorado. <a href="'+d.pollUrl+'" target="_blank" style="color:#1a73e8">Verificar status</a></p></div>';}
+        }).catch(function(){if(polls>=maxPoll)clearInterval(iv);});
+      },5000);
+    }
+  })
+  .catch(function(){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">Erro de conexao.</p></div>';SFX.error();});
+}
+
+/* landing page da secao Criar */
+function gerarLandingCriar(){
+  var nome=(document.getElementById('lp-nome')||{}).value||'';
+  var seg=(document.getElementById('lp-seg')||{}).value||'';
+  var cidade=(document.getElementById('lp-cidade')||{}).value||'';
+  var wa=(document.getElementById('lp-wa')||{}).value||'';
+  var servicos=(document.getElementById('lp-servicos')||{}).value||'';
+  var cor=(document.getElementById('lp-cor')||{}).value||'#1a73e8';
+  var res=document.getElementById('lp-result');
+  if(!nome||!seg){showToast('Preencha nome e segmento');return;}
+  if(S.credits<15&&!S.aiKey){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="color:#ea4335;font-size:12px;margin:0">Creditos insuficientes (15 cr). Configure sua chave em Mais > Setup IA.</p></div>';return;}
+  res.innerHTML='<div style="text-align:center;padding:20px"><div style="width:26px;height:26px;border:3px solid #e8e8e8;border-top-color:#ea4335;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div><p style="font-size:12px;color:#888">IA criando landing page... 20-40s</p></div>';
+  var hdr={'Content-Type':'application/json'};
+  if(S.aiKey){hdr['x-api-key']=S.aiKey;hdr['x-ai-provider']=S.aiProvider;}
+  if(S.userToken) hdr['x-user-token']=S.userToken;
+  fetch('/api/ia?action=landing',{method:'POST',headers:hdr,body:JSON.stringify({negocio:nome,segmento:seg,cidade:cidade,whatsapp:wa,servicos:servicos,cor:cor})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(!d.ok||!d.html){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">'+(d.error||'Configure GROQ_API_KEY no Vercel ou adicione sua chave em Setup IA.')+'</p><a href="https://console.groq.com" target="_blank" style="display:block;margin-top:6px;font-size:12px;color:#1a73e8">Criar chave Groq gratis</a></div>';SFX.error();return;}
+    if(d.credits!=null){S.credits=d.credits;save();updateHeader();}else if(!S.aiKey){S.credits=Math.max(0,S.credits-15);save();updateHeader();}
+    SFX.levelup();addXP(50,'Landing criada!');addCash(10,'Landing gerada');
+    var blob=new Blob([d.html],{type:'text/html'});var url=URL.createObjectURL(blob);
+    res.innerHTML='<div class="cd" style="border-color:#34a85340;padding:12px"><p style="font-size:13px;font-weight:700;color:#34a853;margin-bottom:8px">Landing page pronta!</p><a href="'+url+'" target="_blank" style="display:block;margin-bottom:8px;padding:10px;background:#1a73e8;color:#fff;text-decoration:none;border-radius:10px;font-size:13px;font-weight:700;text-align:center">Visualizar pagina</a><a href="'+url+'" download="landing-'+nome.replace(/\s/g,'-').toLowerCase()+'.html" style="display:block;padding:10px;background:#e8f0fe;color:#1a73e8;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">Baixar HTML</a><p style="font-size:11px;color:#888;margin-top:8px;margin-bottom:0">Hospede gratis no Netlify: arraste o arquivo HTML para app.netlify.com/drop</p></div>';
+  })
+  .catch(function(){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">Erro de conexao.</p></div>';SFX.error();});
+}
+
+/* analise da secao Criar */
+function rodarAnaliseCriar(){
+  var nome=(document.getElementById('an-nome')||{}).value||'';
+  var seg=(document.getElementById('an-seg')||{}).value||'';
+  var cidade=(document.getElementById('an-cidade')||{}).value||'';
+  var prob=(document.getElementById('an-prob')||{}).value||'';
+  var res=document.getElementById('an-result');
+  var btn=document.getElementById('an-btn');
+  if(!nome||!seg){showToast('Preencha nome e segmento');return;}
+  if(S.credits<10&&!S.aiKey){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="color:#ea4335;font-size:12px;margin:0">Creditos insuficientes (10 cr). Configure sua chave em Mais > Setup IA.</p></div>';return;}
+  if(btn){btn.disabled=true;btn.textContent='Analisando...';}
+  res.innerHTML='<div style="text-align:center;padding:20px"><div style="width:26px;height:26px;border:3px solid #e8e8e8;border-top-color:#1a73e8;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 8px"></div><p style="font-size:12px;color:#888">IA analisando... 15-30s</p></div>';
+  SFX.generate();
+  var hdr={'Content-Type':'application/json'};
+  if(S.aiKey){hdr['x-api-key']=S.aiKey;hdr['x-ai-provider']=S.aiProvider;}
+  if(S.userToken) hdr['x-user-token']=S.userToken;
+  fetch('/api/ia?action=analisar',{method:'POST',headers:hdr,body:JSON.stringify({nome:nome,segmento:seg,cidade:cidade,problema:prob})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(btn){btn.disabled=false;btn.innerHTML=svg('cpu','14','#fff')+' Analisar Empresa (10 cr)';}
+    if(!d.ok||!d.analise){res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">'+(d.error||'Configure GROQ_API_KEY no Vercel ou use sua chave em Setup IA.')+'</p><a href="https://console.groq.com" target="_blank" style="display:block;margin-top:6px;font-size:12px;color:#1a73e8">Criar chave Groq gratis</a></div>';SFX.error();return;}
+    if(d.credits!=null){S.credits=d.credits;save();updateHeader();}else if(!S.aiKey){S.credits=Math.max(0,S.credits-10);save();updateHeader();}
+    SFX.complete();addXP(30,'Analise concluida!');
+    var a=d.analise;
+    var scoreColor=a.score>=70?'#34a853':a.score>=40?'#f9ab00':'#ea4335';
+    var r2='<div class="cd" style="border-color:'+scoreColor+'40;margin-bottom:10px">';
+    r2+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
+    r2+='<p style="margin:0;font-size:14px;font-weight:700">'+esc(a.nome||nome)+'</p>';
+    r2+='<div style="text-align:center"><p style="margin:0;font-size:28px;font-weight:900;color:'+scoreColor+'">'+a.score+'</p><p style="margin:0;font-size:10px;color:#888">Score</p></div></div>';
+    if(a.problemas&&a.problemas.length){r2+='<p style="font-size:11px;font-weight:700;color:#ea4335;margin:0 0 4px">Problemas encontrados</p><ul style="margin:0 0 10px;padding-left:16px">';a.problemas.forEach(function(p){r2+='<li style="font-size:12px;color:#555;margin-bottom:2px">'+esc(p)+'</li>';});r2+='</ul>';}
+    if(a.keywords&&a.keywords.length){r2+='<p style="font-size:11px;font-weight:700;color:#1a73e8;margin:0 0 4px">Palavras-chave</p><div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">';a.keywords.forEach(function(k){r2+='<span style="font-size:11px;background:#e8f0fe;color:#1a73e8;padding:2px 8px;border-radius:99px">'+esc(k)+'</span>';});r2+='</div>';}
+    if(a.proposta){r2+='<p style="font-size:11px;font-weight:700;color:#34a853;margin:0 0 4px">Proposta de valor</p><p style="font-size:12px;color:#555;background:#e6f4ea;padding:8px 10px;border-radius:8px;margin:0 0 10px">'+esc(a.proposta)+'</p>';}
+    if(a.script_whatsapp){
+      r2+='<p style="font-size:11px;font-weight:700;color:#128c7e;margin:0 0 4px">Script WhatsApp pronto</p>';
+      r2+='<p style="font-size:12px;color:#555;background:#e7fde8;padding:8px 10px;border-radius:8px;margin:0 0 8px;white-space:pre-line">'+esc(a.script_whatsapp)+'</p>';
+      r2+='<button onclick="_copiar(\''+a.script_whatsapp.replace(/'/g,"\\'").replace(/\n/g,'\\n')+'\');SFX.success();showToast(\'Script copiado!\')" style="width:100%;padding:9px;background:#e7fde8;color:#128c7e;border:none;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer">'+svg('copy','13','#128c7e')+' Copiar Script WhatsApp</button>';
+    }
+    r2+='</div>';
+    res.innerHTML=r2;
+  })
+  .catch(function(){if(btn){btn.disabled=false;btn.innerHTML=svg('cpu','14','#fff')+' Analisar Empresa (10 cr)';}res.innerHTML='<div class="cd" style="border-color:#ea4335;padding:10px"><p style="font-size:12px;color:#ea4335;margin:0">Erro de conexao.</p></div>';SFX.error();});
+}
 
 /* ═══════ RENDER HOME ═══════ */
 function renderHome(){
