@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Google Ads — Curso Completo 2026</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
+html,body{height:100%;overflow-x:hidden;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#202124}
+
+/* HEADER */
+#hdr{background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);padding:13px 16px;position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px}
+#hdr h1{font-size:15px;font-weight:700;flex:1}
+.hbdg{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;background:#e8f0fe;color:#1a73e8}
+
+/* PROGRESS */
+#prog-bar{height:3px;background:#e8eaed;position:sticky;top:50px;z-index:29}
+#prog-fill{height:100%;background:linear-gradient(90deg,#1a73e8,#34a853);width:0%;transition:width .4s}
+
+/* MAIN */
+#main{padding:14px 14px 40px;max-width:600px;margin:0 auto}
+
+/* MODULE LIST */
+.mod-item{background:#fff;border:.5px solid rgba(0,0,0,.08);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:box-shadow .2s}
+.mod-item.open{box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.mod-head{display:flex;align-items:center;gap:12px;padding:13px 14px;cursor:pointer;user-select:none}
+.mod-head:active{background:#f8f9fa}
+.mod-icn{width:40px;height:40px;min-width:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.mod-info{flex:1;min-width:0}
+.mod-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.mod-sub{font-size:11px;color:#888}
+.mod-arrow{font-size:10px;color:#bbb;transition:transform .25s;flex-shrink:0}
+.mod-item.open .mod-arrow{transform:rotate(180deg)}
+.mod-body{display:none;border-top:.5px solid rgba(0,0,0,.06);padding:14px}
+.mod-item.open .mod-body{display:block;animation:fadeIn .2s ease}
+
+/* LESSON */
+.lesson{padding:11px 13px;border-radius:8px;margin-bottom:6px;background:#f8f9fa;border:.5px solid rgba(0,0,0,.06)}
+.lesson-title{font-size:12px;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.lesson-body{font-size:12px;color:#444;line-height:1.7}
+.lesson-body b{color:#202124}
+.lesson-body ul{padding-left:16px;margin-top:5px}
+.lesson-body li{margin-bottom:4px}
+
+/* TIP BOX */
+.tip{border-radius:8px;padding:10px 12px;margin:8px 0;font-size:12px;line-height:1.6}
+.tip-blue{background:#e8f0fe;border-left:3px solid #1a73e8;color:#1a73e8}
+.tip-green{background:#e6f4ea;border-left:3px solid #34a853;color:#188038}
+.tip-yellow{background:#fef9e7;border-left:3px solid #fbbc05;color:#a07000}
+.tip-red{background:#fce8e6;border-left:3px solid #ea4335;color:#c5221f}
+.tip strong{display:block;font-weight:700;margin-bottom:2px}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:11px;margin:8px 0}
+.tbl th{background:#f1f3f4;padding:7px 9px;text-align:left;font-weight:700;color:#444}
+.tbl td{padding:7px 9px;border-top:.5px solid rgba(0,0,0,.07)}
+.tbl tr:hover td{background:#fafafa}
+
+/* BADGE */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;margin-right:4px;margin-bottom:4px}
+.badge-blue{background:#e8f0fe;color:#1a73e8}
+.badge-green{background:#e6f4ea;color:#188038}
+.badge-red{background:#fce8e6;color:#c5221f}
+.badge-yellow{background:#fef9e7;color:#a07000}
+.badge-purple{background:#f3e8fd;color:#7c4dff}
+.badge-gray{background:#f1f3f4;color:#666}
+
+/* STEP */
+.steps{margin:8px 0}
+.step-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.step-num{width:22px;height:22px;min-width:22px;border-radius:50%;background:#1a73e8;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;margin-top:1px;flex-shrink:0}
+.step-txt{font-size:12px;line-height:1.6;color:#444;flex:1}
+.step-txt b{color:#202124}
+
+/* INTRO CARD */
+.intro-card{background:linear-gradient(135deg,#1a73e8,#0d47a1);border-radius:14px;padding:18px 16px;margin-bottom:14px;color:#fff}
+.intro-card h2{font-size:18px;font-weight:800;margin-bottom:6px}
+.intro-card p{font-size:12px;opacity:.9;line-height:1.6;margin-bottom:12px}
+.intro-tags{display:flex;flex-wrap:wrap;gap:6px}
+.intro-tag{background:rgba(255,255,255,.18);font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px}
+
+/* SECTION LABEL */
+.slbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#aaa;margin:16px 0 8px}
+
+/* FORMULA */
+.formula{background:#202124;color:#fff;border-radius:8px;padding:10px 12px;font-size:12px;font-family:monospace;margin:8px 0;line-height:1.6}
+.formula .var{color:#fbbc05}
+.formula .op{color:#34a853}
+
+/* SCROLL TOP */
+#top-btn{position:fixed;bottom:24px;right:16px;background:#1a73e8;color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2);z-index:50}
+#top-btn.show{display:flex}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <span style="font-size:20px">🎯</span>
+  <h1>Google Ads — Curso Completo</h1>
+  <span class="hbdg">2026</span>
+</div>
+<div id="prog-bar"><div id="prog-fill"></div></div>
+
+<div id="main">
+
+<!-- INTRO -->
+<div class="intro-card">
+  <h2>Domine o Google Ads</h2>
+  <p>Do zero ao avançado: estrutura de conta, campanhas, anúncios, lances, otimização e estratégias reais para gerar resultado em 2026.</p>
+  <div class="intro-tags">
+    <span class="intro-tag">12 Módulos</span>
+    <span class="intro-tag">Search · Display · YouTube · Shopping · PMax</span>
+    <span class="intro-tag">Estratégias 2026</span>
+  </div>
+</div>
+
+<p class="slbl">Módulos do curso</p>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 1 — O QUE É GOOGLE ADS
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m1">
+  <div class="mod-head" onclick="toggle('m1')">
+    <div class="mod-icn" style="background:#e8f0fe">📡</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 1 — O que é Google Ads</div>
+      <div class="mod-sub">Conceitos fundamentais, como funciona o leilão</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="lesson">
+      <div class="lesson-title">🔍 O que é o Google Ads?</div>
+      <div class="lesson-body">
+        O Google Ads (antigo Google AdWords) é a plataforma de publicidade paga do Google. Você paga para exibir anúncios para pessoas que estão <b>buscando ativamente</b> por produtos ou serviços como o seu.<br><br>
+        Diferente das redes sociais (onde você interrompe quem não está procurando), no Google Ads você aparece <b>exatamente no momento da intenção de compra</b>.
+      </div>
+    </div>
+
+    <div class="tip tip-blue"><strong>💡 Princípio-chave</strong>Google Ads é captura de demanda. Redes sociais são criação de demanda. No Google, a pessoa já quer — você só precisa aparecer na frente dela.</div>
+
+    <div class="lesson">
+      <div class="lesson-title">⚖️ Como funciona o Leilão</div>
+      <div class="lesson-body">
+        Toda vez que alguém faz uma busca, o Google realiza um leilão instantâneo para decidir quais anúncios aparecem e em qual posição.
+      </div>
+    </div>
+
+    <div class="formula">
+<span class="var">Ad Rank</span> <span class="op">=</span> Lance Máximo (CPC) <span class="op">×</span> Índice de Qualidade <span class="op">+</span> Extensões + Contexto
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">📊 Índice de Qualidade (Quality Score)</div>
+      <div class="lesson-body">
+        Nota de 1 a 10 que o Google dá para cada palavra-chave. Composto por:<br>
+        <ul>
+          <li><b>CTR esperado</b> — quantas pessoas tendem a clicar no seu anúncio</li>
+          <li><b>Relevância do anúncio</b> — o anúncio é relevante para a palavra-chave?</li>
+          <li><b>Experiência na página de destino</b> — a landing page entrega o que promete?</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tip tip-green"><strong>✅ Por que isso importa?</strong>Quem tem Índice de Qualidade 10 pode pagar MENOS por clique e aparecer ACIMA de concorrentes que pagam mais. Qualidade vence lance.</div>
+
+    <table class="tbl">
+      <tr><th>Métrica</th><th>Significado</th></tr>
+      <tr><td>CPC</td><td>Custo Por Clique</td></tr>
+      <tr><td>CPM</td><td>Custo Por Mil Impressões</td></tr>
+      <tr><td>CTR</td><td>Taxa de Cliques (cliques ÷ impressões)</td></tr>
+      <tr><td>ROAS</td><td>Retorno sobre Gasto em Anúncios</td></tr>
+      <tr><td>CPA</td><td>Custo Por Aquisição/Conversão</td></tr>
+      <tr><td>CVR</td><td>Taxa de Conversão</td></tr>
+      <tr><td>Impressão</td><td>Quantas vezes o anúncio foi exibido</td></tr>
+    </table>
+
+    <div class="tip tip-yellow"><strong>⚠️ Modelo de Cobrança</strong>No Google Ads você não paga o lance máximo — paga apenas o suficiente para superar o concorrente abaixo de você (leilão de segundo preço).</div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 2 — ESTRUTURA DE CONTA
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m2">
+  <div class="mod-head" onclick="toggle('m2')">
+    <div class="mod-icn" style="background:#e6f4ea">🏗️</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 2 — Estrutura de Conta</div>
+      <div class="mod-sub">Conta → Campanha → Grupo → Anúncio → Palavra-chave</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="lesson">
+      <div class="lesson-title">🏛️ Hierarquia da Conta Google Ads</div>
+      <div class="lesson-body">
+        <ul>
+          <li><b>Conta</b> — configurações gerais, faturamento, acesso</li>
+          <li><b>Campanha</b> — orçamento, tipo de campanha, localização, idioma</li>
+          <li><b>Grupo de Anúncios</b> — conjunto de palavras-chave + anúncios relacionados</li>
+          <li><b>Anúncio</b> — os textos/imagens que o usuário vê</li>
+          <li><b>Palavra-chave</b> — termos que ativam os anúncios</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tip tip-blue"><strong>💡 Regra de Ouro da Estrutura</strong>Cada Grupo de Anúncios deve ter um tema único e específico. Não misture "curso de inglês" com "aula de inglês online" no mesmo grupo — crie grupos separados.</div>
+
+    <div class="lesson">
+      <div class="lesson-title">📐 SKAG vs. STAG — Qual usar em 2026?</div>
+      <div class="lesson-body">
+        <b>SKAG</b> (Single Keyword Ad Group): 1 palavra-chave por grupo. Máximo controle. Trabalhoso mas preciso.<br><br>
+        <b>STAG</b> (Single Theme Ad Group): várias palavras do mesmo tema por grupo. Mais prático, funciona bem com Smart Bidding.<br><br>
+        <b>Em 2026:</b> com o match type "broad" + Smart Bidding sendo incentivados pelo Google, STAG temático é a abordagem dominante.
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step-row"><div class="step-num">1</div><div class="step-txt"><b>Crie sua Conta MCC</b> se for gerenciar múltiplos clientes (My Client Center). Permite centralizar tudo.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-txt"><b>Configure o faturamento</b> antes de criar campanhas. Defina limite de gasto diário na campanha.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-txt"><b>Vincule o Google Analytics 4</b> (GA4) para rastrear comportamento pós-clique.</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-txt"><b>Configure conversões</b> antes de rodar qualquer anúncio. Sem rastreamento = dinheiro perdido.</div></div>
+      <div class="step-row"><div class="step-num">5</div><div class="step-txt"><b>Planeje a estrutura</b> no papel antes de criar no sistema. Mude depois é caro.</div></div>
+    </div>
+
+    <div class="tip tip-red"><strong>🚫 Erro Clássico de Iniciante</strong>Colocar tudo em uma campanha só com um grupo de anúncios genérico. Isso impede otimização e desperdiça verba.</div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 3 — TIPOS DE CAMPANHA
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m3">
+  <div class="mod-head" onclick="toggle('m3')">
+    <div class="mod-icn" style="background:#fef9e7">📢</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 3 — Tipos de Campanha</div>
+      <div class="mod-sub">Search, Display, Shopping, YouTube, PMax, App</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <table class="tbl">
+      <tr><th>Tipo</th><th>Onde aparece</th><th>Melhor para</th></tr>
+      <tr><td><b>Search</b></td><td>Resultados de busca Google</td><td>Capturar demanda existente</td></tr>
+      <tr><td><b>Display</b></td><td>Sites parceiros, apps</td><td>Branding, remarketing</td></tr>
+      <tr><td><b>Shopping</b></td><td>Aba Compras, busca</td><td>E-commerce com produtos físicos</td></tr>
+      <tr><td><b>YouTube (Video)</b></td><td>YouTube, parceiros</td><td>Consciência de marca, vendas</td></tr>
+      <tr><td><b>Performance Max</b></td><td>Todos os canais Google</td><td>Maximizar conversões com IA</td></tr>
+      <tr><td><b>App</b></td><td>Busca, Play Store, YouTube</td><td>Instalações de aplicativo</td></tr>
+      <tr><td><b>Smart</b></td><td>Todos canais (simplificado)</td><td>Pequenos negócios locais</td></tr>
+    </table>
+
+    <div class="lesson">
+      <div class="lesson-title">🔎 Search (Rede de Pesquisa)</div>
+      <div class="lesson-body">
+        A campanha mais importante para a maioria dos negócios. Anúncios aparecem quando alguém busca palavras-chave específicas. Alta intenção de compra. CPC geralmente mais alto mas conversão superior.
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">🖼️ Display (Rede de Display)</div>
+      <div class="lesson-body">
+        Anúncios em banners em mais de 2 milhões de sites, apps e YouTube. Ótimo para remarketing (impactar quem já visitou seu site). CPC mais barato, mas intenção de compra menor.
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">🛒 Shopping</div>
+      <div class="lesson-body">
+        Mostra produto com foto, preço e nome da loja diretamente na busca. Requer Google Merchant Center com feed de produtos. Taxa de conversão muito alta para e-commerce.
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">▶️ YouTube / Video</div>
+      <div class="lesson-body">
+        Formatos: <b>In-Stream pulável</b> (pode pular após 5s), <b>In-Stream não-pulável</b> (até 15s), <b>Bumper Ads</b> (6s), <b>Discovery</b> (aparece nos resultados do YouTube).<br><br>
+        Você paga por visualização (CPV). Ótimo para construir marca e remarketing de vídeo.
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">⚡ Performance Max (PMax)</div>
+      <div class="lesson-body">
+        Campanha que usa IA do Google para exibir seus anúncios em <b>todos os canais ao mesmo tempo</b>: Search, Display, YouTube, Gmail, Discover, Maps.<br><br>
+        Você fornece: orçamento, objetivo de conversão, assets criativos (textos, imagens, vídeos) e sinais de audiência. A IA otimiza automaticamente.
+      </div>
+    </div>
+
+    <div class="tip tip-yellow"><strong>⚠️ PMax em 2026</strong>PMax é poderoso mas exige dados de conversão robustos (mínimo 50 conversões/mês) para funcionar bem. Com poucos dados, prefira Search manual primeiro.</div>
+
+    <div class="tip tip-blue"><strong>💡 Ordem recomendada para começar</strong>1º Search → 2º Remarketing Display → 3º Shopping (se e-commerce) → 4º YouTube → 5º PMax (quando tiver dados suficientes)</div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 4 — PALAVRAS-CHAVE
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m4">
+  <div class="mod-head" onclick="toggle('m4')">
+    <div class="mod-icn" style="background:#f3e8fd">🔑</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 4 — Palavras-chave</div>
+      <div class="mod-sub">Match types, pesquisa, negativas, planejador</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="lesson">
+      <div class="lesson-title">🎯 Tipos de Correspondência (Match Types)</div>
+      <div class="lesson-body">
+        <ul>
+          <li><b>Ampla (Broad)</b> — <code>comprar sapato</code> → ativa buscas relacionadas, sinônimos, variantes. Maior alcance, menor controle.</li>
+          <li><b>Frase (Phrase)</b> — <code>"comprar sapato"</code> → ativa buscas que contêm essa frase com palavras antes/depois.</li>
+          <li><b>Exata (Exact)</b> — <code>[comprar sapato]</code> → ativa apenas essa busca exata (e variantes próximas). Máximo controle.</li>
+        </ul>
+      </div>
+    </div>
+
+    <table class="tbl">
+      <tr><th>Match Type</th><th>Sintaxe</th><th>Volume</th><th>Controle</th></tr>
+      <tr><td>Ampla</td><td>sapato</td><td>🟢 Alto</td><td>🔴 Baixo</td></tr>
+      <tr><td>Frase</td><td>"sapato"</td><td>🟡 Médio</td><td>🟡 Médio</td></tr>
+      <tr><td>Exata</td><td>[sapato]</td><td>🔴 Baixo</td><td>🟢 Alto</td></tr>
+    </table>
+
+    <div class="tip tip-blue"><strong>💡 Estratégia 2026</strong>Com Smart Bidding maduro, Broad Match + Smart Bidding + boas palavras negativas pode superar Exact Match. Teste antes de descartar.</div>
+
+    <div class="lesson">
+      <div class="lesson-title">🚫 Palavras-chave Negativas — O maior diferencial</div>
+      <div class="lesson-body">
+        Palavras negativas bloqueiam buscas irrelevantes que desperdiçariam seu orçamento. São tão importantes quanto as positivas.<br><br>
+        <b>Exemplo:</b> Você vende "curso de Excel pago" → adicione negativas: <em>grátis, gratuito, free, torrent, pirate, download</em>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step-row"><div class="step-num">1</div><div class="step-txt"><b>Use o Planejador de Palavras-chave</b> do Google (gratuito) para descobrir volume de busca e CPC estimado.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-txt"><b>Analise o Relatório de Termos de Pesquisa</b> semanalmente para encontrar termos irrelevantes (vira negativa) e termos novos (vira palavra-chave).</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-txt"><b>Crie Listas de Negativas</b> por campanha E uma lista global de conta para palavras que nunca devem ativar seus anúncios.</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-txt"><b>Monitore o Search Impression Share</b> — se estiver baixo, aumente lance ou melhore qualidade dos anúncios.</div></div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">🛠️ Ferramentas de Pesquisa de Palavras-chave</div>
+      <div class="lesson-body">
+        <span class="badge badge-blue">Google Keyword Planner</span>
+        <span class="badge badge-green">Ubersuggest</span>
+        <span class="badge badge-purple">SEMrush</span>
+        <span class="badge badge-yellow">Ahrefs</span>
+        <span class="badge badge-gray">Answer the Public</span>
+        <span class="badge badge-gray">Google Trends</span>
+        <span class="badge badge-blue">Search Console</span>
+      </div>
+    </div>
+
+    <div class="tip tip-green"><strong>✅ Lista de Negativas Universal (começar com)</strong>grátis · gratuito · free · pirata · torrent · baixar · download · vagas · emprego · salário · concurso · como fazer · o que é · significado · wikipedia · receita · DIY</div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 5 — CRIAÇÃO DE ANÚNCIOS
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m5">
+  <div class="mod-head" onclick="toggle('m5')">
+    <div class="mod-icn" style="background:#fce8e6">✍️</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 5 — Criação de Anúncios</div>
+      <div class="mod-sub">RSA, assets, extensões, copy que converte</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="lesson">
+      <div class="lesson-title">📝 Anúncio Responsivo de Pesquisa (RSA)</div>
+      <div class="lesson-body">
+        O formato padrão atual. Você fornece até <b>15 títulos</b> e <b>4 descrições</b>. O Google testa combinações automaticamente e aprende quais performam melhor.<br><br>
+        <b>Títulos:</b> até 30 caracteres cada<br>
+        <b>Descrições:</b> até 90 caracteres cada<br>
+        <b>URL de display:</b> 2 campos de até 15 caracteres
+      </div>
+    </div>
+
+    <div class="tip tip-blue"><strong>💡 Regra dos Títulos RSA</strong>Inclua a palavra-chave principal no título 1. Use benefícios claros nos demais. Ao menos 3 títulos devem ser diferentes para dar ao Google material para testar.</div>
+
+    <div class="lesson">
+      <div class="lesson-title">🏆 Fórmula de Copy que Converte</div>
+      <div class="lesson-body">
+        <b>1. Problema + Solução:</b> "Dor de Cabeça Frequente? Descubra a Causa e Trate Agora"<br>
+        <b>2. Benefício + CTA:</b> "Aumente Suas Vendas 3x — Comece Hoje Grátis"<br>
+        <b>3. Urgência + Escassez:</b> "Apenas 10 Vagas — Garanta a Sua Antes que Acabe"<br>
+        <b>4. Prova Social:</b> "+10.000 Clientes Satisfeitos — Veja os Resultados"<br>
+        <b>5. Pergunta:</b> "Cansado de Pagar Caro no Plano de Saúde?"
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">📌 Assets (Extensões de Anúncio)</div>
+      <div class="lesson-body">
+        Assets aumentam o espaço do anúncio gratuitamente e melhoram o CTR. Sempre configure todos que forem relevantes:
+        <ul>
+          <li><b>Sitelinks</b> — links adicionais para outras páginas do site</li>
+          <li><b>Callouts</b> — destaques como "Frete Grátis", "12x sem juros"</li>
+          <li><b>Snippets Estruturados</b> — lista de produtos/serviços</li>
+          <li><b>Chamada</b> — número de telefone clicável</li>
+          <li><b>Localização</b> — endereço do negócio</li>
+          <li><b>Preço</b> — tabela de preços de produtos/serviços</li>
+          <li><b>Promoção</b> — destaque de oferta com valor de desconto</li>
+          <li><b>Formulário de leads</b> — captura lead sem sair do Google</li>
+          <li><b>Imagem</b> — foto ao lado do anúncio de texto</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tip tip-green"><strong>✅ Meta de Ad Strength</strong>Busque sempre "Excelente" no indicador de Ad Strength. Use a maioria dos 15 títulos disponíveis, todos distintos entre si.</div>
+
+    <div class="tip tip-red"><strong>🚫 Erros Comuns no Anúncio</strong>• Não incluir a palavra-chave no título<br>• Usar a mesma mensagem para todos os grupos<br>• Não ter CTA claro ("Saiba Mais", "Compre Agora", "Fale Conosco")<br>• Copiar exatamente o que o concorrente faz<br>• Enviar o clique para a home em vez de uma landing page específica</div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 6 — LANCES E ORÇAMENTO
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m6">
+  <div class="mod-head" onclick="toggle('m6')">
+    <div class="mod-icn" style="background:#e6f4ea">💰</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 6 — Lances e Orçamento</div>
+      <div class="mod-sub">Smart Bidding, CPC manual, ROAS alvo, CPA alvo</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="lesson">
+      <div class="lesson-title">📊 Estratégias de Lance</div>
+      <div class="lesson-body"></div>
+    </div>
+
+    <table class="tbl">
+      <tr><th>Estratégia</th><th>O que faz</th><th>Usar quando</th></tr>
+      <tr><td><b>CPC Manual</b></td><td>Você define o lance por clique</td><td>Início de campanha, baixo volume</td></tr>
+      <tr><td><b>CPC Otimizado (eCPC)</b></td><td>Ajusta seu lance manual baseado em chance de conversão</td><td>Transição para smart bidding</td></tr>
+      <tr><td><b>Maximizar Cliques</b></td><td>Gera o máximo de cliques no orçamento</td><td>Tráfego, brand awareness</td></tr>
+      <tr><td><b>Maximizar Conversões</b></td><td>Gera o máximo de conversões</td><td>Dados insuficientes para CPA alvo</td></tr>
+      <tr><td><b>CPA Alvo</b></td><td>Mantém custo por conversão no valor definido</td><td>+50 conv./mês com CPA consistente</td></tr>
+      <tr><td><b>ROAS Alvo</b></td><td>Mantém retorno sobre gasto definido</td><td>E-commerce com valores variados</td></tr>
+      <tr><td><b>Maximizar Valor</b></td><td>Maximiza o valor total de conversões</td><td>Quando diferentes conv. têm valores diferentes</td></tr>
+    </table>
+
+    <div class="tip tip-yellow"><strong>⚠️ Período de Aprendizado</strong>Ao mudar estratégia de lance, a campanha entra em "período de aprendizado" (~2 semanas). Não faça alterações grandes nesse período ou o aprendizado reinicia.</div>
+
+    <div class="lesson">
+      <div class="lesson-title">💵 Como definir o orçamento diário</div>
+      <div class="lesson-body">
+        <b>Fórmula básica:</b> (CPC médio da palavra-chave × cliques necessários) ÷ taxa de conversão esperada = verba mínima para resultados.<br><br>
+        <b>Exemplo:</b> CPC médio R$3, preciso de 100 cliques/dia para ter ~3 conversões (CVR 3%) = R$300/dia de orçamento mínimo.<br><br>
+        O Google pode gastar até <b>2× o orçamento diário</b> em dias de alta demanda, mas compensa nos dias seguintes.
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step-row"><div class="step-num">1</div><div class="step-txt">Comece com <b>CPC Manual</b> por 2-4 semanas para entender os CPCs reais do seu mercado.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-txt">Com 30+ conversões, mude para <b>Maximizar Conversões</b> para deixar a IA trabalhar.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-txt">Com 50+ conversões/mês e CPA estável, configure <b>CPA Alvo</b> e monitore o desempenho.</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-txt">Para e-commerce, prefira <b>ROAS Alvo</b> quando os produtos têm valores diferentes.</div></div>
+    </div>
+
+    <div class="tip tip-blue"><strong>💡 Ajustes de Lance por Dispositivo/Horário</strong>No CPC Manual você pode ajustar lances por: dispositivo (mobile -20%), horário (+30% das 19h-22h), localização (+15% na capital), público específico (+50% para visitantes do site).</div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 7 — RASTREAMENTO DE CONVERSÕES
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m7">
+  <div class="mod-head" onclick="toggle('m7')">
+    <div class="mod-icn" style="background:#e8f0fe">📈</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 7 — Rastreamento de Conversões</div>
+      <div class="mod-sub">Tag, GA4, eventos, o que trackear</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="tip tip-red"><strong>🚨 Regra Número 1</strong>NUNCA rode anúncios sem rastreamento de conversão configurado. Você estará investindo dinheiro sem saber o que funciona.</div>
+
+    <div class="lesson">
+      <div class="lesson-title">🔧 Métodos de Rastreamento</div>
+      <div class="lesson-body">
+        <ul>
+          <li><b>Tag do Google Ads direta</b> — código JavaScript na página de obrigado</li>
+          <li><b>Google Analytics 4 (GA4) importado</b> — mais completo, recomendado</li>
+          <li><b>Google Tag Manager (GTM)</b> — gerencia todas as tags sem mexer no código</li>
+          <li><b>Enhanced Conversions</b> — envia dados hasheados de email/tel para melhorar atribuição</li>
+          <li><b>Conversões Offline</b> — importa vendas fechadas no CRM para o Google Ads</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">📋 O que rastrear como conversão</div>
+      <div class="lesson-body">
+        <span class="badge badge-green">Compra concluída</span>
+        <span class="badge badge-green">Formulário enviado</span>
+        <span class="badge badge-green">Ligação telefônica</span>
+        <span class="badge badge-blue">Chat iniciado</span>
+        <span class="badge badge-blue">WhatsApp clicado</span>
+        <span class="badge badge-blue">Página visitada (chave)</span>
+        <span class="badge badge-yellow">Add to cart</span>
+        <span class="badge badge-yellow">Cadastro realizado</span>
+        <span class="badge badge-gray">Download de material</span>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">🏷️ Janela de Atribuição e Modelos</div>
+      <div class="lesson-body">
+        <b>Janela de atribuição:</b> define quanto tempo após o clique uma conversão ainda é atribuída ao anúncio. Padrão: 30 dias para cliques, 1 dia para visualizações.<br><br>
+        <b>Modelo de atribuição em 2026:</b> o Google migrou para <b>Data-Driven Attribution (DDA)</b> como padrão — usa ML para distribuir crédito entre todos os pontos de contato na jornada de compra.
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step-row"><div class="step-num">1</div><div class="step-txt">Instale o <b>Google Tag Manager</b> no site (1 código, controla tudo).</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-txt">Configure o <b>GA4</b> via GTM com eventos de e-commerce ou lead.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-txt">Importe as <b>conversões do GA4 para o Google Ads</b> no painel de Conversões.</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-txt">Ative <b>Enhanced Conversions</b> nas configurações de conversão do Google Ads.</div></div>
+      <div class="step-row"><div class="step-num">5</div><div class="step-txt">Valide com o <b>Tag Assistant</b> (extensão Chrome) que os eventos estão disparando corretamente.</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 8 — AUDIÊNCIAS E REMARKETING
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m8">
+  <div class="mod-head" onclick="toggle('m8')">
+    <div class="mod-icn" style="background:#f3e8fd">👥</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 8 — Audiências e Remarketing</div>
+      <div class="mod-sub">Segmentação, remarketing, Customer Match, lookalike</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="lesson">
+      <div class="lesson-title">🎯 Tipos de Audiência no Google Ads</div>
+      <div class="lesson-body">
+        <ul>
+          <li><b>Remarketing (Retargeting)</b> — pessoas que visitaram seu site/app</li>
+          <li><b>Customer Match</b> — lista de emails/telefones de clientes reais</li>
+          <li><b>Similar (Lookalike)</b> — pessoas similares aos seus clientes (Google gera automaticamente)</li>
+          <li><b>In-Market</b> — pessoas ativamente pesquisando comprar na sua categoria</li>
+          <li><b>Affinity</b> — pessoas com interesses relacionados ao seu negócio</li>
+          <li><b>Custom Intent</b> — pessoas que buscaram palavras específicas recentemente</li>
+          <li><b>Detailed Demographics</b> — por renda, status parental, educação, etc.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">🔄 Estratégia de Remarketing em Camadas</div>
+      <div class="lesson-body">
+        <b>Nível 1 — Visitou o site:</b> anúncio de reengajamento genérico<br>
+        <b>Nível 2 — Visitou página de produto/serviço:</b> anúncio específico do produto<br>
+        <b>Nível 3 — Adicionou ao carrinho:</b> anúncio com urgência + desconto<br>
+        <b>Nível 4 — Chegou ao checkout mas não comprou:</b> anúncio agressivo + frete grátis<br>
+        <b>Nível 5 — Comprou:</b> excluir da campanha de aquisição, criar campanha de upsell
+      </div>
+    </div>
+
+    <div class="tip tip-green"><strong>✅ Customer Match em 2026</strong>Envie sua lista de clientes (email, tel, nome) para o Google Ads. O Google faz o match com contas Google e permite impactar esses usuários diretamente — ou criar lookalikes deles.</div>
+
+    <div class="lesson">
+      <div class="lesson-title">📋 Como usar Audiências na Search</div>
+      <div class="lesson-body">
+        Na Search, audiências funcionam de 2 formas:<br><br>
+        <b>Observação (padrão):</b> adiciona audiência para monitorar performance e ajustar lances, sem restringir alcance.<br><br>
+        <b>Segmentação:</b> restringe os anúncios APENAS para quem está na audiência E busca a palavra-chave. Uso avançado.
+      </div>
+    </div>
+
+    <div class="tip tip-blue"><strong>💡 RLSA (Remarketing Lists for Search Ads)</strong>Estratégia poderosa: coloque palavras-chave broad match com lance baixo para todos, mas adicione ajuste de lance +100% para visitantes do site. Quem já te conhece merece mais investimento.</div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 9 — LANDING PAGE
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m9">
+  <div class="mod-head" onclick="toggle('m9')">
+    <div class="mod-icn" style="background:#fce8e6">🖥️</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 9 — Landing Page que Converte</div>
+      <div class="mod-sub">Estrutura, elementos essenciais, CRO</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="tip tip-red"><strong>🚨 Verdade Absoluta</strong>50% do sucesso de uma campanha Google Ads está na landing page. Você pode ter o melhor anúncio do mundo — se a página não converter, tudo é desperdício.</div>
+
+    <div class="lesson">
+      <div class="lesson-title">🏗️ Estrutura de Landing Page de Alta Conversão</div>
+      <div class="lesson-body">
+        <div class="steps">
+          <div class="step-row"><div class="step-num">1</div><div class="step-txt"><b>Headline poderosa</b> — deve espelhar a promessa do anúncio (message match)</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-txt"><b>Subheadline</b> — reforça a proposta de valor com mais detalhes</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-txt"><b>Hero image/vídeo</b> — visual que reforça o produto/serviço</div></div>
+          <div class="step-row"><div class="step-num">4</div><div class="step-txt"><b>Benefícios (não características)</b> — o que o cliente GANHA, não o que você OFERECE</div></div>
+          <div class="step-row"><div class="step-num">5</div><div class="step-txt"><b>Prova social</b> — depoimentos, avaliações, logos de clientes, números</div></div>
+          <div class="step-row"><div class="step-num">6</div><div class="step-txt"><b>CTA claro e único</b> — um único objetivo por página</div></div>
+          <div class="step-row"><div class="step-num">7</div><div class="step-txt"><b>Garantia</b> — reduz risco percebido ("7 dias ou dinheiro de volta")</div></div>
+          <div class="step-row"><div class="step-num">8</div><div class="step-txt"><b>Urgência real</b> — timer, vagas limitadas, oferta por tempo</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">⚡ Message Match</div>
+      <div class="lesson-body">
+        O anúncio e a landing page devem falar a <b>mesma linguagem</b>. Se o anúncio diz "Curso de Excel — 40% OFF", a landing page deve mostrar isso imediatamente. Inconsistência = abandono.
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">📱 Mobile First em 2026</div>
+      <div class="lesson-body">
+        +70% do tráfego de busca é mobile. Sua landing page deve:<br>
+        <ul>
+          <li>Carregar em menos de 3 segundos (use PageSpeed Insights)</li>
+          <li>CTA visível sem rolar a tela</li>
+          <li>Formulário com poucos campos (nome + email + tel máximo)</li>
+          <li>Botão de WhatsApp clicável</li>
+          <li>Número de telefone clicável (click-to-call)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="tip tip-green"><strong>✅ Ferramentas de Landing Page</strong><span class="badge badge-blue">Unbounce</span><span class="badge badge-green">Leadpages</span><span class="badge badge-purple">Instapage</span><span class="badge badge-yellow">RD Station</span><span class="badge badge-gray">Webflow</span><span class="badge badge-red">ClickFunnels</span><span class="badge badge-blue">Elementor</span></div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 10 — OTIMIZAÇÃO E ANÁLISE
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m10">
+  <div class="mod-head" onclick="toggle('m10')">
+    <div class="mod-icn" style="background:#e6f4ea">📊</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 10 — Otimização e Análise</div>
+      <div class="mod-sub">Relatórios, métricas, rotina de otimização</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="lesson">
+      <div class="lesson-title">📅 Rotina de Otimização Semanal</div>
+      <div class="lesson-body"></div>
+    </div>
+
+    <div class="steps">
+      <div class="step-row"><div class="step-num">1</div><div class="step-txt"><b>Termos de pesquisa</b> — adicione negativas e novas palavras-chave relevantes.</div></div>
+      <div class="step-row"><div class="step-num">2</div><div class="step-txt"><b>CTR dos anúncios</b> — abaixo de 3% na Search? Teste novos títulos.</div></div>
+      <div class="step-row"><div class="step-num">3</div><div class="step-txt"><b>Taxa de conversão</b> — caiu? Verifique landing page, rastreamento, qualidade do tráfego.</div></div>
+      <div class="step-row"><div class="step-num">4</div><div class="step-txt"><b>CPA/ROAS</b> — acima da meta? Revise lances, pause palavras-chave ruins.</div></div>
+      <div class="step-row"><div class="step-num">5</div><div class="step-txt"><b>Dispositivos</b> — mobile convertendo muito abaixo? Reduza lance em -30%.</div></div>
+      <div class="step-row"><div class="step-num">6</div><div class="step-txt"><b>Horário e dia</b> — identifique os horários de maior conversão e ajuste lances.</div></div>
+      <div class="step-row"><div class="step-num">7</div><div class="step-txt"><b>Qualidade do anúncio</b> — Índice de Qualidade < 6? Revise relevância de palavra + anúncio + landing.</div></div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">📉 Métricas que Mais Importam</div>
+      <div class="lesson-body">
+        <table class="tbl">
+          <tr><th>Métrica</th><th>Referência</th><th>O que fazer se ruim</th></tr>
+          <tr><td>CTR Search</td><td>> 5%</td><td>Reescrever anúncios</td></tr>
+          <tr><td>Taxa de conversão</td><td>> 2% (B2B) / > 3% (B2C)</td><td>Otimizar landing page</td></tr>
+          <tr><td>Índice de Qualidade</td><td>> 7</td><td>Melhorar relevância</td></tr>
+          <tr><td>Impression Share</td><td>> 60%</td><td>Aumentar orçamento ou lances</td></tr>
+          <tr><td>ROAS</td><td>> 4x (depende da margem)</td><td>Pausar produtos ruins</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="tip tip-blue"><strong>💡 Auditoria Mensal</strong>Analise: desempenho por dispositivo, localização, horário, campanha, grupo de anúncios. Redirecione verba dos que perdem para os que ganham.</div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 11 — GOOGLE ADS PARA PRESTADORES DE SERVIÇO
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m11">
+  <div class="mod-head" onclick="toggle('m11')">
+    <div class="mod-icn" style="background:#fef9e7">🔧</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 11 — Google Ads para Prestadores de Serviço</div>
+      <div class="mod-sub">Local, leads, WhatsApp, nicho específico</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="lesson">
+      <div class="lesson-title">📍 Campanhas Locais — Oportunidade Real</div>
+      <div class="lesson-body">
+        Para negócios locais (advocacia, clínicas, dentistas, encanadores, academias, restaurantes), o Google Ads tem enorme potencial com orçamentos pequenos porque a concorrência local é menor.<br><br>
+        <b>Configurações essenciais:</b><br>
+        <ul>
+          <li>Segmentação geográfica: raio de 5-30km do negócio</li>
+          <li>Asset de localização vinculado ao Google Business Profile</li>
+          <li>Asset de chamada ativa no horário comercial</li>
+          <li>Palavras-chave com localidade: "dentista em Campinas", "advogado BH"</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">📲 Google Ads + WhatsApp</div>
+      <div class="lesson-body">
+        Estratégia muito eficiente no Brasil:<br>
+        <div class="steps">
+          <div class="step-row"><div class="step-num">1</div><div class="step-txt">Anúncio Search → Landing page simples com botão WhatsApp</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-txt">Rastreie clique no WhatsApp como conversão no GTM</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-txt">Use mensagem pré-definida: "Vim pelo Google, quero saber sobre [serviço]"</div></div>
+          <div class="step-row"><div class="step-num">4</div><div class="step-txt">Responda em menos de 5 minutos — velocidade é conversão</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">💼 Para Gestores de Tráfego — Como vender Google Ads</div>
+      <div class="lesson-body">
+        <b>Como precificar:</b> Cobrança flat mensal (R$800–R$3.000+) ou percentual sobre verba gerenciada (10-20%).<br><br>
+        <b>O que entregar todo mês:</b><br>
+        <ul>
+          <li>Relatório com métricas principais (cliques, conversões, CPA, ROAS)</li>
+          <li>O que foi otimizado e por que</li>
+          <li>Próximas ações do mês</li>
+          <li>Comparativo mês a mês</li>
+        </ul>
+        <b>Verba mínima recomendada para cliente:</b> R$1.500/mês (Search local) a R$5.000/mês para campanhas completas.
+      </div>
+    </div>
+
+    <div class="tip tip-green"><strong>✅ Script para abordar cliente</strong>"[Nome], percebi que você não aparece no Google quando alguém pesquisa [serviço] em [cidade]. Posso criar uma campanha que te traz 10-20 ligações por mês investindo R$X. Podemos conversar esta semana?"</div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MÓDULO 12 — ESTRATÉGIAS AVANÇADAS 2026
+══════════════════════════════════════════ -->
+<div class="mod-item" id="m12">
+  <div class="mod-head" onclick="toggle('m12')">
+    <div class="mod-icn" style="background:#e8f0fe">🚀</div>
+    <div class="mod-info">
+      <div class="mod-title">Módulo 12 — Estratégias Avançadas 2026</div>
+      <div class="mod-sub">IA, Broad + Smart, PMax, scripts, tendências</div>
+    </div>
+    <span class="mod-arrow">▼</span>
+  </div>
+  <div class="mod-body">
+
+    <div class="lesson">
+      <div class="lesson-title">🤖 Google Ads com IA em 2026</div>
+      <div class="lesson-body">
+        O Google está investindo pesado em automação. As tendências dominantes:<br>
+        <ul>
+          <li><b>Broad Match + Smart Bidding</b> — o Google incentiva esta combinação. Com dados suficientes, supera combinações manuais.</li>
+          <li><b>Geração de assets por IA</b> — Google Ads sugere imagens, vídeos e textos baseados no seu site.</li>
+          <li><b>Conversational Campaign Builder</b> — cria campanhas via chat com IA dentro do painel.</li>
+          <li><b>AI-powered Search Ads</b> — anúncios gerados em tempo real pela IA para cada busca.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">⚡ Performance Max — Como dominar</div>
+      <div class="lesson-body">
+        <b>Para PMax funcionar bem:</b><br>
+        <ul>
+          <li>Forneça sinais de audiência detalhados (Customer Match, visitantes do site)</li>
+          <li>Crie múltiplos grupos de assets por tema/produto</li>
+          <li>Insira vídeos — sem vídeo próprio o Google gera automaticamente (baixa qualidade)</li>
+          <li>Exclua brand keywords se tiver campanha Search de marca separada</li>
+          <li>Dê ao mínimo 6 semanas antes de julgar performance</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">📜 Google Ads Scripts</div>
+      <div class="lesson-body">
+        Scripts são código JavaScript que automatizam tarefas repetitivas no Google Ads:<br>
+        <ul>
+          <li>Pausar campanhas quando estoque acabar</li>
+          <li>Alertas de CPA acima do limite por email</li>
+          <li>Ajuste automático de lances por condição climática</li>
+          <li>Relatórios automáticos no Google Sheets</li>
+          <li>Pausar palavras-chave com baixo Quality Score</li>
+        </ul>
+        Acesse: <b>Ferramentas → Criação e gerenciamento → Scripts</b>
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">🧪 Framework de Testes A/B</div>
+      <div class="lesson-body">
+        <b>Use Experimentos do Google Ads:</b> cria variação da campanha com tráfego dividido 50/50.<br><br>
+        O que testar:<br>
+        <ul>
+          <li>Estratégia de lance (Manual vs Smart Bidding)</li>
+          <li>Landing pages diferentes</li>
+          <li>Broad Match vs Exact Match</li>
+          <li>Com ou sem RSA específico por grupo</li>
+          <li>Diferentes chamadas para ação</li>
+        </ul>
+        <b>Regra:</b> teste uma variável por vez. Aguarde significância estatística (mínimo 100 conversões por variação).
+      </div>
+    </div>
+
+    <div class="lesson">
+      <div class="lesson-title">🔗 Stack Completo de Ferramentas 2026</div>
+      <div class="lesson-body">
+        <span class="badge badge-blue">Google Ads Editor</span>
+        <span class="badge badge-blue">Google Keyword Planner</span>
+        <span class="badge badge-blue">Google Analytics 4</span>
+        <span class="badge badge-blue">Google Tag Manager</span>
+        <span class="badge badge-blue">Google Merchant Center (e-comm)</span>
+        <span class="badge badge-green">SEMrush / Ahrefs</span>
+        <span class="badge badge-green">Unbounce / Instapage</span>
+        <span class="badge badge-yellow">Data Studio / Looker Studio</span>
+        <span class="badge badge-purple">Optmyzr</span>
+        <span class="badge badge-purple">WordStream</span>
+        <span class="badge badge-gray">Zapier (automações)</span>
+        <span class="badge badge-red">ChatGPT (copy de anúncios)</span>
+      </div>
+    </div>
+
+    <div class="tip tip-green"><strong>✅ Mentalidade do Especialista 2026</strong>Google Ads em 2026 é 40% configuração técnica e 60% interpretação de dados + criatividade na copy. A IA do Google cuida dos lances — você cuida da estratégia, criativos e entender o cliente.</div>
+
+    <div class="lesson">
+      <div class="lesson-title">💎 Checklist Final antes de rodar qualquer campanha</div>
+      <div class="lesson-body">
+        <span class="badge badge-green">✓</span> Rastreamento de conversão configurado e testado<br>
+        <span class="badge badge-green">✓</span> Landing page otimizada e mobile-friendly<br>
+        <span class="badge badge-green">✓</span> Palavras-chave negativas configuradas<br>
+        <span class="badge badge-green">✓</span> Todos os assets (extensões) configurados<br>
+        <span class="badge badge-green">✓</span> Segmentação geográfica correta<br>
+        <span class="badge badge-green">✓</span> Orçamento diário adequado ao CPC da categoria<br>
+        <span class="badge badge-green">✓</span> Pelo menos 3 variações de anúncio por grupo<br>
+        <span class="badge badge-green">✓</span> Metas de CPA/ROAS definidas antes de começar<br>
+        <span class="badge badge-green">✓</span> GA4 vinculado e importando conversões<br>
+        <span class="badge badge-green">✓</span> Audiences de remarketing configuradas<br>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<button id="top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+function toggle(id){
+  const el = document.getElementById(id);
+  const isOpen = el.classList.contains('open');
+  // close all
+  document.querySelectorAll('.mod-item').forEach(m => m.classList.remove('open'));
+  if(!isOpen) el.classList.add('open');
+  updateProgress();
+}
+
+function updateProgress(){
+  const total = document.querySelectorAll('.mod-item').length;
+  const open = document.querySelectorAll('.mod-item.open').length;
+  // track opened modules in session
+  if(!window._opened) window._opened = new Set();
+  document.querySelectorAll('.mod-item.open').forEach(m => window._opened.add(m.id));
+  const pct = Math.round((window._opened.size / total) * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('top-btn');
+  btn.classList.toggle('show', window.scrollY > 300);
+});
+
+// Open first module by default
+toggle('m1');
+</script>
+</body>
+</html>
