@@ -684,120 +684,272 @@ var PROMPTS=[
   ]}
 ];
 
-/* === CRIAR IA - CHAT COM CLAUDE === */
-window._chatTyping=false;
+/* === OPENCLAUDE BRIDGE === */
+window._br = null;
+window._brOk = false;
+window._brStreaming = false;
+window._brQ = [];
+window._brActiveSession = null;
+
+function _brConnect(){
+  if(window._br && window._br.readyState < 2) return;
+  try {
+    var sock = new WebSocket("ws://localhost:7432");
+    window._br = sock;
+    sock.onopen = function(){
+      window._brOk = true;
+      sock.send(JSON.stringify({type:"ping"}));
+      _brFlushQ();
+      renderCriar();
+    };
+    sock.onmessage = function(ev){
+      try {
+        var d = JSON.parse(ev.data);
+        if(d.type === "pong") return;
+        if(d.type === "chunk") _brOnChunk(d.sessionId, d.text);
+        else if(d.type === "done") _brOnDone(d.sessionId, d.code);
+        else if(d.type === "error") _brOnDone(d.sessionId, 1, d.error);
+        else if(d.type === "status") _brOnStatus(d.sessionId, d.text);
+      } catch(ex){}
+    };
+    sock.onerror = function(){};
+    sock.onclose = function(){
+      window._brOk = false;
+      window._br = null;
+      window._brStreaming = false;
+      setTimeout(_brConnect, 4000);
+    };
+  } catch(ex){ setTimeout(_brConnect, 4000); }
+}
+
+function _brFlushQ(){
+  while(_brQ.length && _brOk){
+    try { _br.send(JSON.stringify(_brQ.shift())); } catch(e){ break; }
+  }
+}
+
+function _brOnChunk(sid, text){
+  var el = document.getElementById("agent-stream-" + sid);
+  if(!el) return;
+  el.dataset.raw = (el.dataset.raw || "") + text;
+  el.innerHTML = _agMd(el.dataset.raw);
+  var box = document.getElementById("agent-msgs-" + sid);
+  if(box) box.scrollTop = box.scrollHeight;
+}
+function _brOnStatus(sid, text){
+  var el = document.getElementById("agent-status-" + sid);
+  if(el) el.textContent = text;
+}
+function _brOnDone(sid, code, errMsg){
+  window._brStreaming = false;
+  var el = document.getElementById("agent-stream-" + sid);
+  var raw = el ? (el.dataset.raw || "") : (errMsg || "Erro ao processar");
+  _pushToSession(sid, "assistant", raw);
+  var box = document.getElementById("agent-msgs-" + sid);
+  if(box){ var st = box.querySelector(".agent-streaming"); if(st) st.remove(); }
+  _renderSessionMsgs(sid);
+  var inp = document.getElementById("agent-inp-" + sid);
+  if(inp){ inp.disabled = false; inp.focus(); }
+  var btn = document.getElementById("agent-send-" + sid);
+  if(btn) btn.disabled = false;
+}
+function _getSessions(){
+  try { return JSON.parse(localStorage.getItem("gc_oc_sessions") || "[]"); } catch(e){ return []; }
+}
+function _saveSessions(arr){ localStorage.setItem("gc_oc_sessions", JSON.stringify(arr)); }
+function _newSession(){
+  var arr = _getSessions();
+  var id = "oc_" + Date.now();
+  arr.unshift({id: id, name: "Chat " + (arr.length + 1), history: []});
+  _saveSessions(arr);
+  return id;
+}
+function _deleteSession(id){
+  var arr = _getSessions().filter(function(s){ return s.id !== id; });
+  _saveSessions(arr);
+  if(window._brActiveSession === id) window._brActiveSession = arr.length ? arr[0].id : null;
+}
+function _pushToSession(id, role, text){
+  var arr = _getSessions();
+  var s = arr.find(function(x){ return x.id === id; });
+  if(!s) return;
+  s.history.push({role: role, text: text, ts: Date.now()});
+  _saveSessions(arr);
+}
+function _getSession(id){ return _getSessions().find(function(s){ return s.id === id; }) || null; }
+
+function _agMd(text){
+  if(!text) return "";
+  return text
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/```([\s\S]*?)```/g,"<pre style='background:#111;color:#0f0;padding:8px;border-radius:6px;overflow-x:auto;font-size:12px;margin:4px 0'><code>$1</code></pre>")
+    .replace(/`([^`]+)`/g,"<code style='background:#1a1a1a;color:#58a6ff;padding:1px 4px;border-radius:3px;font-size:12px'>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g,"<em>$1</em>")
+    .replace(/^#{1,3} (.+)$/gm,"<strong style='font-size:14px;color:#e8eaed'>$1</strong>")
+    .replace(/\n/g,"<br>");
+}
+
+function _renderSessionMsgs(sid){
+  var box = document.getElementById("agent-msgs-" + sid);
+  if(!box) return;
+  var sess = _getSession(sid);
+  if(!sess){ box.innerHTML = ""; return; }
+  var h = "";
+  sess.history.forEach(function(m){
+    if(m.role === "user"){
+      h += "<div style='display:flex;justify-content:flex-end;margin-bottom:8px'><div style='background:#1a73e8;color:#fff;padding:8px 12px;border-radius:12px 12px 2px 12px;max-width:80%;font-size:13px;line-height:1.5'>"
+        + m.text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        + "</div></div>";
+    } else {
+      h += "<div style='display:flex;justify-content:flex-start;margin-bottom:8px'><div style='background:#1e1e1e;color:#e8eaed;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:85%;font-size:13px;line-height:1.6;border:1px solid #2a2a2a'>"
+        + _agMd(m.text) + "</div></div>";
+    }
+  });
+  box.innerHTML = h;
+  box.scrollTop = box.scrollHeight;
+}
+
+function agentSend(sid){
+  var inp = document.getElementById("agent-inp-" + sid);
+  var btn = document.getElementById("agent-send-" + sid);
+  if(!inp) return;
+  var txt = inp.value.trim();
+  if(!txt || _brStreaming) return;
+  if(!_brOk){ showToast("Instale o GC Bridge primeiro"); return; }
+  inp.value = "";
+  inp.disabled = true;
+  if(btn) btn.disabled = true;
+  _pushToSession(sid, "user", txt);
+  _renderSessionMsgs(sid);
+  var box = document.getElementById("agent-msgs-" + sid);
+  if(box){
+    var bubble = document.createElement("div");
+    bubble.className = "agent-streaming";
+    bubble.style.cssText = "display:flex;justify-content:flex-start;margin-bottom:8px";
+    var inner = document.createElement("div");
+    inner.style.cssText = "background:#1e1e1e;color:#e8eaed;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:85%;font-size:13px;line-height:1.6;border:1px solid #2a2a2a";
+    var stEl = document.createElement("span");
+    stEl.id = "agent-status-" + sid;
+    stEl.style.cssText = "font-size:10px;color:#888;display:block;margin-bottom:4px";
+    var strEl = document.createElement("span");
+    strEl.id = "agent-stream-" + sid;
+    strEl.dataset.raw = "";
+    var cur = document.createElement("span");
+    cur.style.cssText = "display:inline-block;width:8px;height:14px;background:#1a73e8;animation:blink 1s infinite;vertical-align:middle;margin-left:2px";
+    inner.appendChild(stEl); inner.appendChild(strEl); inner.appendChild(cur);
+    bubble.appendChild(inner); box.appendChild(bubble);
+    box.scrollTop = box.scrollHeight;
+  }
+  window._brStreaming = true;
+  window._brActiveSession = sid;
+  var msg = {type:"chat", sessionId: sid, text: txt};
+  if(_brOk && _br){ try{ _br.send(JSON.stringify(msg)); }catch(e){ _brQ.push(msg); } }
+  else { _brQ.push(msg); }
+}
+
+function agentSetSession(id){ window._brActiveSession = id; renderCriar(); }
+
+function agentDeleteSession(id){
+  if(!confirm("Apagar este chat?")) return;
+  _deleteSession(id);
+  renderCriar();
+}
+
+function downloadAgentInstaller(){
+  var lines = ["@echo off","echo [GC Bridge] Instalando...","where node >/dev/null 2>&1","if %errorlevel% neq 0 (","  echo Instalando Node.js...",")","echo Instalando openclaude e ws...","npm install -g @gitlawb/openclaude@latest >/dev/null 2>&1","if not exist \"%APPDATA%gcbridge\" mkdir \"%APPDATA%gcbridge\"","powershell -Command \"$b64='dmFyIGh0dHA9cmVxdWlyZSgiaHR0cCIpLHdzPXJlcXVpcmUoIndzIiksc3A9cmVxdWlyZSgiY2hpbGRfcHJvY2VzcyIpLnNwYXduOwp2YXIgUE9SVD03NDMyOwp2YXIgc3Y9aHR0cC5jcmVhdGVTZXJ2ZXIoZnVuY3Rpb24ocSxyKXsKICByLnNldEhlYWRlcigiQWNjZXNzLUNvbnRyb2wtQWxsb3ctT3JpZ2luIiwiKiIpOwogIHIuc2V0SGVhZGVyKCJBY2Nlc3MtQ29udHJvbC1BbGxvdy1NZXRob2RzIiwiR0VULE9QVElPTlMiKTsKICBpZihxLm1ldGhvZD09PSJPUFRJT05TIil7ci53cml0ZUhlYWQoMjA0KTtyZXR1cm4gci5lbmQoKTt9CiAgaWYocS51cmw9PT0iL2hlYWx0aCIpe3Iud3JpdGVIZWFkKDIwMCx7IkNvbnRlbnQtVHlwZSI6ImFwcGxpY2F0aW9uL2pzb24ifSk7cmV0dXJuIHIuZW5kKEpTT04uc3RyaW5naWZ5KHtvazp0cnVlLHZlcnNpb246IjEuMCJ9KSk7fQogIHIud3JpdGVIZWFkKDQwNCk7ci5lbmQoKTsKfSk7CnZhciB3c3M9bmV3IHdzLldlYlNvY2tldFNlcnZlcih7c2VydmVyOnN2fSk7Cndzcy5vbigiY29ubmVjdGlvbiIsZnVuY3Rpb24oc29jayl7CiAgc29jay5vbigibWVzc2FnZSIsZnVuY3Rpb24ocmF3KXsKICAgIHRyeXsKICAgICAgdmFyIG09SlNPTi5wYXJzZShyYXcudG9TdHJpbmcoKSk7CiAgICAgIGlmKG0udHlwZT09PSJwaW5nIilyZXR1cm4gc29jay5zZW5kKEpTT04uc3RyaW5naWZ5KHt0eXBlOiJwb25nIn0pKTsKICAgICAgaWYobS50eXBlPT09ImNoYXQiKXsKICAgICAgICB2YXIgZW52PU9iamVjdC5hc3NpZ24oe30scHJvY2Vzcy5lbnYpOwogICAgICAgIGlmKG0ua2V5KWVudi5PUEVOQUlfQVBJX0tFWT1tLmtleTsKICAgICAgICBpZihtLm1vZGVsKWVudi5PUEVOQUlfTU9ERUw9bS5tb2RlbDsKICAgICAgICBpZihtLmJhc2VVcmwpZW52Lk9QRU5BSV9CQVNFX1VSTD1tLmJhc2VVcmw7CiAgICAgICAgdmFyIHByb2M9c3AoIm9wZW5jbGF1ZGUiLFsiLXAiLG0udGV4dF0se2VudjplbnYsd2luZG93c0hpZGU6dHJ1ZSxzaGVsbDp0cnVlfSk7CiAgICAgICAgcHJvYy5zdGRvdXQub24oImRhdGEiLGZ1bmN0aW9uKGQpe3RyeXtzb2NrLnNlbmQoSlNPTi5zdHJpbmdpZnkoe3R5cGU6ImNodW5rIixzZXNzaW9uSWQ6bS5zZXNzaW9uSWQsdGV4dDpkLnRvU3RyaW5nKCl9KSk7fWNhdGNoKGUpe319KTsKICAgICAgICBwcm9jLnN0ZGVyci5vbigiZGF0YSIsZnVuY3Rpb24oZCl7dmFyIHM9ZC50b1N0cmluZygpLnRyaW0oKTtpZihzKXRyeXtzb2NrLnNlbmQoSlNPTi5zdHJpbmdpZnkoe3R5cGU6InN0YXR1cyIsc2Vzc2lvbklkOm0uc2Vzc2lvbklkLHRleHQ6c30pKTt9Y2F0Y2goZSl7fX0pOwogICAgICAgIHByb2Mub24oImNsb3NlIixmdW5jdGlvbihjKXt0cnl7c29jay5zZW5kKEpTT04uc3RyaW5naWZ5KHt0eXBlOiJkb25lIixzZXNzaW9uSWQ6bS5zZXNzaW9uSWQsY29kZTpjfSkpO31jYXRjaChlKXt9fSk7CiAgICAgICAgcHJvYy5vbigiZXJyb3IiLGZ1bmN0aW9uKGUpe3RyeXtzb2NrLnNlbmQoSlNPTi5zdHJpbmdpZnkoe3R5cGU6ImVycm9yIixzZXNzaW9uSWQ6bS5zZXNzaW9uSWQsZXJyb3I6ZS5tZXNzYWdlfSkpO31jYXRjaChlMil7fX0pOwogICAgICB9CiAgICB9Y2F0Y2goZSl7dHJ5e3NvY2suc2VuZChKU09OLnN0cmluZ2lmeSh7dHlwZToiZXJyb3IiLGVycm9yOmUubWVzc2FnZX0pKTt9Y2F0Y2goZTIpe319CiAgfSk7Cn0pOwpzdi5saXN0ZW4oUE9SVCwiMTI3LjAuMC4xIixmdW5jdGlvbigpe2NvbnNvbGUubG9nKCJbR0NCcmlkZ2VdIGxvY2FsaG9zdDoiK1BPUlQpO30pOwpwcm9jZXNzLm9uKCJ1bmNhdWdodEV4Y2VwdGlvbiIsZnVuY3Rpb24oZSl7Y29uc29sZS5lcnJvcigiW0dDQnJpZGdlXSIsZS5tZXNzYWdlKTt9KTs=';$bytes=[Convert]::FromBase64String($b64);[IO.File]::WriteAllBytes(($env:APPDATA+\"\"gcbridgeserver.js\"\"),$bytes)\"","cd /d \"%APPDATA%gcbridge\"","if not exist node_modulesws npm install ws >/dev/null 2>&1","echo [GC Bridge] Iniciando...","start /b node server.js","echo.","echo Instalado! Pode fechar esta janela.","timeout /t 3"];
+  var blob = new Blob([lines.join("\r\n") + "\r\n"], {type:"application/octet-stream"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "instalar-gc-bridge.bat";
+  a.click();
+}
 
 function renderCriar(){
-  var el=document.getElementById("s-criar");
-  if(!S.chatHistory)S.chatHistory=[];
-  var h="<div style=\"display:flex;flex-direction:column;height:calc(100vh - 116px)\">";
-  h+="<div style=\"padding:12px 16px 10px;background:#fff;border-bottom:.5px solid #eee;display:flex;align-items:center;justify-content:space-between;flex-shrink:0\">";
-  h+="<div><p style=\"font-size:17px;font-weight:800;color:#202124;margin:0 0 1px\">Assistente Claude</p><p style=\"font-size:11px;color:#888;margin:0\">Criativos, landing pages, analises e mais</p></div>";
-  h+="<span style=\"background:#e8f5e9;border:.5px solid #34a853;border-radius:99px;padding:4px 10px;font-size:11px;font-weight:700;color:#34a853\">Claude ativo</span>";
-  h+="<button onclick=\"showMcpSetup()\" style=\"background:#f0f0f0;border:none;border-radius:99px;padding:5px 11px;font-size:11px;color:#555;cursor:pointer;font-family:inherit;margin-left:6px\">Ferramentas</button>";
-  h+="</div>";
-  h+="<div id=\"chat-msgs\" style=\"flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f7f8fc\">";
-  if(S.chatHistory.length===0){
-    h+=gcBubble("Ola! Sou o assistente Claude. Posso:<br><strong>Criar criativos</strong> &mdash; imagens para Instagram, Stories e Reels<br><strong>Gerar landing pages</strong> &mdash; HTML completo, baixe e hospede gratis<br><strong>Analisar empresas</strong> &mdash; score digital, problemas, proposta pronta<br><strong>Escrever scripts</strong> &mdash; mensagens de prospeccao para WhatsApp<br><br>O que voce precisa hoje?");
-  } else { S.chatHistory.forEach(function(m){h+=gcRenderMsg(m);}); }
-  if(window._chatTyping){
-    h+="<div style=\"display:flex;gap:8px;align-items:flex-end\"><div style=\"width:30px;height:30px;background:linear-gradient(135deg,#1a73e8,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0\">"+svg("cpu","12","#fff")+"</div><div style=\"background:#fff;border-radius:16px 16px 16px 2px;padding:12px 16px;box-shadow:0 1px 6px rgba(0,0,0,.08)\"><span style=\"width:7px;height:7px;background:#1a73e8;border-radius:50%;display:inline-block;animation:chatdot .7s .0s infinite alternate;margin:0 2px\"></span><span style=\"width:7px;height:7px;background:#1a73e8;border-radius:50%;display:inline-block;animation:chatdot .7s .15s infinite alternate;margin:0 2px\"></span><span style=\"width:7px;height:7px;background:#1a73e8;border-radius:50%;display:inline-block;animation:chatdot .7s .3s infinite alternate;margin:0 2px\"></span></div></div>";
-  }
-  h+="</div>";
-  if(S.chatHistory.length===0){
-    var sugs=["Criativo barbearia Instagram","Landing page restaurante SP","Analise academia em BH","Script WhatsApp para clinicas"];
-    h+="<div style=\"display:flex;gap:5px;overflow-x:auto;padding:8px 12px;border-top:.5px solid #eee;background:#fafafa;flex-shrink:0\">";
-    sugs.forEach(function(sug){h+='<button onclick="gcSendSuggestion('+JSON.stringify(sug)+')" style="white-space:nowrap;padding:6px 12px;border-radius:20px;border:.5px solid #ddd;background:#fff;color:#444;font-size:11.5px;cursor:pointer;font-family:inherit;flex-shrink:0">'+sug+'</button>';});
-    h+="</div>";
-  }
-  h+="<div style=\"display:flex;gap:8px;padding:10px 12px;border-top:.5px solid #eee;background:#fff;align-items:flex-end;flex-shrink:0\">";
-  if(S.chatHistory.length>0)h+="<button onclick=\"gcLimparChat()\" style=\"background:#f5f5f5;border:none;border-radius:10px;padding:9px;cursor:pointer;flex-shrink:0\" title=\"Novo chat\">"+svg("trash","14","#aaa")+"</button>";
-  h+="<textarea id=\"chat-inp\" placeholder=\"Peca um criativo, landing page, analise...\" rows=\"2\" style=\"flex:1;padding:10px 13px;border-radius:14px;border:.5px solid #e0e0e0;font-size:13px;font-family:inherit;resize:none;outline:none;background:#f7f8fa;line-height:1.4;max-height:80px\" onkeydown=\"if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();gcSendChat();}\"></textarea>";
-  h+="<button onclick=\"gcSendChat()\" style=\"width:42px;height:42px;min-width:42px;background:linear-gradient(135deg,#1a73e8,#7c3aed);border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center\">"+svg("zap","16","#fff")+"</button></div></div>";
-  el.innerHTML=h;
-  if(!document.getElementById("chat-css")){var st=document.createElement("style");st.id="chat-css";st.textContent="@keyframes chatdot{0%{opacity:.3;transform:translateY(0)}100%{opacity:1;transform:translateY(-4px)}}";document.head.appendChild(st);}
-  requestAnimationFrame(function(){var m=document.getElementById("chat-msgs");if(m)m.scrollTop=m.scrollHeight;});
-}
-
-function gcBubble(html){
-  return "<div style=\"display:flex;gap:8px;align-items:flex-end\"><div style=\"width:30px;height:30px;background:linear-gradient(135deg,#1a73e8,#7c3aed);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0\">"+svg("cpu","12","#fff")+"</div><div style=\"background:#fff;border-radius:16px 16px 16px 2px;padding:12px 14px;max-width:84%;box-shadow:0 1px 6px rgba(0,0,0,.07)\"><div style=\"font-size:13px;color:#202124;line-height:1.6\">"+html+"</div></div></div>";
-}
-
-function gcRenderMsg(m){
-  if(m.role==="user"){return "<div style=\"display:flex;justify-content:flex-end\"><div style=\"background:linear-gradient(135deg,#1a73e8,#7c3aed);border-radius:16px 16px 2px 16px;padding:10px 14px;max-width:82%\"><p style=\"font-size:13px;color:#fff;margin:0;line-height:1.5;white-space:pre-wrap\">"+gcEsc(m.content)+"</p></div></div>";}
-  return gcBubble(gcMarkdown(m.content));
-}
-
-function gcMarkdown(text){
-  text=text.replace(/```html\n?([\s\S]*?)```/g,function(match,html){
-    try{var blob=new Blob([html],{type:"text/html"});var burl=URL.createObjectURL(blob);
-      return "<div style=\"margin:8px 0;background:#e8f0fe;border-radius:10px;padding:12px\"><p style=\"font-size:11px;font-weight:700;color:#1a73e8;margin:0 0 8px\">Landing Page gerada</p><div style=\"display:flex;gap:6px\">"+"<a href=\""+burl+"\" target=\"_blank\" style=\"flex:1;padding:8px;background:#1a73e8;color:#fff;text-decoration:none;border-radius:8px;font-size:12px;font-weight:700;text-align:center\">Visualizar</a>"+"<a href=\""+burl+"\" download=\"landing.html\" style=\"flex:1;padding:8px;background:#fff;color:#1a73e8;text-decoration:none;border-radius:8px;font-size:12px;font-weight:700;text-align:center;border:.5px solid #1a73e8\">Baixar HTML</a>"+"</div></div>";
-    }catch(e){return "<p style=\"font-size:12px;color:#1a73e8\">Landing page gerada.</p>";}
+  var el = document.getElementById("s-criar");
+  if(!el) return;
+  var sessions = _getSessions();
+  if(!window._brActiveSession && sessions.length) window._brActiveSession = sessions[0].id;
+  var connected = _brOk;
+  var dotC = connected ? "#0f9d58" : "#ea4335";
+  var dotL = connected ? "Conectado" : "Desconectado";
+  var sessH = "";
+  sessions.forEach(function(s){
+    var act = s.id === window._brActiveSession;
+    var bg = act ? "#1a73e8" : "#1a1a1a";
+    var bd = act ? "#1a73e8" : "#2a2a2a";
+    var tc = act ? "#fff" : "#ccc";
+    var ic = act ? "#fff" : "#666";
+    var sid2 = s.id;
+    sessH += "<div onclick=" + q + "agentSetSession(\"" + sid2 + "\")" + q + " style=" + q + "display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:4px;background:" + bg + ";border:1px solid " + bd + q + ">"
+      + "<span style=" + q + "font-size:12px;color:" + tc + ";overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1" + q + ">" + s.name + "</span>"
+      + "<button onclick=" + q + "event.stopPropagation();agentDeleteSession(\"" + sid2 + "\")" + q + " style=" + q + "background:none;border:none;cursor:pointer;color:" + ic + ";font-size:14px;padding:0 0 0 6px;line-height:1" + q + ">&#x2715;</button>"
+      + "</div>";
   });
-  text=text.replace(/```[\w]*\n?([\s\S]*?)```/g,"<pre style=\"background:#f5f5f5;border-radius:8px;padding:10px;font-size:12px;overflow-x:auto;white-space:pre-wrap;margin:6px 0\">$1</pre>");
-  text=text.replace(/!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g,function(mt,alt,url){return "<div style=\"margin:8px 0\">"+"<img src=\""+url+"\" alt=\""+gcEsc(alt)+"\" style=\"width:100%;border-radius:10px;display:block;max-height:280px;object-fit:cover\" onerror=\"this.style.display='none'\">"+"<div style=\"display:flex;gap:6px;margin-top:6px\">"+"<a href=\""+url+"\" target=\"_blank\" download style=\"flex:1;padding:7px;background:#7c3aed;color:#fff;text-decoration:none;border-radius:8px;font-size:12px;font-weight:700;text-align:center\">Baixar</a>"+"<button onclick=\"gcSendSuggestion('Gere outra variacao com estilo diferente')\" style=\"flex:1;padding:7px;background:#f5f3ff;color:#7c3aed;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit\">Variar</button></div></div>";});
-  text=text.replace(/\*\*([^*\n]+)\*\*/g,"<strong>$1</strong>");
-  text=text.replace(/\*([^*\n]+)\*/g,"<em>$1</em>");
-  text=text.replace(/`([^`\n]+)`/g,"<code style=\"background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;font-family:monospace\">$1</code>");
-  text=text.replace(/^[*-] (.+)$/gm,"<div style=\"display:flex;gap:5px;margin:1px 0\"><span style=\"color:#1a73e8\">&#8226;</span><span>$1</span></div>");
-  text=text.replace(/^\d+\. (.+)$/gm,"<div style=\"margin:2px 0\">$1</div>");
-  text=text.replace(/\n\n/g,"<br><br>");text=text.replace(/\n/g,"<br>");return text;
+  var activeSess = window._brActiveSession ? _getSession(window._brActiveSession) : null;
+  var chatArea = "";
+  if(activeSess){
+    var sid = activeSess.id;
+    var mH = "";
+    activeSess.history.forEach(function(m){
+      if(m.role === "user")
+        mH += "<div style=" + q + "display:flex;justify-content:flex-end;margin-bottom:8px" + q + "><div style=" + q + "background:#1a73e8;color:#fff;padding:8px 12px;border-radius:12px 12px 2px 12px;max-width:80%;font-size:13px;line-height:1.5" + q + ">" + m.text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") + "</div></div>";
+      else
+        mH += "<div style=" + q + "display:flex;justify-content:flex-start;margin-bottom:8px" + q + "><div style=" + q + "background:#1e1e1e;color:#e8eaed;padding:8px 12px;border-radius:12px 12px 12px 2px;max-width:85%;font-size:13px;line-height:1.6;border:1px solid #2a2a2a" + q + ">" + _agMd(m.text) + "</div></div>";
+    });
+    chatArea = "<div style=" + q + "display:flex;flex-direction:column;flex:1;min-height:0" + q + ">"
+      + "<div id=" + q + "agent-msgs-" + sid + q + " style=" + q + "flex:1;overflow-y:auto;padding:12px;min-height:0" + q + ">" + mH + "</div>"
+      + "<div style=" + q + "padding:10px;border-top:1px solid #2a2a2a;display:flex;gap:8px;align-items:flex-end" + q + ">"
+      + "<textarea id=" + q + "agent-inp-" + sid + q + " placeholder=" + q + "Mensagem para OpenClaude..." + q + " rows=" + q + "2" + q + " "
+      + "onkeydown=" + q + "if(event.key===\\" + q + "Enter\\" + q + "&&!event.shiftKey){event.preventDefault();agentSend(\\" + q + "" + sid + "\\" + q + ")}" + q + " "
+      + "style=" + q + "flex:1;background:#1a1a1a;color:#e8eaed;border:1px solid #2a2a2a;border-radius:8px;padding:8px 10px;font-size:13px;resize:none;outline:none;font-family:inherit" + q + "></textarea>"
+      + "<button id=" + q + "agent-send-" + sid + q + " onclick=" + q + "agentSend(\\" + q + "" + sid + "\\" + q + ")" + q + " style=" + q + "background:#1a73e8;color:#fff;border:none;border-radius:8px;padding:0 14px;height:52px;cursor:pointer" + q + ">"
+      + "<svg width=" + q + "16" + q + " height=" + q + "16" + q + " viewBox=" + q + "0 0 24 24" + q + " fill=" + q + "none" + q + " stroke=" + q + "currentColor" + q + " stroke-width=" + q + "2.5" + q + " style=" + q + "display:block" + q + "><line x1=" + q + "22" + q + " y1=" + q + "2" + q + " x2=" + q + "11" + q + " y2=" + q + "13" + q + "/><polygon points=" + q + "22 2 15 22 11 13 2 9 22 2" + q + "/></svg>"
+      + "</button></div></div>";
+  } else {
+    chatArea = "<div style=" + q + "flex:1;display:flex;align-items:center;justify-content:center;color:#555;font-size:13px" + q + ">Crie um chat para comecar</div>";
+  }
+  var installBanner = "";
+  if(!connected){
+    installBanner = "<div style=" + q + "padding:12px" + q + ">"
+      + "<div style=" + q + "background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:16px;text-align:center" + q + ">"
+      + "<svg width=" + q + "32" + q + " height=" + q + "32" + q + " viewBox=" + q + "0 0 24 24" + q + " fill=" + q + "none" + q + " stroke=" + q + "#1a73e8" + q + " stroke-width=" + q + "1.5" + q + " style=" + q + "margin-bottom:8px" + q + "><rect x=" + q + "2" + q + " y=" + q + "3" + q + " width=" + q + "20" + q + " height=" + q + "14" + q + " rx=" + q + "2" + q + "/><line x1=" + q + "8" + q + " y1=" + q + "21" + q + " x2=" + q + "16" + q + " y2=" + q + "21" + q + "/><line x1=" + q + "12" + q + " y1=" + q + "17" + q + " x2=" + q + "12" + q + " y2=" + q + "21" + q + "/></svg>"
+      + "<div style=" + q + "font-size:14px;font-weight:600;color:#e8eaed;margin-bottom:4px" + q + ">GC Bridge nao encontrado</div>"
+      + "<div style=" + q + "font-size:12px;color:#888;margin-bottom:12px;line-height:1.5" + q + ">Um clique instala tudo automaticamente.<br>Apos instalar, a conexao aparece aqui.</div>"
+      + "<button onclick=" + q + "downloadAgentInstaller()" + q + " style=" + q + "background:#1a73e8;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;width:100%" + q + ">"
+      + "<svg width=" + q + "14" + q + " height=" + q + "14" + q + " viewBox=" + q + "0 0 24 24" + q + " fill=" + q + "none" + q + " stroke=" + q + "currentColor" + q + " stroke-width=" + q + "2.5" + q + " style=" + q + "display:inline-block;vertical-align:middle;margin-right:6px" + q + "><path d=" + q + "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" + q + "/><polyline points=" + q + "7 10 12 15 17 10" + q + "/><line x1=" + q + "12" + q + " y1=" + q + "15" + q + " x2=" + q + "12" + q + " y2=" + q + "3" + q + "/></svg>"
+      + "Baixar Instalador (.bat)</button>"
+      + "<div style=" + q + "font-size:10px;color:#555;margin-top:8px" + q + ">Apos instalar, aguarde a reconexao automatica</div>"
+      + "</div></div>";
+  }
+
+  el.innerHTML = "<style>@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}</style>"
+    + "<div style=" + q + "display:flex;flex-direction:column;height:100%;background:#0d0d0d" + q + ">"
+    + "<div style=" + q + "display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #1e1e1e" + q + ">"
+    + "<div style=" + q + "display:flex;align-items:center;gap:8px" + q + ">"
+    + "<svg width=" + q + "18" + q + " height=" + q + "18" + q + " viewBox=" + q + "0 0 24 24" + q + " fill=" + q + "none" + q + " stroke=" + q + "#1a73e8" + q + " stroke-width=" + q + "2" + q + "><circle cx=" + q + "12" + q + " cy=" + q + "12" + q + " r=" + q + "10" + q + "/><path d=" + q + "M12 8v4l3 3" + q + "/></svg>"
+    + "<span style=" + q + "font-size:14px;font-weight:700;color:#e8eaed" + q + ">OpenClaude</span>"
+    + "</div>"
+    + "<div style=" + q + "display:flex;align-items:center;gap:10px" + q + ">"
+    + "<span style=" + q + "display:inline-block;width:8px;height:8px;border-radius:50%;background:" + dotC + ";margin-right:4px" + q + "></span>"
+    + "<span style=" + q + "color:" + dotC + ";font-size:12px" + q + ">" + dotL + "</span>"
+    + "<button onclick=" + q + "var id=_newSession();agentSetSession(id);" + q + " style=" + q + "background:#1a73e8;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer" + q + ">+ Chat</button>"
+    + "</div></div>"
+    + "<div style=" + q + "display:flex;flex:1;min-height:0" + q + ">"
+    + "<div style=" + q + "width:140px;min-width:140px;border-right:1px solid #1e1e1e;padding:10px 8px;overflow-y:auto;background:#111" + q + ">"
+    + (sessions.length ? sessH : "<div style=" + q + "color:#555;font-size:11px;text-align:center;margin-top:16px" + q + ">Nenhum chat<br>ainda</div>")
+    + "</div>"
+    + "<div style=" + q + "flex:1;display:flex;flex-direction:column;min-height:0;min-width:0" + q + ">"
+    + installBanner + chatArea
+    + "</div></div></div>";
+
+  if(activeSess){
+    var mb = document.getElementById("agent-msgs-" + activeSess.id);
+    if(mb) mb.scrollTop = mb.scrollHeight;
+  }
 }
-function gcEsc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
-function gcSendSuggestion(text){var inp=document.getElementById("chat-inp");if(inp)inp.value=text;gcSendChat();}
-function gcLimparChat(){if(!confirm("Limpar conversa?"))return;S.chatHistory=[];save();renderCriar();}
-function gcSendChat(){
-  var inp=document.getElementById("chat-inp");var text=inp?inp.value.trim():"";
-  if(!text||window._chatTyping)return;
-  if(!S.chatHistory)S.chatHistory=[];
-  if(S.credits<5&&!S.userToken){showToast("Creditos insuficientes.");return;}
-  S.chatHistory.push({role:"user",content:text});save();if(inp)inp.value="";
-  window._chatTyping=true;renderCriar();SFX.click();
-  var hdr={"Content-Type":"application/json"};if(S.userToken)hdr["x-user-token"]=S.userToken;
-  fetch("/api/ia?action=chat",{method:"POST",headers:hdr,body:JSON.stringify({messages:S.chatHistory.slice(-12)})})
-  .then(function(r){return r.json();})
-  .then(function(d){
-    window._chatTyping=false;
-    if(!d.ok){var err="Erro: "+(d.error||"Tente novamente.");if(d.setup)err="Configure ANTHROPIC_API_KEY no Vercel Dashboard (console.anthropic.com).";S.chatHistory.push({role:"assistant",content:err});}
-    else{S.chatHistory.push({role:"assistant",content:d.text});if(d.credits!=null){S.credits=d.credits;}else{S.credits=Math.max(0,(S.credits||0)-5);}updateHeader();SFX.success();addXP(5,"Chat IA!");}
-    save();renderCriar();
-  }).catch(function(){window._chatTyping=false;S.chatHistory.push({role:"assistant",content:"Erro de conexao."});save();renderCriar();});
-}
-function downloadMcpInstaller(){
-  var nc=["const fs=require('fs'),pa=require('path'),os=require('os');","const pl=os.platform();",
-    "const cfg=pl==='win32'?pa.join(process.env.APPDATA||os.homedir(),'Claude','claude_desktop_config.json'):pl==='darwin'?pa.join(os.homedir(),'Library','Application Support','Claude','claude_desktop_config.json'):pa.join(os.homedir(),'.config','Claude','claude_desktop_config.json');",
-    "fs.mkdirSync(pa.dirname(cfg),{recursive:true});","let c={};try{c=JSON.parse(fs.readFileSync(cfg,'utf8'))}catch(e){}","if(!c.mcpServers)c.mcpServers={};",
-    "Object.assign(c.mcpServers,{memory:{command:'npx',args:['DASHY','@modelcontextprotocol/server-memory']},fetch:{command:'npx',args:['DASHY','mcp-server-fetch']},'sequential-thinking':{command:'npx',args:['DASHY','@modelcontextprotocol/server-sequential-thinking']}});",
-    "fs.writeFileSync(cfg,JSON.stringify(c,null,2));","console.log('MCPs instalados! Reinicie o Claude Desktop.');"].join("").replace(/DASHY/g,"-y");
-  var bat="@echo off\r\ntitle Google Cash MCPs\r\necho.\r\nnode -e \""+nc+"\"\r\necho.\r\npause\r\n";
-  var blob=new Blob([bat],{type:"application/octet-stream"});var url=URL.createObjectURL(blob);
-  var a=document.createElement("a");a.href=url;a.download="instalar-mcps-google-cash.bat";document.body.appendChild(a);a.click();document.body.removeChild(a);
-  setTimeout(function(){URL.revokeObjectURL(url);},2000);showToast("Baixado! Clique duas vezes no .bat para instalar.");
-}
-function showMcpSetup(){
-  var ov=document.createElement("div");ov.setAttribute("data-overlay","1");
-  ov.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:9000;display:flex;align-items:flex-end;justify-content:center";
-  ov.onclick=function(e){if(e.target===ov)ov.remove();};
-  var md=document.createElement("div");md.style.cssText="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 20px 36px;max-height:88vh;overflow-y:auto";
-  var chatted=!!(S.chatHistory&&S.chatHistory.length>0);
-  var steps=[{done:true,title:"Claude Desktop",desc:"App nativo para PC e Mac",btn:"Baixar Claude Desktop",act:"window.open('https://claude.ai/download','_blank')"},
-    {done:false,title:"MCPs instalados",desc:"Memoria de clientes, busca e raciocinio",btn:"Instalar MCPs automaticamente",act:"downloadMcpInstaller()"},
-    {done:!!S.userToken,title:"Conta ativada",desc:"Login realizado ou creditos ativados"},
-    {done:chatted,title:"Primeiro chat",desc:"Conversa com o assistente Claude",btn:"Ir para o chat",act:"document.querySelector('[data-overlay]').remove()"}];
-  var h="<div style=\"display:flex;justify-content:space-between;align-items:center;margin-bottom:16px\"><p style=\"font-size:17px;font-weight:800;color:#202124;margin:0\">Ferramentas e Setup</p>";
-  h+='<button onclick="document.querySelector(\'[data-overlay]\').remove()" style="background:#f0f0f0;border:none;border-radius:99px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center">'+svg("x","16","#555")+'</button></div>';
-  h+="<p style=\"font-size:11px;font-weight:700;color:#bbb;letter-spacing:.5px;margin:0 0 10px\">CHECKLIST</p>";
-  steps.forEach(function(s){
-    h+="<div style=\"display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:.5px solid #f0f0f0\">"+(s.done?svg("checksq","20","#34a853"):svg("sq","20","#ccc"))+" <div style='flex:1'><p style='font-size:13px;font-weight:700;color:"+(s.done?"#34a853":"#202124")+";margin:0 0 2px'> "+s.title+"</p><p style='font-size:12px;color:#888;margin:0 0 6px'> "+s.desc+"</p>";
-    if(!s.done&&s.btn)h+='<button onclick="'+s.act+'" style="font-size:12px;font-weight:700;color:#fff;background:#1a73e8;border:none;border-radius:8px;padding:7px 13px;cursor:pointer;font-family:inherit">'+s.btn+'</button>';
-    h+="</div></div>";
-  });
-  h+="<div style=\"background:#e8f0fe;border-radius:12px;padding:14px;margin-top:16px\"><p style=\"font-size:13px;font-weight:700;color:#1a73e8;margin:0 0 5px\">Instalar MCPs automaticamente</p><p style=\"font-size:12px;color:#555;line-height:1.5;margin:0 0 10px\">Clique para baixar. Depois clique duas vezes no .bat — MCPs configurados automaticamente no Claude Desktop.</p>";
-  h+='<button onclick="downloadMcpInstaller()" style="width:100%;padding:12px;background:linear-gradient(135deg,#1a73e8,#7c3aed);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">'+svg("pkg","14","#fff")+' Baixar Instalador de MCPs (.bat)</button>';
-  h+="<p style=\"font-size:11px;color:#888;margin:7px 0 0;text-align:center\">Windows: clique duas vezes no .bat</p></div>";
-  h+="<a href=\"https://claude.ai/download\" target=\"_blank\" style=\"display:block;margin-top:10px;padding:11px;background:#202124;color:#fff;text-decoration:none;border-radius:12px;font-size:13px;font-weight:700;text-align:center\">Baixar Claude Desktop gratis</a>";
-  md.innerHTML=h;ov.appendChild(md);document.body.appendChild(ov);
-}
+
+
 /* ═══════ RENDER HOME ═══════ */
 function renderHome(){
   var lvl=getLvl(S.xp);
@@ -2138,6 +2290,7 @@ function initApp(){
   updateHeader();
   renderHome();
   setTimeout(showLGPD,1500);
+  _brConnect();
 }
 </script>
 </body>
