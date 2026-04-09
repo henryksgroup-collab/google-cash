@@ -738,9 +738,9 @@ function gcMarkdown(text){
   text=text.replace(/!\[([^\]]*)\]\((https?:\/\/[^)]+)\)/g,function(mt,alt,url){return "<div style=\"margin:8px 0\">"+"<img src=\""+url+"\" alt=\""+gcEsc(alt)+"\" style=\"width:100%;border-radius:10px;display:block;max-height:280px;object-fit:cover\" onerror=\"this.style.display='none'\">"+"<div style=\"display:flex;gap:6px;margin-top:6px\">"+"<a href=\""+url+"\" target=\"_blank\" download style=\"flex:1;padding:7px;background:#7c3aed;color:#fff;text-decoration:none;border-radius:8px;font-size:12px;font-weight:700;text-align:center\">Baixar</a>"+"<button onclick=\"gcSendSuggestion('Gere outra variacao com estilo diferente')\" style=\"flex:1;padding:7px;background:#f5f3ff;color:#7c3aed;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit\">Variar</button></div></div>";});
   text=text.replace(/\*\*([^*\n]+)\*\*/g,"<strong>$1</strong>");
   text=text.replace(/\*([^*\n]+)\*/g,"<em>$1</em>");
-  text=text.replace(/`([^`\n]+)`/g,q("<code style=\"background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;font-family:monospace\">$1</code>"));
-  text=text.replace(/^[*-] (.+)$/gm,q("<div style=\"display:flex;gap:5px;margin:1px 0\"><span style=\"color:#1a73e8\">&#8226;</span><span>$1</span></div>"));
-  text=text.replace(/^\d+\. (.+)$/gm,"<div style=\\"margin:2px 0\\">$1</div>");
+  text=text.replace(/`([^`\n]+)`/g,"<code style=\"background:#f0f0f0;padding:1px 5px;border-radius:4px;font-size:12px;font-family:monospace\">$1</code>");
+  text=text.replace(/^[*-] (.+)$/gm,"<div style=\"display:flex;gap:5px;margin:1px 0\"><span style=\"color:#1a73e8\">&#8226;</span><span>$1</span></div>");
+  text=text.replace(/^\d+\. (.+)$/gm,"<div style=\"margin:2px 0\">$1</div>");
   text=text.replace(/\n\n/g,"<br><br>");text=text.replace(/\n/g,"<br>");return text;
 }
 function gcEsc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
