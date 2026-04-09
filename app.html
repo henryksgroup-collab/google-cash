@@ -1167,7 +1167,7 @@ function renderMore(tab){
   _moreTab=tab;
   var el=document.getElementById('s-more');
   var h='<div class="tabs">';
-  [{v:'scripts',l:'Scripts',i:'msg'},{v:'tools',l:'Ferramentas',i:'search'},{v:'prompts',l:'Prompts IA',i:'bot'},{v:'criativos',l:'Criativos',i:'image'},{v:'anuncios',l:'Anuncios',i:'trend'},{v:'prospectar',l:'Prospectar',i:'search'},{v:'analise',l:'Analise IA',i:'cpu'},{v:'landing',l:'Landing Page',i:'layout'},{v:'whatsapp',l:'WhatsApp',i:'msg'},{v:'setup',l:'Setup IA',i:'zap'}].forEach(function(t){
+  [{v:'scripts',l:'Scripts',i:'msg'},{v:'tools',l:'Ferramentas',i:'search'},{v:'prompts',l:'Prompts IA',i:'bot'},{v:'criativos',l:'Criativos',i:'image'},{v:'anuncios',l:'Anuncios',i:'trend'},{v:'prospectar',l:'Prospectar',i:'search'},{v:'analise',l:'Analise IA',i:'cpu'},{v:'landing',l:'Landing Page',i:'layout'},{v:'whatsapp',l:'WhatsApp',i:'msg'},{v:'setup',l:'Setup IA',i:'zap'},{v:'openclaude',l:'OpenClaude',i:'pkg'}].forEach(function(t){
     var a=tab===t.v;
     h+='<button class="tab'+(a?' a':'')+'" style="'+(a?'border-color:#1a73e850;background:#e8f0fe;color:#1a73e8':'color:#888')+'" onclick="renderMore(\''+t.v+'\')">'+svg(t.i,'13',a?'#1a73e8':'#aaa')+' '+t.l+'</button>';
   });
@@ -1596,6 +1596,45 @@ function renderMore(tab){
     });
     h+='<a href="/mcp-setup.json" download style="display:block;margin-top:10px;padding:9px;background:#f8f9fa;border:.5px solid #e8e8e8;color:#444;text-decoration:none;border-radius:10px;font-size:12px;font-weight:700;text-align:center">Baixar mcp-setup.json (config pronta)</a>'
       +'</div>';
+  }
+
+  if(tab==='openclaude'){
+    h+='<div class="cd" style="margin-bottom:10px;border-color:#7c3aed22;background:linear-gradient(135deg,#f5f3ff,#fff)">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">'
+      +'<div style="width:40px;height:40px;background:linear-gradient(135deg,#7c3aed,#1a73e8);border-radius:12px;display:flex;align-items:center;justify-content:center">'+svg('pkg','18','#fff')+'</div>'
+      +'<div><p style="font-size:15px;font-weight:700;color:#202124;margin:0">OpenClaude</p>'
+      +'<p style="font-size:11px;color:#7c3aed;margin:0;font-weight:600">Claude Code open-source com qualquer LLM</p></div></div>'
+      +'<p style="font-size:12px;color:#555;line-height:1.6;margin:0 0 12px">Fork do Claude Code que funciona com OpenAI, Gemini, DeepSeek, Ollama e +200 modelos — sem lock-in de provedor.</p>'
+      +'</div>'
+      +'<div class="cd" style="margin-bottom:10px"><p style="font-size:13px;font-weight:700;color:#202124;margin:0 0 10px">'+svg('zap','14','#1a73e8')+' Instalacao (1 comando)</p>'
+      +'<div style="background:#1a1a2e;border-radius:10px;padding:12px 14px;margin-bottom:8px;position:relative">'
+      +'<code id="oc-install" style="font-size:12px;color:#a5f3fc;font-family:monospace">npm install -g @gitlawb/openclaude@latest</code>'
+      +'<button onclick="navigator.clipboard.writeText(\'npm install -g @gitlawb/openclaude@latest\');showToast(\'Copiado!\')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#ffffff15;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;color:#fff;font-size:10px">Copiar</button>'
+      +'</div>'
+      +'<p style="font-size:11px;color:#888;margin:0">Requer Node.js e ripgrep instalados.</p>'
+      +'</div>'
+      +'<div class="cd" style="margin-bottom:10px"><p style="font-size:13px;font-weight:700;color:#202124;margin:0 0 10px">'+svg('target','14','#34a853')+' Uso com diferentes modelos</p>'
+      +'<div style="display:flex;flex-direction:column;gap:8px">'
+      +'<div style="background:#f8f9fa;border-radius:8px;padding:10px 12px">'
+      +'<p style="font-size:11px;font-weight:700;color:#34a853;margin:0 0 4px">OpenAI / DeepSeek / Groq</p>'
+      +'<div style="background:#1a1a2e;border-radius:8px;padding:8px 10px;position:relative">'
+      +'<code style="font-size:10px;color:#a5f3fc;font-family:monospace;white-space:pre">CLAUDE_CODE_USE_OPENAI=1\nOPENAI_API_KEY=sk-...\nOPENAI_MODEL=gpt-4o\nopenclaude</code>'
+      +'<button onclick="navigator.clipboard.writeText(\'export CLAUDE_CODE_USE_OPENAI=1\\nexport OPENAI_API_KEY=sk-SUA-CHAVE\\nexport OPENAI_MODEL=gpt-4o\\nopenclaude\');showToast(\'Copiado!\')" style="position:absolute;right:6px;top:6px;background:#ffffff15;border:none;border-radius:4px;padding:3px 7px;cursor:pointer;color:#fff;font-size:10px">Copiar</button>'
+      +'</div></div>'
+      +'<div style="background:#f8f9fa;border-radius:8px;padding:10px 12px">'
+      +'<p style="font-size:11px;font-weight:700;color:#7c3aed;margin:0 0 4px">Ollama — 100% local, gratis</p>'
+      +'<div style="background:#1a1a2e;border-radius:8px;padding:8px 10px;position:relative">'
+      +'<code style="font-size:10px;color:#a5f3fc;font-family:monospace;white-space:pre">CLAUDE_CODE_USE_OPENAI=1\nOPENAI_BASE_URL=http://localhost:11434/v1\nOPENAI_MODEL=qwen2.5-coder:7b\nopenclaude</code>'
+      +'<button onclick="navigator.clipboard.writeText(\'export CLAUDE_CODE_USE_OPENAI=1\\nexport OPENAI_BASE_URL=http://localhost:11434/v1\\nexport OPENAI_MODEL=qwen2.5-coder:7b\\nopenclaude\');showToast(\'Copiado!\')" style="position:absolute;right:6px;top:6px;background:#ffffff15;border:none;border-radius:4px;padding:3px 7px;cursor:pointer;color:#fff;font-size:10px">Copiar</button>'
+      +'</div></div>'
+      +'</div></div>'
+      +'<div class="cd" style="margin-bottom:10px"><p style="font-size:13px;font-weight:700;color:#202124;margin:0 0 10px">'+svg('book','14','#e65100')+' Agent Routing (modelos por tarefa)</p>'
+      +'<p style="font-size:12px;color:#555;margin:0 0 8px;line-height:1.5">Salve em <code style="background:#f0f0f0;padding:1px 5px;border-radius:4px">~/.claude/settings.json</code>:</p>'
+      +'<div style="background:#1a1a2e;border-radius:8px;padding:10px 12px;position:relative">'
+      +'<code style="font-size:10px;color:#a5f3fc;font-family:monospace;white-space:pre">{\n  "agentRouting": {\n    "Explore": "deepseek-chat",\n    "Plan": "gpt-4o",\n    "default": "gpt-4o"\n  }\n}</code>'
+      +'<button onclick="navigator.clipboard.writeText(\'{\\"agentRouting\\":{\\"Explore\\":\\"deepseek-chat\\",\\"Plan\\":\\"gpt-4o\\",\\"default\\":\\"gpt-4o\\"}}\');showToast(\'Copiado!\')" style="position:absolute;right:6px;top:6px;background:#ffffff15;border:none;border-radius:4px;padding:3px 7px;cursor:pointer;color:#fff;font-size:10px">Copiar</button>'
+      +'</div></div>'
+      +'<a href="https://github.com/gitlawb/openclaude" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:#24292e;color:#fff;text-decoration:none;border-radius:12px;font-size:13px;font-weight:700">'+svg('pkg','14','#fff')+' Ver no GitHub — gitlawb/openclaude</a>';
   }
 
   el.innerHTML=h;
