@@ -1,5 +1,5 @@
 /* hooks.js — webhook Duckfy (PIX) + InfinitePay/TriboPay (cartao)
-   POST ?source=duckfy (default) ou ?source=infinitepay
+   POST ?source=duckfy (default) ou ?source=infinitepay ou ?source=pending
 */
 const crypto = require('crypto');
 
@@ -25,14 +25,22 @@ function getWebpush() {
   return wp;
 }
 
-async function getOrCreateUserToken(db, email) {
-  if (!db || !email) return null;
-  const emailKey = `gc:token:email:${email.toLowerCase().trim()}`;
+async function getOrCreateUserToken(db, email, phone) {
+  if (!db) return null;
+  const id = email ? email.toLowerCase().trim() : (phone ? phone.replace(/\D/g,'') : null);
+  if (!id) return null;
+  const emailKey = email ? `gc:token:email:${id}` : `gc:token:phone:${id}`;
   let token = await db.get(emailKey);
   if (!token) {
     token = crypto.randomBytes(16).toString('hex');
     await db.set(emailKey, token);
-    await db.set(`gc:email:${token}`, email.toLowerCase().trim());
+    if (email) {
+      await db.set(`gc:email:${token}`, id);
+    } else {
+      await db.set(`gc:phone:${token}`, id);
+    }
+    // Also store the id (email or phone) for login lookup
+    if (phone && email) await db.set(`gc:token:phone:${phone.replace(/\D/g,'')}`, token);
   }
   return token;
 }
@@ -48,15 +56,18 @@ async function grantStarterCredits(db, userToken) {
   }
 }
 
-async function sendPushNotification(db, buyer, amount) {
+async function sendPushNotification(db, buyer, amount, isPending) {
   const webpush = getWebpush();
   if (!webpush || !db) return;
   try {
     const subs = await db.smembers('push:subs');
+    const title = isPending
+      ? `PIX gerado — R$ ${Number(amount).toFixed(2).replace('.', ',')} (aguardando)`
+      : `Nova venda — R$ ${Number(amount).toFixed(2).replace('.', ',')}`;
     const payload = JSON.stringify({
-      title: `Nova venda — R$ ${Number(amount).toFixed(2).replace('.', ',')}`,
-      body: `${buyer} acabou de comprar o Google Cash`,
-      amount, buyer
+      title,
+      body: `${buyer} ${isPending ? 'iniciou checkout' : 'acabou de comprar o Google Cash'}`,
+      amount, buyer, isPending: !!isPending
     });
     await Promise.allSettled((subs || []).map(sub => {
       try { return webpush.sendNotification(typeof sub === 'string' ? JSON.parse(sub) : sub, payload); }
@@ -76,6 +87,22 @@ module.exports = async (req, res) => {
   const db = getRedis();
 
   try {
+    /* ── PENDING checkout start (chamado pelo pay.js ao criar PIX) ── */
+    if (source === 'pending') {
+      const { txId, name, email, phone, amount } = req.body || {};
+      if (!txId || !db) return;
+      const pendingKey = `tx:pending:${txId}`;
+      await db.hset(pendingKey, {
+        status: 'PENDING', createdAt: Date.now(),
+        name: name || 'Visitante', email: email || '', phone: phone || '',
+        amount: amount || 117
+      });
+      await db.lpush('tx:pending', txId);
+      await db.ltrim('tx:pending', 0, 999);
+      await sendPushNotification(db, name || 'Visitante', amount || 117, true);
+      return;
+    }
+
     /* ── INFINITEPAY / TRIBOPAY ── */
     if (source === 'infinitepay') {
       const { invoice_slug, amount, paid_amount, installments, capture_method, transaction_nsu, order_nsu } = req.body || {};
@@ -93,8 +120,16 @@ module.exports = async (req, res) => {
       await db.incr('funnel:CheckoutClicked');
       let userToken = orderData?.userToken || null;
       const email = orderData?.email || null;
-      if (!userToken && email) { userToken = await getOrCreateUserToken(db, email); await db.hset(orderKey, { userToken }); }
+      const phone = orderData?.phone || null;
+      if (!userToken) { userToken = await getOrCreateUserToken(db, email, phone); if (userToken) await db.hset(orderKey, { userToken }); }
       await grantStarterCredits(db, userToken);
+      // Also add to main tx:list for unified view
+      await db.lpush('tx:list', order_nsu);
+      await db.ltrim('tx:list', 0, 999);
+      await db.incr('stats:totalSales');
+      await db.incrbyfloat('stats:totalRevenue', paid_amount || amount || 0);
+      const buyer = orderData?.name || orderData?.email || 'Cliente';
+      await sendPushNotification(db, buyer, paid_amount || amount || 0, false);
       return;
     }
 
@@ -108,21 +143,28 @@ module.exports = async (req, res) => {
     const buyer = transaction.customer?.name || 'Novo cliente';
     const amount = transaction.amount || 117;
     const email = transaction.customer?.email || '';
+    const phone = transaction.customer?.phone || '';
 
     if (db && transaction.id) {
-      await db.hset(`tx:${transaction.id}`, { status: 'COMPLETED', paidAt: Date.now(), name: buyer, email, amount });
+      await db.hset(`tx:${transaction.id}`, { status: 'COMPLETED', paidAt: Date.now(), name: buyer, email, phone, amount, method: 'pix' });
       await db.lpush('tx:list', transaction.id);
       await db.ltrim('tx:list', 0, 999);
       await db.incr('stats:totalSales');
       await db.incrbyfloat('stats:totalRevenue', amount);
       await db.incr('funnel:CheckoutClicked');
+      // Mark pending as paid if exists
+      await db.hset(`tx:pending:${transaction.id}`, { status: 'COMPLETED', paidAt: Date.now() }).catch(() => {});
+
       const txData = await db.hgetall(`tx:${transaction.id}`) || {};
       let userToken = txData.userToken || null;
-      if (!userToken && email) { userToken = await getOrCreateUserToken(db, email); await db.hset(`tx:${transaction.id}`, { userToken }); }
+      if (!userToken) {
+        userToken = await getOrCreateUserToken(db, email || null, phone || null);
+        if (userToken) await db.hset(`tx:${transaction.id}`, { userToken });
+      }
       await grantStarterCredits(db, userToken);
     }
 
-    await sendPushNotification(db, buyer, amount);
+    await sendPushNotification(db, buyer, amount, false);
 
   } catch(err) {
     console.error('[HOOKS] Erro:', err);

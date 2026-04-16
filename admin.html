@@ -199,6 +199,63 @@
   .install-btn:hover { opacity: .88; }
   #install-btn { display: none; }
 
+  /* ── NOTIFICATIONS BELL ── */
+  .notif-bell-wrap { position: relative; margin-left: auto; }
+  .notif-bell-btn {
+    width: 36px; height: 36px; background: none; border: none; cursor: pointer;
+    color: var(--muted); display: flex; align-items: center; justify-content: center;
+    border-radius: 8px; position: relative; transition: color .15s;
+  }
+  .notif-bell-btn:hover { color: var(--text); background: var(--surface2); }
+  .notif-bell-btn .material-symbols-rounded { font-size: 22px; }
+  .notif-badge {
+    position: absolute; top: 2px; right: 2px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--red); color: #fff;
+    font-size: 9px; font-weight: 700;
+    display: none; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .notif-badge.show { display: flex; }
+  .notif-panel {
+    position: fixed; top: 60px; right: 16px; width: 340px; max-height: 480px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; box-shadow: 0 16px 48px rgba(0,0,0,.6);
+    z-index: 9990; display: none; flex-direction: column; overflow: hidden;
+  }
+  .notif-panel.open { display: flex; }
+  .notif-panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .notif-panel-header h4 { font-size: 14px; font-weight: 700; }
+  .notif-clear-btn {
+    font-size: 12px; color: var(--muted); background: none; border: none;
+    cursor: pointer; padding: 4px 8px; border-radius: 6px; font-family: var(--font);
+  }
+  .notif-clear-btn:hover { color: var(--red); background: rgba(234,67,53,.1); }
+  .notif-list { flex: 1; overflow-y: auto; padding: 8px; }
+  .notif-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; margin-bottom: 4px;
+    background: var(--surface2); border: 1px solid var(--border);
+    position: relative;
+  }
+  .notif-item.notif-sale { border-left: 3px solid var(--green); }
+  .notif-item.notif-pending { border-left: 3px solid var(--yellow); }
+  .notif-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .notif-text { flex: 1; }
+  .notif-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .notif-sub { font-size: 12px; color: var(--muted); }
+  .notif-close {
+    width: 20px; height: 20px; background: none; border: none; cursor: pointer;
+    color: var(--muted); flex-shrink: 0; border-radius: 4px; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0; line-height: 1;
+  }
+  .notif-close:hover { color: var(--red); background: rgba(234,67,53,.1); }
+  .notif-empty { text-align: center; color: var(--muted); font-size: 13px; padding: 32px 0; }
+
   /* ── SALE TOAST (gateway style) ── */
   #sale-toast {
     position: fixed; top: 24px; right: 24px;
@@ -208,6 +265,7 @@
     box-shadow: 0 12px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(52,168,83,.1);
     display: none; z-index: 9999; min-width: 280px; max-width: 320px;
     animation: toastSlideIn .35s cubic-bezier(.34,1.56,.64,1);
+    cursor: pointer;
   }
   @keyframes toastSlideIn {
     from { opacity: 0; transform: translateX(24px) scale(.95); }
@@ -355,10 +413,25 @@
       <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
       <span style="color:var(--text);font-weight:400"> Cash</span>
     </div>
-    <div style="margin-left:auto">
-      <span id="refresh-dot-mobile" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite"></span>
+    <div class="notif-bell-wrap" style="margin-left:auto">
+      <button class="notif-bell-btn" id="notif-bell-btn" aria-label="Notificações">
+        <span class="material-symbols-rounded">notifications</span>
+        <span class="notif-badge" id="notif-badge"></span>
+      </button>
     </div>
+    <span id="refresh-dot-mobile" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s ease-in-out infinite;margin-left:8px"></span>
   </header>
+
+  <!-- Notifications panel -->
+  <div class="notif-panel" id="notif-panel">
+    <div class="notif-panel-header">
+      <h4>Notificações</h4>
+      <button class="notif-clear-btn" id="notif-clear-btn">Limpar tudo</button>
+    </div>
+    <div class="notif-list" id="notif-list">
+      <div class="notif-empty" id="notif-empty">Nenhuma notificação</div>
+    </div>
+  </div>
 
   <!-- Sidebar overlay (mobile tap-to-close) -->
   <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -372,6 +445,10 @@
     <button class="bottom-nav-item" data-page="vendas">
       <span class="material-symbols-rounded">payments</span>
       <span>Vendas</span>
+    </button>
+    <button class="bottom-nav-item" data-page="vsl">
+      <span class="material-symbols-rounded">play_circle</span>
+      <span>VSL</span>
     </button>
     <button class="bottom-nav-item" data-page="funil">
       <span class="material-symbols-rounded">filter_alt</span>
@@ -400,6 +477,9 @@
         </button>
         <button class="nav-item" data-page="vendas">
           <span class="icon material-symbols-rounded">payments</span><span>Vendas</span>
+        </button>
+        <button class="nav-item" data-page="vsl">
+          <span class="icon material-symbols-rounded">play_circle</span><span>VSL A/B</span>
         </button>
         <button class="nav-item" data-page="funil">
           <span class="icon material-symbols-rounded">filter_alt</span><span>Funil</span>
@@ -476,9 +556,39 @@
       <section class="page" id="page-vendas">
         <div class="page-header">
           <h1>Vendas</h1>
-          <p>Histórico completo de transações</p>
+          <p>Histórico completo de transações — aprovadas e pendentes</p>
         </div>
+
+        <!-- Pending Sales -->
+        <div class="card" id="card-pending" style="border-color:rgba(251,188,4,.4)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div class="card-title" style="margin:0">
+              <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;color:var(--yellow);margin-right:6px">schedule</span>
+              Checkouts Pendentes <span id="pending-count" style="font-size:13px;color:var(--muted);font-weight:400"></span>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>E-mail</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th>Iniciado em</th>
+                </tr>
+              </thead>
+              <tbody id="table-pending"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Approved Sales -->
         <div class="card">
+          <div class="card-title">
+            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;color:var(--green);margin-right:6px">check_circle</span>
+            Vendas Aprovadas
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -494,6 +604,67 @@
               <tbody id="table-all"></tbody>
             </table>
           </div>
+        </div>
+      </section>
+
+      <!-- VSL A/B -->
+      <section class="page" id="page-vsl">
+        <div class="page-header">
+          <h1>VSL A/B Test</h1>
+          <p>Compare o desempenho das duas versões do vídeo</p>
+        </div>
+
+        <!-- Toggle cards -->
+        <div class="kpi-grid" style="grid-template-columns:repeat(2,1fr)">
+          <div class="kpi-card" id="vsl-card-a">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div class="kpi-label">VSL A — vsl01.mp4</div>
+              <button class="toggle-btn on" id="vsl-toggle-a" onclick="toggleVSL('a')">Ativa</button>
+            </div>
+            <div class="kpi-value" id="vsl-a-assign" style="font-size:22px">—</div>
+            <div class="kpi-sub">visitantes atribuídos</div>
+          </div>
+          <div class="kpi-card" id="vsl-card-b">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <div class="kpi-label">VSL B — vsl02.mp4</div>
+              <button class="toggle-btn on" id="vsl-toggle-b" onclick="toggleVSL('b')">Ativa</button>
+            </div>
+            <div class="kpi-value" id="vsl-b-assign" style="font-size:22px">—</div>
+            <div class="kpi-sub">visitantes atribuídos</div>
+          </div>
+        </div>
+
+        <!-- Comparison table -->
+        <div class="card">
+          <div class="card-title">Métricas Comparativas</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Métrica</th>
+                  <th style="color:var(--accent)">VSL A</th>
+                  <th style="color:var(--green)">VSL B</th>
+                  <th>Vencedor</th>
+                </tr>
+              </thead>
+              <tbody id="vsl-table"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Watch depth chart -->
+        <div class="card">
+          <div class="card-title">Retenção por Etapa do Vídeo</div>
+          <div id="vsl-retention" style="font-size:14px"></div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card">
+          <div class="card-title">
+            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;color:var(--yellow);margin-right:6px">auto_awesome</span>
+            Recomendações
+          </div>
+          <div id="vsl-recommendations" style="font-size:14px;line-height:1.8;color:var(--muted)">Carregando dados…</div>
         </div>
       </section>
 
@@ -611,6 +782,104 @@ let pollTimer = null;
 let deferredInstall = null;
 let pushActive = false;
 let lastSaleCount = 0;
+let notifications = JSON.parse(localStorage.getItem('gc_admin_notifs') || '[]');
+let vslConfig = { a: true, b: true };
+
+/* ─────────────────────────────────────────────
+   NOTIFICATIONS
+───────────────────────────────────────────── */
+function saveNotifs() {
+  localStorage.setItem('gc_admin_notifs', JSON.stringify(notifications.slice(0, 100)));
+}
+
+function addNotif(type, title, sub) {
+  const n = { id: Date.now() + Math.random(), type, title, sub, ts: Date.now() };
+  notifications.unshift(n);
+  saveNotifs();
+  renderNotifPanel();
+  return n;
+}
+
+function removeNotif(id) {
+  notifications = notifications.filter(n => n.id !== id);
+  saveNotifs();
+  renderNotifPanel();
+}
+
+function renderNotifPanel() {
+  const list = document.getElementById('notif-list');
+  const empty = document.getElementById('notif-empty');
+  const badge = document.getElementById('notif-badge');
+  if (!list) return;
+
+  // Remove all existing notif items (keep empty placeholder)
+  Array.from(list.querySelectorAll('.notif-item')).forEach(el => el.remove());
+
+  if (!notifications.length) {
+    if (empty) empty.style.display = 'block';
+    if (badge) { badge.textContent = ''; badge.classList.remove('show'); }
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  if (badge) {
+    const count = notifications.length;
+    badge.textContent = count > 9 ? '9+' : String(count);
+    badge.classList.add('show');
+  }
+
+  notifications.forEach(n => {
+    const item = document.createElement('div');
+    item.className = 'notif-item ' + (n.type === 'sale' ? 'notif-sale' : 'notif-pending');
+
+    const icon = document.createElement('span');
+    icon.className = 'notif-icon material-symbols-rounded';
+    icon.style.color = n.type === 'sale' ? 'var(--green)' : 'var(--yellow)';
+    icon.textContent = n.type === 'sale' ? 'check_circle' : 'schedule';
+
+    const text = document.createElement('div');
+    text.className = 'notif-text';
+    const titleEl = document.createElement('div');
+    titleEl.className = 'notif-title';
+    titleEl.textContent = n.title;
+    const subEl = document.createElement('div');
+    subEl.className = 'notif-sub';
+    subEl.textContent = n.sub || '';
+    text.appendChild(titleEl);
+    text.appendChild(subEl);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'notif-close';
+    closeBtn.textContent = '×';
+    closeBtn.setAttribute('aria-label', 'Fechar');
+    closeBtn.addEventListener('click', () => removeNotif(n.id));
+
+    item.appendChild(icon);
+    item.appendChild(text);
+    item.appendChild(closeBtn);
+    list.appendChild(item);
+  });
+}
+
+// Toggle notification panel
+document.getElementById('notif-bell-btn').addEventListener('click', e => {
+  e.stopPropagation();
+  document.getElementById('notif-panel').classList.toggle('open');
+});
+document.addEventListener('click', e => {
+  const panel = document.getElementById('notif-panel');
+  const btn = document.getElementById('notif-bell-btn');
+  if (panel && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+document.getElementById('notif-clear-btn').addEventListener('click', () => {
+  notifications = [];
+  saveNotifs();
+  renderNotifPanel();
+});
+
+// Init
+renderNotifPanel();
 
 /* ─────────────────────────────────────────────
    CASH SOUND (Web Audio API — no external deps)
@@ -728,23 +997,52 @@ document.getElementById('logout-btn').addEventListener('click', () => {
 ───────────────────────────────────────────── */
 async function loadData() {
   try {
-    const r = await fetch('/api/sales', { headers: { 'x-admin-token': TOKEN } });
+    const r = await fetch('/api/stats', { headers: { 'x-admin-token': TOKEN } });
     if (r.status === 403) { sessionStorage.removeItem('gc_token'); location.reload(); return; }
     const d = await r.json();
     updateKPIs(d.stats, d.funnel);
-    updateDailyChart(d.dailySales);
-    renderRecentSales(d.transactions.slice(0, 8));
-    renderAllSales(d.transactions);
+    buildDailyChartFromSales(d.sales || []);
+    renderRecentSales((d.sales || []).slice(0, 8));
+    renderAllSales(d.sales || []);
+    renderPendingSales(d.pendingSales || []);
     renderFunnel(d.funnel);
     renderInsights(d.funnel);
+    if (d.vsl) renderVSL(d.vsl);
     // detect new sale
-    const completed = d.transactions.filter(t => t.status === 'COMPLETED').length;
+    const completed = (d.sales || []).filter(t => t.status === 'COMPLETED').length;
     if (lastSaleCount > 0 && completed > lastSaleCount) {
-      const newest = d.transactions.find(t => t.status === 'COMPLETED');
-      if (newest) showSaleAlert(newest);
+      const newest = (d.sales || []).find(t => t.status === 'COMPLETED');
+      if (newest) showSaleAlert(newest, false);
+    }
+    // detect new pending
+    const pendingCount = (d.pendingSales || []).length;
+    if (pendingCount > 0) {
+      const newest = (d.pendingSales || [])[0];
+      const seenKey = 'gc_seen_pending_' + (newest?.createdAt || '');
+      if (!sessionStorage.getItem(seenKey)) {
+        sessionStorage.setItem(seenKey, '1');
+        addNotif('pending', 'PIX Gerado — R$ ' + formatMoney(newest?.amount || 117).replace('R$ ',''),
+          (newest?.name || 'Visitante') + ' iniciou checkout');
+      }
     }
     lastSaleCount = completed;
   } catch (e) { console.warn('[admin] loadData error', e); }
+}
+
+function buildDailyChartFromSales(sales) {
+  // Build last-7-days chart from sales array
+  const days = [];
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    const label = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+    const count = sales.filter(s => {
+      const sd = new Date(parseInt(s.paidAt || 0));
+      return sd.toDateString() === d.toDateString();
+    }).length;
+    days.push({ label, count });
+  }
+  updateDailyChart(days);
 }
 
 function startPolling() {
@@ -875,6 +1173,33 @@ function renderRecentSales(transactions) {
     statusTd.appendChild(makeStatusBadge(tx.status));
     tr.appendChild(statusTd);
     tr.appendChild(makeCell(formatDate(tx.paidAt || tx.createdAt)));
+    tbody.appendChild(tr);
+  });
+}
+
+function renderPendingSales(pendingSales) {
+  const tbody = document.getElementById('table-pending');
+  const countEl = document.getElementById('pending-count');
+  if (!tbody) return;
+  tbody.replaceChildren();
+  if (countEl) countEl.textContent = pendingSales.length ? '(' + pendingSales.length + ')' : '';
+  if (!pendingSales.length) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 5; td.textContent = 'Nenhum checkout pendente.';
+    td.style.cssText = 'color:var(--muted);text-align:center;padding:20px';
+    tr.appendChild(td); tbody.appendChild(tr);
+    return;
+  }
+  pendingSales.forEach(tx => {
+    const tr = document.createElement('tr');
+    tr.appendChild(makeCell(tx.name || '—'));
+    tr.appendChild(makeCell(tx.email || '—'));
+    tr.appendChild(makeCell(formatMoney(tx.amount)));
+    const statusTd = document.createElement('td');
+    statusTd.appendChild(makeStatusBadge(tx.status || 'PENDING'));
+    tr.appendChild(statusTd);
+    tr.appendChild(makeCell(formatDate(tx.createdAt)));
     tbody.appendChild(tr);
   });
 }
@@ -1042,16 +1367,214 @@ function renderInsights(funnel) {
 }
 
 /* ─────────────────────────────────────────────
+   VSL A/B
+───────────────────────────────────────────── */
+function renderVSL(vsl) {
+  vslConfig.a = vsl.a.active !== false;
+  vslConfig.b = vsl.b.active !== false;
+
+  const a = vsl.a, b = vsl.b;
+
+  // Update assign counts
+  const elA = document.getElementById('vsl-a-assign');
+  const elB = document.getElementById('vsl-b-assign');
+  if (elA) elA.textContent = (a.assign || 0).toLocaleString('pt-BR');
+  if (elB) elB.textContent = (b.assign || 0).toLocaleString('pt-BR');
+
+  // Update toggle buttons
+  updateVSLToggle('a', vslConfig.a);
+  updateVSLToggle('b', vslConfig.b);
+
+  // Build comparison table
+  const tbody = document.getElementById('vsl-table');
+  if (tbody) {
+    tbody.replaceChildren();
+    const rows = [
+      ['Atribuídos',    a.assign,   b.assign,   'higher'],
+      ['Reproduziram',  a.play,     b.play,     'higher'],
+      ['Assistiram 25%',a.p25,      b.p25,      'higher'],
+      ['Assistiram 50%',a.p50,      b.p50,      'higher'],
+      ['Assistiram 75%',a.p75,      b.p75,      'higher'],
+      ['Assistiram 100%',a.p100,    b.p100,     'higher'],
+      ['CTA Exibido',   a.ctaShown, b.ctaShown, 'higher'],
+      ['CTA Clicado',   a.ctaClick, b.ctaClick, 'higher'],
+      ['CTR da CTA',
+        a.ctaShown > 0 ? ((a.ctaClick/a.ctaShown)*100).toFixed(1)+'%' : '—',
+        b.ctaShown > 0 ? ((b.ctaClick/b.ctaShown)*100).toFixed(1)+'%' : '—',
+        'higher-pct']
+    ];
+    rows.forEach(([label, va, vb, mode]) => {
+      const tr = document.createElement('tr');
+      const numA = typeof va === 'number' ? va : parseFloat(va) || 0;
+      const numB = typeof vb === 'number' ? vb : parseFloat(vb) || 0;
+      const winner = numA > numB ? 'a' : numB > numA ? 'b' : null;
+      const labelTd = document.createElement('td');
+      labelTd.textContent = label;
+      const tdA = document.createElement('td');
+      tdA.textContent = va != null ? String(va) : '—';
+      if (winner === 'a') tdA.style.color = 'var(--green)';
+      const tdB = document.createElement('td');
+      tdB.textContent = vb != null ? String(vb) : '—';
+      if (winner === 'b') tdB.style.color = 'var(--green)';
+      const tdW = document.createElement('td');
+      if (winner) {
+        const badge = document.createElement('span');
+        badge.className = 'badge badge-green';
+        badge.textContent = 'VSL ' + winner.toUpperCase();
+        tdW.appendChild(badge);
+      } else {
+        tdW.textContent = '—';
+        tdW.style.color = 'var(--muted)';
+      }
+      tr.appendChild(labelTd); tr.appendChild(tdA); tr.appendChild(tdB); tr.appendChild(tdW);
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Retention bars
+  const retEl = document.getElementById('vsl-retention');
+  if (retEl) {
+    retEl.replaceChildren();
+    const steps = [
+      { label: 'Iniciaram', va: a.play, vb: b.play },
+      { label: '25%', va: a.p25, vb: b.p25 },
+      { label: '50%', va: a.p50, vb: b.p50 },
+      { label: '75%', va: a.p75, vb: b.p75 },
+      { label: '100%', va: a.p100, vb: b.p100 },
+      { label: 'CTA Click', va: a.ctaClick, vb: b.ctaClick }
+    ];
+    const maxA = a.play || 1;
+    const maxB = b.play || 1;
+    steps.forEach(s => {
+      const row = document.createElement('div');
+      row.style.cssText = 'margin-bottom:12px';
+      const lbl = document.createElement('div');
+      lbl.style.cssText = 'font-size:12px;color:var(--muted);margin-bottom:4px';
+      lbl.textContent = s.label;
+      row.appendChild(lbl);
+      // Bar A
+      const barARow = document.createElement('div');
+      barARow.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:3px';
+      const labelA = document.createElement('span');
+      labelA.style.cssText = 'font-size:11px;color:var(--accent);width:40px;flex-shrink:0';
+      labelA.textContent = 'VSL A';
+      const trackA = document.createElement('div');
+      trackA.style.cssText = 'flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden';
+      const fillA = document.createElement('div');
+      fillA.style.cssText = 'height:100%;border-radius:4px;background:var(--accent);transition:width .6s ease;width:' + Math.min(100,((s.va||0)/maxA)*100).toFixed(1) + '%';
+      trackA.appendChild(fillA);
+      const cntA = document.createElement('span');
+      cntA.style.cssText = 'font-size:11px;width:28px;text-align:right;flex-shrink:0';
+      cntA.textContent = String(s.va || 0);
+      barARow.appendChild(labelA); barARow.appendChild(trackA); barARow.appendChild(cntA);
+      // Bar B
+      const barBRow = document.createElement('div');
+      barBRow.style.cssText = 'display:flex;align-items:center;gap:8px';
+      const labelB = document.createElement('span');
+      labelB.style.cssText = 'font-size:11px;color:var(--green);width:40px;flex-shrink:0';
+      labelB.textContent = 'VSL B';
+      const trackB = document.createElement('div');
+      trackB.style.cssText = 'flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden';
+      const fillB = document.createElement('div');
+      fillB.style.cssText = 'height:100%;border-radius:4px;background:var(--green);transition:width .6s ease;width:' + Math.min(100,((s.vb||0)/maxB)*100).toFixed(1) + '%';
+      trackB.appendChild(fillB);
+      const cntB = document.createElement('span');
+      cntB.style.cssText = 'font-size:11px;width:28px;text-align:right;flex-shrink:0';
+      cntB.textContent = String(s.vb || 0);
+      barBRow.appendChild(labelB); barBRow.appendChild(trackB); barBRow.appendChild(cntB);
+      row.appendChild(barARow); row.appendChild(barBRow);
+      retEl.appendChild(row);
+    });
+  }
+
+  // Recommendations
+  const recEl = document.getElementById('vsl-recommendations');
+  if (recEl) buildVSLRecommendations(recEl, a, b);
+}
+
+function buildVSLRecommendations(container, a, b) {
+  container.replaceChildren();
+  const recs = [];
+
+  if (a.assign < 10 && b.assign < 10) {
+    recs.push({ icon: 'info', color: 'var(--accent)', text: 'Dados insuficientes — aguarde pelo menos 10 visitantes em cada versão para conclusões confiáveis.' });
+  } else {
+    // CTR comparison
+    const ctrA = a.ctaShown > 0 ? (a.ctaClick / a.ctaShown) : 0;
+    const ctrB = b.ctaShown > 0 ? (b.ctaClick / b.ctaShown) : 0;
+    if (ctrA > ctrB * 1.1) recs.push({ icon: 'emoji_events', color: 'var(--yellow)', text: 'VSL A tem CTR ' + ((ctrA/ctrB - 1)*100).toFixed(0) + '% superior. Considere desativar VSL B e enviar 100% para VSL A.' });
+    else if (ctrB > ctrA * 1.1) recs.push({ icon: 'emoji_events', color: 'var(--yellow)', text: 'VSL B está performando ' + ((ctrB/ctrA - 1)*100).toFixed(0) + '% melhor no CTR da CTA. Desative VSL A para concentrar tráfego.' });
+    else recs.push({ icon: 'balance', color: 'var(--green)', text: 'As VSLs estão equilibradas. Continue o teste por mais tempo antes de decidir.' });
+
+    // Retention at 75%
+    const ret75A = a.play > 0 ? (a.p75 / a.play) : 0;
+    const ret75B = b.play > 0 ? (b.p75 / b.play) : 0;
+    if (ret75A < 0.4) recs.push({ icon: 'warning', color: 'var(--red)', text: 'VSL A perde ' + ((1-ret75A)*100).toFixed(0) + '% dos espectadores antes de 75%. Corte os primeiros segundos ou reforce o gancho de abertura.' });
+    if (ret75B < 0.4) recs.push({ icon: 'warning', color: 'var(--red)', text: 'VSL B perde ' + ((1-ret75B)*100).toFixed(0) + '% dos espectadores antes de 75%. Analise a edição do vídeo B.' });
+  }
+
+  if (!recs.length) recs.push({ icon: 'check_circle', color: 'var(--green)', text: 'Tudo dentro do esperado. Continue monitorando.' });
+
+  recs.forEach(r => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:flex-start;gap:8px;margin-bottom:10px';
+    const icon = document.createElement('span');
+    icon.className = 'material-symbols-rounded';
+    icon.style.cssText = 'font-size:18px;flex-shrink:0;margin-top:1px;color:' + r.color;
+    icon.textContent = r.icon;
+    const p = document.createElement('p');
+    p.style.margin = '0';
+    p.textContent = r.text;
+    row.appendChild(icon); row.appendChild(p);
+    container.appendChild(row);
+  });
+}
+
+function updateVSLToggle(v, active) {
+  const btn = document.getElementById('vsl-toggle-' + v);
+  const card = document.getElementById('vsl-card-' + v);
+  if (!btn) return;
+  btn.textContent = active ? 'Ativa' : 'Pausada';
+  btn.className = active ? 'toggle-btn on' : 'toggle-btn off';
+  if (card) card.style.opacity = active ? '1' : '0.55';
+}
+
+async function toggleVSL(v) {
+  const newActive = !vslConfig[v];
+  vslConfig[v] = newActive;
+  updateVSLToggle(v, newActive);
+  try {
+    await fetch('/api/vsl', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN },
+      body: JSON.stringify({ action: 'toggle', vsl: v, active: newActive })
+    });
+  } catch (e) { console.warn('[vsl] toggle error', e); }
+}
+
+/* ─────────────────────────────────────────────
    SALE ALERT TOAST
 ───────────────────────────────────────────── */
-function showSaleAlert(tx) {
+function showSaleAlert(tx, isPending) {
   playCashSound();
   const toast = document.getElementById('sale-toast');
-  document.getElementById('toast-title').textContent = formatMoney(tx.amount);
-  document.getElementById('toast-body').textContent = (tx.name || 'Alguem') + ' acabou de comprar o Google Cash!';
+  const titleEl = document.getElementById('toast-title');
+  const bodyEl = document.getElementById('toast-body');
+  const labelEl = toast.querySelector('.toast-label');
+  if (labelEl) labelEl.textContent = isPending ? 'PIX Gerado!' : 'Venda Realizada!';
+  if (titleEl) titleEl.textContent = formatMoney(tx.amount);
+  if (bodyEl) bodyEl.textContent = (tx.name || 'Alguem') + (isPending ? ' gerou um PIX' : ' acabou de comprar!');
   toast.style.display = 'block';
-  setTimeout(() => { toast.style.display = 'none'; }, 6000);
+  // Add to persistent notification list
+  addNotif(isPending ? 'pending' : 'sale',
+    (isPending ? 'PIX Gerado — ' : 'Venda — ') + formatMoney(tx.amount),
+    (tx.name || 'Alguem') + (isPending ? ' iniciou checkout' : ' comprou Google Cash'));
 }
+
+// Click toast to dismiss
+document.getElementById('sale-toast').addEventListener('click', () => {
+  document.getElementById('sale-toast').style.display = 'none';
+});
 
 /* ─────────────────────────────────────────────
    SERVICE WORKER + PUSH

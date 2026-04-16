@@ -210,6 +210,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 
 
+<!-- LOGIN SCREEN -->
+<div id="__login" style="display:none;min-height:100vh;background:#f0f4ff;background-image:linear-gradient(rgba(26,115,232,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(26,115,232,.07) 1px,transparent 1px);background-size:22px 22px;align-items:center;justify-content:center;padding:20px">
+  <div style="background:#fff;border-radius:20px;padding:36px 28px;max-width:380px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.12);margin:0 auto">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-size:26px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px">
+        <span style="color:#1a73e8">G</span><span style="color:#ea4335">o</span><span style="color:#fbbc05">o</span><span style="color:#1a73e8">g</span><span style="color:#34a853">l</span><span style="color:#ea4335">e</span><span style="color:#202124;margin-left:5px">Cash</span>
+      </div>
+      <div style="font-size:13px;color:#5f6368">Informe o e-mail ou telefone da sua compra</div>
+    </div>
+    <input id="login-identifier" type="text" placeholder="E-mail ou telefone" autocomplete="email" style="width:100%;padding:13px 16px;border:1.5px solid #e0e0e0;border-radius:10px;font-size:15px;outline:none;margin-bottom:12px;font-family:inherit;transition:border-color .2s" oninput="this.style.borderColor='#1a73e8'" onfocus="this.style.borderColor='#1a73e8'" onblur="this.style.borderColor='#e0e0e0'">
+    <button id="login-btn-app" onclick="doAppLogin()" style="width:100%;padding:13px;background:#1a73e8;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:opacity .2s" onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">Acessar minha conta</button>
+    <div id="login-error-app" style="display:none;color:#ea4335;font-size:13px;margin-top:10px;text-align:center"></div>
+    <div style="text-align:center;margin-top:20px;font-size:12px;color:#9aa0a6">
+      Não tem acesso?
+      <a href="/checkout.html" style="color:#1a73e8;text-decoration:none;font-weight:600">Adquira o Google Cash</a>
+    </div>
+  </div>
+</div>
+
 <!-- APP -->
 <div id="__app">
   <div id="hdr">
@@ -270,7 +289,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 ;(function(){
   function boot(){
     document.title='Google Cash';
-    initApp();
+    checkLogin();
   }
   if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',boot);}else{setTimeout(boot,0);}
 })();
@@ -2270,6 +2289,83 @@ function mostrarTermos(){
 }
 
 /* ═══════ INIT ═══════ */
+/* ═══════ LOGIN / AUTH ═══════ */
+function checkLogin(){
+  // Allow access via URL param (for direct post-purchase redirect)
+  var params=new URLSearchParams(window.location.search);
+  var tokenParam=params.get('token')||params.get('access');
+  if(tokenParam){
+    S.userToken=tokenParam;
+    localStorage.setItem('gc_utoken',tokenParam);
+    // Clean URL
+    history.replaceState({},'',window.location.pathname);
+    showApp();
+    return;
+  }
+  // Check stored token
+  if(S.userToken){
+    showApp();
+    return;
+  }
+  // Show login
+  var loginEl=document.getElementById('__login');
+  var appEl=document.getElementById('__app');
+  if(loginEl){loginEl.style.display='flex';}
+  if(appEl){appEl.style.display='none';}
+}
+
+function showApp(){
+  var loginEl=document.getElementById('__login');
+  var appEl=document.getElementById('__app');
+  if(loginEl)loginEl.style.display='none';
+  if(appEl)appEl.style.display='block';
+  initApp();
+}
+
+function doAppLogin(){
+  var identifier=document.getElementById('login-identifier').value.trim();
+  if(!identifier)return;
+  var btn=document.getElementById('login-btn-app');
+  var errEl=document.getElementById('login-error-app');
+  btn.textContent='Verificando...';
+  btn.disabled=true;
+  errEl.style.display='none';
+  fetch('/api/login',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({identifier:identifier})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.ok){
+      S.userToken=d.token;
+      S.credits=d.credits||50;
+      S.plan=d.plan||'starter';
+      localStorage.setItem('gc_utoken',d.token);
+      localStorage.setItem('gc_credits',S.credits);
+      localStorage.setItem('gc_plan',S.plan);
+      showApp();
+    } else if(d.isAdmin){
+      errEl.textContent='Conta de administrador — acesse o painel admin em /admin.html';
+      errEl.style.display='block';
+    } else {
+      errEl.textContent=d.error||'Acesso não encontrado.';
+      errEl.style.display='block';
+    }
+    btn.textContent='Acessar minha conta';
+    btn.disabled=false;
+  }).catch(function(){
+    errEl.textContent='Erro de conexão. Tente novamente.';
+    errEl.style.display='block';
+    btn.textContent='Acessar minha conta';
+    btn.disabled=false;
+  });
+}
+
+// Also allow Enter key on identifier input
+document.addEventListener('DOMContentLoaded',function(){
+  var inp=document.getElementById('login-identifier');
+  if(inp) inp.addEventListener('keydown',function(e){if(e.key==='Enter')doAppLogin();});
+});
+
 function initApp(){
   updateHeader();
   renderHome();

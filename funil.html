@@ -125,7 +125,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:#fff;border-radius:10px;margin-bottom:8px}
 .breakdown-name{font-size:14px;font-weight:600;color:var(--dk)}
 .breakdown-val{font-size:16px;font-weight:800;color:var(--gn)}
-/* VSL — LIGHT GOOGLE THEME */
+/* VSL — A/B PLAYER GOOGLE STYLE */
 #s-vsl{background-color:#fff;background-image:repeating-linear-gradient(0deg,transparent,transparent 23px,rgba(0,0,0,.045) 23px,rgba(0,0,0,.045) 24px),repeating-linear-gradient(90deg,transparent,transparent 23px,rgba(0,0,0,.045) 23px,rgba(0,0,0,.045) 24px);position:relative;overflow:hidden}
 .vsl-screens-bg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:0}
 .sc-float{position:absolute;border-radius:14px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.06)}
@@ -138,12 +138,33 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .vsl-badge{display:inline-flex;align-items:center;gap:6px;background:#e8f0fe;border:1px solid rgba(26,115,232,.25);color:var(--bl);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;margin-bottom:14px}
 .vsl-top h2{font-size:18px;font-weight:800;color:var(--dk);margin-bottom:8px;line-height:1.4}
 .vsl-top .vsl-sub{font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.6}
-.vsl-wrap{margin:0 16px;border-radius:16px;overflow:hidden;background:#f1f3f4;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--bdr)}
-.play-btn{width:68px;height:68px;background:rgba(26,115,232,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(26,115,232,.35)}
+/* Neon glow container */
+.vsl-neon-wrap{margin:0 16px;position:relative}
+.vsl-neon-glow{position:absolute;inset:-6px;border-radius:22px;background:linear-gradient(135deg,#1a73e8,#4285f4,#34a853,#1a73e8);background-size:300% 300%;animation:neonCycle 4s ease infinite;opacity:.55;filter:blur(14px);z-index:0;pointer-events:none}
+@keyframes neonCycle{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+/* Player shell */
+.vsl-player-shell{position:relative;z-index:1;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9}
+.vsl-player-shell video{width:100%;height:100%;display:block;object-fit:cover}
+/* Custom overlay (shown before play) */
+.vsl-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:4;transition:opacity .3s}
+.vsl-overlay.hidden{opacity:0;pointer-events:none}
+.play-btn{width:68px;height:68px;background:rgba(26,115,232,.92);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(26,115,232,.5);cursor:pointer;border:3px solid rgba(255,255,255,.3);transition:transform .15s}
+.play-btn:active{transform:scale(.93)}
 .play-arrow{width:0;height:0;border-top:14px solid transparent;border-bottom:14px solid transparent;border-left:24px solid #fff;margin-left:5px}
+/* Controls bar */
+.vsl-controls{position:absolute;bottom:0;left:0;right:0;z-index:5;background:linear-gradient(0deg,rgba(0,0,0,.7) 0%,transparent 100%);padding:10px 14px 8px;display:none}
+.vsl-controls.show{display:flex;align-items:center;gap:10px}
+.vsl-pause-btn{width:32px;height:32px;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
+.vsl-pause-btn svg{width:20px;height:20px;fill:#fff}
+/* Fake progress bar */
+.vsl-bar-track{flex:1;height:4px;background:rgba(255,255,255,.25);border-radius:2px;overflow:hidden;cursor:default}
+.vsl-bar-fill{height:100%;background:linear-gradient(90deg,#1a73e8,#4285f4);border-radius:2px;width:0%;transition:width .8s linear}
+.vsl-time-lbl{font-size:11px;color:rgba(255,255,255,.7);flex-shrink:0;min-width:28px;text-align:right}
+/* Timer + CTA */
 .vsl-timer{text-align:center;padding:14px;color:var(--sub);font-size:13px}
 .vagas-badge{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--bdr);border-radius:12px;padding:10px 16px;margin:0 16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-.vagas-dot{width:8px;height:8px;border-radius:50%;background:#ea4335;animation:pulse 1s infinite}
+.vagas-dot{width:8px;height:8px;border-radius:50%;background:#ea4335;animation:vagasPulse 1s infinite}
+@keyframes vagasPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
 .vagas-text{font-size:13px;color:var(--text)}
 .vagas-text strong{color:var(--dk);font-weight:800}
@@ -683,7 +704,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <button class="btn btn-green mt16" onclick="goVSL()">Ver Como Funciona + Vagas Disponíveis</button>
 </div>
 
-<!-- ===== SCREEN 6: VSL — TEMA BRANCO GOOGLE ===== -->
+<!-- ===== SCREEN 6: VSL — A/B PLAYER ===== -->
 <div id="s-vsl" class="screen">
   <div class="vsl-screens-bg">
     <div class="sc-float"><div class="sc-body"></div></div>
@@ -700,8 +721,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <h2>Trabalhe com Estrutura Profissional<br>no Google Cash</h2>
       <p class="vsl-sub">Não é curso. É uma vaga de trabalho real com aplicativo, scripts prontos, certificado e comunidade. Assista para desbloquear a sua vaga.</p>
     </div>
-    <div class="vsl-wrap" id="vsl-box" onclick="startVideo()">
-      <div class="play-btn" id="play-btn"><div class="play-arrow"></div></div>
+    <!-- NEON VIDEO PLAYER -->
+    <div class="vsl-neon-wrap" id="vsl-box">
+      <div class="vsl-neon-glow" id="vsl-neon"></div>
+      <div class="vsl-player-shell" id="vsl-shell">
+        <video id="vsl-video" preload="auto" playsinline webkit-playsinline x5-playsinline></video>
+        <!-- Play overlay -->
+        <div class="vsl-overlay" id="vsl-overlay">
+          <div class="play-btn" onclick="startVideo()"><div class="play-arrow"></div></div>
+        </div>
+        <!-- Controls (only pause + fake bar) -->
+        <div class="vsl-controls" id="vsl-controls">
+          <button class="vsl-pause-btn" id="vsl-pause-btn" onclick="togglePause()">
+            <svg id="vsl-pause-icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+          </button>
+          <div class="vsl-bar-track">
+            <div class="vsl-bar-fill" id="vsl-bar"></div>
+          </div>
+          <span class="vsl-time-lbl" id="vsl-time-lbl">0:00</span>
+        </div>
+      </div>
     </div>
     <div class="vsl-timer" id="vsl-timer">Assista ao vídeo para liberar a Vaga no Google Cash</div>
     <div class="vagas-badge" id="vagas-badge" style="display:none">
@@ -903,7 +942,7 @@ function goQuiz(){SFX.click();track('QuizStarted');showScreen('s-quiz');}
 function goTutorial(){SFX.success();track('QuizCompleted',quizAnswers);showScreen('s-tutorial');}
 function goSimulator(){if(!document.getElementById('consent-chk').checked)return;SFX.levelUp();track('SimulatorStarted');showScreen('s-simulator');document.getElementById('rev-bar').classList.add('visible');}
 function goResults(){SFX.levelUp();showScreen('s-results');animateResult();}
-function goVSL(){SFX.click();showScreen('s-vsl');}
+function goVSL(){SFX.click();showScreen('s-vsl');vslAssignVersion();}
 function goOffer(){SFX.click();showScreen('s-offer');startCountdown();}
 
 // ===== QUIZ =====
@@ -988,38 +1027,122 @@ function animateResult(){
   requestAnimationFrame(anim);
 }
 
-// ===== VSL + VAGAS =====
-function getVagas(){
-  try{
-    var stored=JSON.parse(localStorage.getItem('gc_vagas')||'null');
-    var now=Date.now();
-    if(!stored||!stored.count){stored={count:11,lastDecay:now};}
-    else{var elapsed=now-stored.lastDecay;var decays=Math.floor(elapsed/(4*60*1000));if(decays>0){stored.count=Math.max(2,stored.count-decays);stored.lastDecay=stored.lastDecay+decays*4*60*1000;}}
-    localStorage.setItem('gc_vagas',JSON.stringify(stored));
-    return stored.count;
-  }catch(e){return 9;}
+// ===== VSL A/B PLAYER =====
+var VSL={version:'a',started:false,paused:false,secs:0,fakeBarPct:0,timerId:null,barId:null,progressReported:{p25:false,p50:false,p75:false,p100:false},watchInterval:null};
+
+function vslAssignVersion(){
+  var stored=localStorage.getItem('gc_vsl_ver');
+  if(stored==='a'||stored==='b'){VSL.version=stored;vslLoadVideo();return;}
+  fetch('/api/vsl').then(function(r){return r.json();}).then(function(cfg){
+    var canA=cfg.vslA!==false,canB=cfg.vslB!==false,ver;
+    if(canA&&canB){ver=Math.random()<0.5?'a':'b';}else if(canA){ver='a';}else if(canB){ver='b';}else{ver='a';}
+    VSL.version=ver;localStorage.setItem('gc_vsl_ver',ver);vslTrack('assign');vslLoadVideo();
+  }).catch(function(){
+    VSL.version=Math.random()<0.5?'a':'b';localStorage.setItem('gc_vsl_ver',VSL.version);vslTrack('assign');vslLoadVideo();
+  });
 }
+
+function vslLoadVideo(){
+  var video=document.getElementById('vsl-video');
+  if(!video)return;
+  video.src=VSL.version==='b'?'/vsl02.mp4':'/vsl01.mp4';
+  video.load();
+}
+
+function vslTrack(event,extra){
+  try{var body={vsl:VSL.version,event:event};if(extra)Object.assign(body,extra);fetch('/api/vsl',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),keepalive:true});}catch(e){}
+}
+
 function startVideo(){
-  var pb=document.getElementById('play-btn');if(pb)pb.style.display='none';
-  var box=document.getElementById('vsl-box');if(box)box.style.cursor='default';
-  if(!vslStarted){vslStarted=true;startVSLTimer();}
+  var overlay=document.getElementById('vsl-overlay');if(overlay)overlay.classList.add('hidden');
+  var controls=document.getElementById('vsl-controls');if(controls)controls.classList.add('show');
+  var video=document.getElementById('vsl-video');
+  if(video){video.play().catch(function(){});video.addEventListener('ended',function(){vslOnEnded();},{once:true});}
+  if(!VSL.started){VSL.started=true;VSL.paused=false;vslTrack('play');startVSLTimer();startFakeBar();startWatchReporter();}
 }
+
+function vslSetPauseIcon(isPaused){
+  var icon=document.getElementById('vsl-pause-icon');
+  if(!icon)return;
+  // Remove all child nodes safely
+  while(icon.firstChild)icon.removeChild(icon.firstChild);
+  if(isPaused){
+    var poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    poly.setAttribute('points','5,3 19,12 5,21');icon.appendChild(poly);
+  }else{
+    var r1=document.createElementNS('http://www.w3.org/2000/svg','rect');r1.setAttribute('x','6');r1.setAttribute('y','4');r1.setAttribute('width','4');r1.setAttribute('height','16');icon.appendChild(r1);
+    var r2=document.createElementNS('http://www.w3.org/2000/svg','rect');r2.setAttribute('x','14');r2.setAttribute('y','4');r2.setAttribute('width','4');r2.setAttribute('height','16');icon.appendChild(r2);
+  }
+}
+
+function togglePause(){
+  var video=document.getElementById('vsl-video');if(!video)return;
+  if(VSL.paused){
+    video.play().catch(function(){});VSL.paused=false;vslSetPauseIcon(false);
+    if(VSL.timerId)clearInterval(VSL.timerId);startVSLTimer();startFakeBar();
+  }else{
+    video.pause();VSL.paused=true;vslSetPauseIcon(true);
+    if(VSL.timerId)clearInterval(VSL.timerId);if(VSL.barId)clearInterval(VSL.barId);
+  }
+}
+
 function startVSLTimer(){
   var timerEl=document.getElementById('vsl-timer');
-  vslIv=setInterval(function(){
-    vslSecs++;var rem=60-vslSecs;
+  VSL.timerId=setInterval(function(){
+    if(VSL.paused)return;VSL.secs++;var rem=60-VSL.secs;
     if(timerEl&&rem>0)timerEl.textContent='Liberando vaga em '+rem+'s...';
-    if(vslSecs>=60){clearInterval(vslIv);unlockCTA();}
+    if(VSL.secs>=60){clearInterval(VSL.timerId);unlockCTA();}
   },1000);
 }
+
+function startFakeBar(){
+  if(VSL.barId)clearInterval(VSL.barId);
+  var phase='fast';var FAST_TARGET=87,SLOW_TARGET=99;
+  VSL.barId=setInterval(function(){
+    if(VSL.paused)return;
+    if(phase==='fast'){
+      VSL.fakeBarPct=Math.min(VSL.fakeBarPct+0.9,FAST_TARGET);
+      if(VSL.fakeBarPct>=FAST_TARGET){phase='slow';}
+    }else{
+      VSL.fakeBarPct=Math.min(VSL.fakeBarPct+0.05,SLOW_TARGET);
+    }
+    var bar=document.getElementById('vsl-bar');if(bar)bar.style.width=VSL.fakeBarPct.toFixed(1)+'%';
+  },phase==='fast'?180:900);
+}
+
+function startWatchReporter(){
+  VSL.watchInterval=setInterval(function(){
+    if(VSL.paused)return;vslTrack('watch',{seconds:VSL.secs});
+    var pct=(VSL.secs/60)*100;
+    if(!VSL.progressReported.p25&&pct>=25){VSL.progressReported.p25=true;vslTrack('p25');}
+    if(!VSL.progressReported.p50&&pct>=50){VSL.progressReported.p50=true;vslTrack('p50');}
+    if(!VSL.progressReported.p75&&pct>=75){VSL.progressReported.p75=true;vslTrack('p75');}
+  },10000);
+}
+
+function vslOnEnded(){
+  if(VSL.barId)clearInterval(VSL.barId);
+  var bar=document.getElementById('vsl-bar');if(bar){bar.style.transition='width .5s';bar.style.width='100%';}
+  vslTrack('p100');VSL.progressReported.p100=true;vslSetPauseIcon(true);
+}
+
+function getVagas(){
+  try{
+    var stored=JSON.parse(localStorage.getItem('gc_vagas')||'null');var now=Date.now();
+    if(!stored||!stored.count){stored={count:11,lastDecay:now};}
+    else{var elapsed=now-stored.lastDecay;var decays=Math.floor(elapsed/(4*60*1000));if(decays>0){stored.count=Math.max(2,stored.count-decays);stored.lastDecay=stored.lastDecay+decays*4*60*1000;}}
+    localStorage.setItem('gc_vagas',JSON.stringify(stored));return stored.count;
+  }catch(e){return 9;}
+}
+
 function unlockCTA(){
-  SFX.unlock();track('VSL60Seconds');
+  SFX.unlock();track('VSL60Seconds');vslTrack('cta_shown');
   var count=getVagas();
   var vb=document.getElementById('vagas-badge');if(vb)vb.style.display='flex';
   var vn=document.getElementById('vagas-num');if(vn)vn.textContent=count;
   var cta=document.getElementById('vsl-cta');if(cta)cta.classList.add('visible');
   var t=document.getElementById('vsl-timer');if(t)t.textContent='Vaga desbloqueada! Reserve a sua agora.';
-  var iv=setInterval(function(){count=getVagas();if(vn)vn.textContent=count;},30000);
+  setInterval(function(){count=getVagas();if(vn)vn.textContent=count;},30000);
 }
 function showMoreReviews(){
   SFX.click();
@@ -1030,7 +1153,7 @@ function showMoreReviews(){
 // ===== OFFER =====
 function startCountdown(){}
 function checkout(){
-  SFX.click();track('CheckoutClicked');
+  SFX.click();track('CheckoutClicked');vslTrack('cta_click');
   window.location.href='/checkout.html';
 }
 function toggleFaq(el){
@@ -1048,6 +1171,15 @@ function track(event,data){
 
 // ===== INIT =====
 (function(){
+  // Block seeking on VSL video
+  var video=document.getElementById('vsl-video');
+  if(video){
+    var lastTime=0;
+    video.addEventListener('timeupdate',function(){if(VSL.started)lastTime=video.currentTime;});
+    video.addEventListener('seeking',function(){if(VSL.started&&Math.abs(video.currentTime-lastTime)>1.5)video.currentTime=lastTime;});
+    video.addEventListener('contextmenu',function(e){e.preventDefault();});
+  }
+
   var bp=document.getElementById('lp-breakdown');
   if(bp){
     var items=[['Café Central','R$ 280'],['Clínica Sorriso','R$ 870'],['Academia PowerFit','R$ 530'],['PetCare Center','R$ 620']];
