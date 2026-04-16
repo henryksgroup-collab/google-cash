@@ -1,5 +1,5 @@
 /* stats.js — track (POST) + sales/admin dashboard (GET) */
-const PASS = process.env.ADMIN_PASSWORD || 'gcadmin2026';
+const PASS = 'gcadmin2026';
 let redis;
 function getRedis() {
   if (!redis && process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {

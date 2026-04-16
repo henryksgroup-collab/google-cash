@@ -1,5 +1,5 @@
 /* api/vsl.js — VSL A/B tracking + config + URL management */
-const PASS = process.env.ADMIN_PASSWORD || 'gcadmin2026';
+const PASS = 'gcadmin2026';
 
 let redis;
 function getRedis() {
