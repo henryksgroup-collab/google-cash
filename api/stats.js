@@ -1,4 +1,5 @@
 /* stats.js — track (POST) + sales/admin dashboard (GET) */
+const PASS = process.env.ADMIN_PASSWORD || 'gcadmin2026';
 let redis;
 function getRedis() {
   if (!redis && process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
@@ -27,7 +28,7 @@ module.exports = async (req, res) => {
 
   // GET — admin dashboard
   const token = req.headers['x-admin-token'];
-  if (token !== process.env.ADMIN_PASSWORD) {
+  if (token !== PASS) {
     return res.status(403).json({ error: 'Nao autorizado' });
   }
 

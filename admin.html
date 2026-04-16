@@ -666,6 +666,27 @@
           </div>
           <div id="vsl-recommendations" style="font-size:14px;line-height:1.8;color:var(--muted)">Carregando dados…</div>
         </div>
+
+        <!-- URLs dos vídeos -->
+        <div class="card">
+          <div class="card-title">URLs dos Vídeos (YouTube)</div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+            <div>
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">VSL A</label>
+              <div style="display:flex;gap:8px">
+                <input id="vsl-url-a" type="text" style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px" placeholder="https://youtu.be/...">
+                <button onclick="saveVslUrl('a')" style="padding:10px 16px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:13px;font-weight:600">Salvar</button>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:4px">VSL B</label>
+              <div style="display:flex;gap:8px">
+                <input id="vsl-url-b" type="text" style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px" placeholder="https://youtu.be/...">
+                <button onclick="saveVslUrl('b')" style="padding:10px 16px;border-radius:8px;background:var(--accent);color:#fff;border:none;cursor:pointer;font-size:13px;font-weight:600">Salvar</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- FUNIL -->
@@ -1007,7 +1028,7 @@ async function loadData() {
     renderPendingSales(d.pendingSales || []);
     renderFunnel(d.funnel);
     renderInsights(d.funnel);
-    if (d.vsl) renderVSL(d.vsl);
+    if (d.vsl) { renderVSL(d.vsl); loadVslUrls(); }
     // detect new sale
     const completed = (d.sales || []).filter(t => t.status === 'COMPLETED').length;
     if (lastSaleCount > 0 && completed > lastSaleCount) {
@@ -1550,6 +1571,44 @@ async function toggleVSL(v) {
       body: JSON.stringify({ action: 'toggle', vsl: v, active: newActive })
     });
   } catch (e) { console.warn('[vsl] toggle error', e); }
+}
+
+/* ─────────────────────────────────────────────
+   VSL URL MANAGEMENT
+───────────────────────────────────────────── */
+async function saveVslUrl(v) {
+  const input = document.getElementById('vsl-url-' + v);
+  if (!input) return;
+  const url = input.value.trim();
+  if (!url) return;
+  try {
+    const r = await fetch('/api/vsl', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': TOKEN },
+      body: JSON.stringify({ action: 'saveurl', vsl: v, url })
+    });
+    const d = await r.json();
+    if (d.ok) showToast('URL do VSL ' + v.toUpperCase() + ' salva!');
+  } catch (e) { console.warn('[vsl] saveurl error', e); }
+}
+
+async function loadVslUrls() {
+  try {
+    const r = await fetch('/api/vsl?urls=1', { headers: { 'x-admin-token': TOKEN } });
+    const d = await r.json();
+    const ia = document.getElementById('vsl-url-a');
+    const ib = document.getElementById('vsl-url-b');
+    if (ia && d.a) ia.value = d.a;
+    if (ib && d.b) ib.value = d.b;
+  } catch {}
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a73e8;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;z-index:9999;pointer-events:none';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
 }
 
 /* ─────────────────────────────────────────────

@@ -14,6 +14,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Google Cash – Trabalhe com o Google</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://www.youtube.com/iframe_api"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
 :root{--bl:#1a73e8;--rd:#ea4335;--yl:#fbbc05;--gn:#34a853;--dk:#202124;--bg:#f8f9fa;--card:#fff;--text:#3c4043;--sub:#5f6368;--bdr:#e0e0e0;--radius:16px;--sh:0 2px 12px rgba(0,0,0,.1)}
@@ -145,6 +146,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 /* Player shell */
 .vsl-player-shell{position:relative;z-index:1;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9}
 .vsl-player-shell video{width:100%;height:100%;display:block;object-fit:cover}
+/* YouTube iframe fill */
+#vsl-yt-wrap{position:absolute;inset:0;display:none;border-radius:16px;overflow:hidden;}
+#vsl-yt-wrap iframe{width:100%!important;height:100%!important;border:none!important;display:block;}
+/* Máscaras anti-branding YouTube */
+.yt-mask-top{position:absolute;top:0;left:0;right:0;height:44px;background:#000;z-index:5;border-radius:16px 16px 0 0;pointer-events:none;}
+.yt-mask-bot{position:absolute;bottom:0;right:0;width:120px;height:38px;background:#000;z-index:5;border-radius:0 0 16px 0;pointer-events:none;}
+.yt-click-block{position:absolute;inset:0;z-index:4;cursor:default;}
 /* Custom overlay (shown before play) */
 .vsl-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:4;transition:opacity .3s}
 .vsl-overlay.hidden{opacity:0;pointer-events:none}
@@ -396,7 +404,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="company-card" id="cc1" data-tasks="3">
     <div class="company-header" onclick="toggleCompany(1)">
       <div class="clogo" id="cl1">
-        <img src="assets/logos/cafe-central.jpg" alt="Café Central" onerror="document.getElementById('cl1').classList.add('no-img')">
+        <img src="/assets/logos/cafe-central.jpg" alt="Café Central" onerror="document.getElementById('cl1').classList.add('no-img')">
         <div class="clogo-fb" style="background:linear-gradient(135deg,#6d4c41,#4e342e)">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg>
         </div>
@@ -468,7 +476,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="company-card" id="cc2" data-tasks="3">
     <div class="company-header" onclick="toggleCompany(2)">
       <div class="clogo" id="cl2">
-        <img src="assets/logos/clinica-sorriso.jpg" alt="Clínica Sorriso" onerror="document.getElementById('cl2').classList.add('no-img')">
+        <img src="/assets/logos/clinica-sorriso.jpg" alt="Clínica Sorriso" onerror="document.getElementById('cl2').classList.add('no-img')">
         <div class="clogo-fb" style="background:linear-gradient(135deg,#26c6da,#1565c0)">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M12 2a7 7 0 00-7 7c0 3.5 2.5 6.5 5.5 7.5V19h3v-2.5C16.5 15.5 19 12.5 19 9a7 7 0 00-7-7z"/><circle cx="9" cy="9" r="1" fill="#fff"/><circle cx="15" cy="9" r="1" fill="#fff"/></svg>
         </div>
@@ -540,7 +548,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="company-card" id="cc3" data-tasks="3">
     <div class="company-header" onclick="toggleCompany(3)">
       <div class="clogo" id="cl3">
-        <img src="assets/logos/academia-powerfit.jpg" alt="Academia PowerFit" onerror="document.getElementById('cl3').classList.add('no-img')">
+        <img src="/assets/logos/academia-powerfit.jpg" alt="Academia PowerFit" onerror="document.getElementById('cl3').classList.add('no-img')">
         <div class="clogo-fb" style="background:linear-gradient(135deg,#e64a19,#1a237e)">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M6 4v16M18 4v16M6 12h12M2 7h4M18 7h4M2 17h4M18 17h4"/></svg>
         </div>
@@ -612,7 +620,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="company-card" id="cc4" data-tasks="3">
     <div class="company-header" onclick="toggleCompany(4)">
       <div class="clogo" id="cl4">
-        <img src="assets/logos/petcare.jpg" alt="PetCare Center" onerror="document.getElementById('cl4').classList.add('no-img')">
+        <img src="/assets/logos/petcare.jpg" alt="PetCare Center" onerror="document.getElementById('cl4').classList.add('no-img')">
         <div class="clogo-fb" style="background:linear-gradient(135deg,#00897b,#f4a261)">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         </div>
@@ -725,7 +733,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="vsl-neon-wrap" id="vsl-box">
       <div class="vsl-neon-glow" id="vsl-neon"></div>
       <div class="vsl-player-shell" id="vsl-shell">
-        <video id="vsl-video" preload="auto" playsinline webkit-playsinline x5-playsinline></video>
+        <!-- YouTube player (principal) -->
+        <div id="vsl-yt-wrap">
+          <div id="vsl-yt-el"></div>
+          <div class="yt-mask-top"></div>
+          <div class="yt-mask-bot"></div>
+          <div class="yt-click-block" onclick="togglePause()"></div>
+        </div>
+        <!-- Fallback mp4 -->
+        <video id="vsl-video" preload="none" playsinline webkit-playsinline style="display:none;"></video>
         <!-- Play overlay -->
         <div class="vsl-overlay" id="vsl-overlay">
           <div class="play-btn" onclick="startVideo()"><div class="play-arrow"></div></div>
@@ -1028,7 +1044,7 @@ function animateResult(){
 }
 
 // ===== VSL A/B PLAYER =====
-var VSL={version:'a',started:false,paused:false,secs:0,fakeBarPct:0,timerId:null,barId:null,progressReported:{p25:false,p50:false,p75:false,p100:false},watchInterval:null};
+var VSL={version:'a',isYT:false,_pendingPlay:false,started:false,paused:false,secs:0,fakeBarPct:0,timerId:null,barId:null,progressReported:{p25:false,p50:false,p75:false,p100:false},watchInterval:null};
 
 function vslAssignVersion(){
   var stored=localStorage.getItem('gc_vsl_ver');
@@ -1042,11 +1058,52 @@ function vslAssignVersion(){
   });
 }
 
+// ── YouTube Player ──────────────────────────────────────────
+var _ytOk=false,_ytWait=null,_ytP=null;
+window.onYouTubeIframeAPIReady=function(){_ytOk=true;if(_ytWait){_ytWait();_ytWait=null;}};
+
+function _ytId(url){
+  if(!url)return null;
+  var m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/);
+  return m?m[1]:null;
+}
+
+function _ytCreate(vid){
+  var wrap=document.getElementById('vsl-yt-wrap');
+  var el=document.getElementById('vsl-yt-el');
+  if(!wrap||!el)return;
+  wrap.style.display='block';
+  el.innerHTML='';
+  _ytP=new YT.Player('vsl-yt-el',{
+    videoId:vid,width:'100%',height:'100%',
+    playerVars:{autoplay:0,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,iv_load_policy:3,playsinline:1,origin:location.origin},
+    events:{
+      onReady:function(e){if(VSL._pendingPlay){VSL._pendingPlay=false;e.target.playVideo();}},
+      onStateChange:function(e){
+        if(e.data===1&&!VSL.started){VSL.started=true;VSL.paused=false;vslTrack('play');startVSLTimer();startFakeBar();startWatchReporter();}
+        if(e.data===0)vslOnEnded();
+      }
+    }
+  });
+}
+
 function vslLoadVideo(){
-  var video=document.getElementById('vsl-video');
-  if(!video)return;
-  video.src=VSL.version==='b'?'/vsl02.mp4':'/vsl01.mp4';
-  video.load();
+  fetch('/api/vsl?urls=1').then(function(r){return r.json();}).then(function(u){
+    var url=VSL.version==='b'?(u.b||'https://youtu.be/agyaFdDMZWI'):(u.a||'https://youtu.be/wwsmxusUMvk');
+    var ytId=_ytId(url);
+    if(ytId){
+      VSL.isYT=true;
+      if(_ytOk)_ytCreate(ytId);else _ytWait=function(){_ytCreate(ytId);};
+    }else{
+      VSL.isYT=false;
+      var v=document.getElementById('vsl-video');if(v){v.style.display='block';v.src=url;v.load();}
+    }
+  }).catch(function(){
+    // fallback YouTube padrão
+    var ytId=VSL.version==='b'?'agyaFdDMZWI':'wwsmxusUMvk';
+    VSL.isYT=true;
+    if(_ytOk)_ytCreate(ytId);else _ytWait=function(){_ytCreate(ytId);};
+  });
 }
 
 function vslTrack(event,extra){
@@ -1056,9 +1113,13 @@ function vslTrack(event,extra){
 function startVideo(){
   var overlay=document.getElementById('vsl-overlay');if(overlay)overlay.classList.add('hidden');
   var controls=document.getElementById('vsl-controls');if(controls)controls.classList.add('show');
-  var video=document.getElementById('vsl-video');
-  if(video){video.play().catch(function(){});video.addEventListener('ended',function(){vslOnEnded();},{once:true});}
-  if(!VSL.started){VSL.started=true;VSL.paused=false;vslTrack('play');startVSLTimer();startFakeBar();startWatchReporter();}
+  if(VSL.isYT){
+    if(_ytP&&_ytP.playVideo){_ytP.playVideo();}else{VSL._pendingPlay=true;}
+  }else{
+    var video=document.getElementById('vsl-video');
+    if(video){video.play().catch(function(){});video.addEventListener('ended',function(){vslOnEnded();},{once:true});}
+    if(!VSL.started){VSL.started=true;VSL.paused=false;vslTrack('play');startVSLTimer();startFakeBar();startWatchReporter();}
+  }
 }
 
 function vslSetPauseIcon(isPaused){
@@ -1076,6 +1137,12 @@ function vslSetPauseIcon(isPaused){
 }
 
 function togglePause(){
+  if(VSL.isYT){
+    if(!_ytP)return;
+    if(VSL.paused){_ytP.playVideo();VSL.paused=false;vslSetPauseIcon(false);if(VSL.timerId)clearInterval(VSL.timerId);startVSLTimer();startFakeBar();}
+    else{_ytP.pauseVideo();VSL.paused=true;vslSetPauseIcon(true);if(VSL.timerId)clearInterval(VSL.timerId);if(VSL.barId)clearInterval(VSL.barId);}
+    return;
+  }
   var video=document.getElementById('vsl-video');if(!video)return;
   if(VSL.paused){
     video.play().catch(function(){});VSL.paused=false;vslSetPauseIcon(false);
