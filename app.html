@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-W72HZGKC');</script>
+<!-- End Google Tag Manager -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta http-equiv="Cache-Control" content="no-store,no-cache,must-revalidate">
@@ -16,13 +23,8 @@ html,body{height:100%;overflow-x:hidden;font-family:-apple-system,BlinkMacSystem
   background-size:22px 22px;
 }
 
-/* GATE */
-#__gate{display:flex;align-items:center;justify-content:center;height:100vh;background:transparent;flex-direction:column;gap:16px}
-.gate-spinner{width:36px;height:36px;border:3px solid #dbe4ff;border-top-color:#1a73e8;border-radius:50%;animation:spin .8s linear infinite}
-.gate-txt{font-size:13px;color:#9eabc8}
-
 /* APP */
-#__app{display:none;max-width:480px;margin:0 auto;min-height:100vh;background:rgba(240,244,255,.88);position:relative;backdrop-filter:blur(0px)}
+#__app{display:block;max-width:480px;margin:0 auto;min-height:100vh;background:rgba(240,244,255,.88);position:relative;backdrop-filter:blur(0px)}
 
 /* HEADER */
 #hdr{background:#fff;border-bottom:.5px solid rgba(0,0,0,.08);padding:11px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30}
@@ -202,12 +204,11 @@ select.inp{cursor:pointer}
 </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W72HZGKC"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 
-<!-- GATE -->
-<div id="__gate">
-  <div class="gate-spinner"></div>
-  <p class="gate-txt">Verificando acesso...</p>
-</div>
 
 <!-- APP -->
 <div id="__app">
@@ -265,30 +266,13 @@ select.inp{cursor:pointer}
 <div id="toast"></div>
 
 <script>
-/* ═══════ GATE ═══════ */
+/* ═══════ BOOT ═══════ */
 ;(function(){
-  var TOKEN='gc2024x9z', CK='__gc_auth', SK='__gc_sess';
-  function checkToken(){
-    var p=new URLSearchParams(location.search),t=p.get('access')||p.get('utm_content')||p.get('ref');
-    if(t===TOKEN){
-      try{sessionStorage.setItem(SK,btoa(TOKEN+Date.now()));var d=new Date();d.setTime(d.getTime()+86400000);document.cookie=CK+'='+btoa(TOKEN)+';expires='+d.toUTCString()+';path=/;SameSite=Strict';}catch(e){}
-      try{history.replaceState({},'',location.pathname);}catch(e){}
-      return true;
-    }
-    try{var s=sessionStorage.getItem(SK);if(s&&atob(s).indexOf(TOKEN)===0)return true;}catch(e){}
-    try{var ck=document.cookie.split(';').find(function(c){return c.trim().startsWith(CK+'=');});if(ck&&atob(ck.split('=')[1].trim())===TOKEN)return true;}catch(e){}
-    return false;
-  }
   function boot(){
-    if(!checkToken()){setTimeout(function(){try{location.replace('https://www.google.com');}catch(e){}},100);return;}
-    document.getElementById('__gate').style.display='none';
-    document.getElementById('__app').style.display='block';
     document.title='Google Cash';
-    document.addEventListener('contextmenu',function(e){e.preventDefault();});
-    document.addEventListener('keydown',function(e){if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&['I','J','C','U'].indexOf(e.key)>-1)||(e.ctrlKey&&e.key==='U')||(e.ctrlKey&&e.key==='S')){e.preventDefault();}});
     initApp();
   }
-  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',boot);}else{setTimeout(boot,300);}
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',boot);}else{setTimeout(boot,0);}
 })();
 
 /* ═══════ SVG ICONS ═══════ */
