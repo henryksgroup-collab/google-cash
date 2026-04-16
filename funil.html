@@ -14,7 +14,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <title>Google Cash – Trabalhe com o Google</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://www.youtube.com/iframe_api"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
 :root{--bl:#1a73e8;--rd:#ea4335;--yl:#fbbc05;--gn:#34a853;--dk:#202124;--bg:#f8f9fa;--card:#fff;--text:#3c4043;--sub:#5f6368;--bdr:#e0e0e0;--radius:16px;--sh:0 2px 12px rgba(0,0,0,.1)}
@@ -733,15 +732,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="vsl-neon-wrap" id="vsl-box">
       <div class="vsl-neon-glow" id="vsl-neon"></div>
       <div class="vsl-player-shell" id="vsl-shell">
-        <!-- YouTube player (principal) -->
-        <div id="vsl-yt-wrap">
-          <div id="vsl-yt-el"></div>
-          <div class="yt-mask-top"></div>
-          <div class="yt-mask-bot"></div>
-          <div class="yt-click-block" onclick="togglePause()"></div>
-        </div>
-        <!-- Fallback mp4 -->
-        <video id="vsl-video" preload="none" playsinline webkit-playsinline style="display:none;"></video>
+        <!-- YouTube iframe direto (sem JS API — mais confiável) -->
+        <iframe id="vsl-yt-iframe"
+          style="position:absolute;inset:0;width:100%;height:100%;border:none;display:none;"
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+          playsinline></iframe>
+        <!-- Masks anti-branding -->
+        <div class="yt-mask-top"></div>
+        <div class="yt-mask-bot"></div>
+        <!-- Bloqueio de clique (só pause via nosso botão) -->
+        <div style="position:absolute;inset:0;z-index:6;cursor:default;" onclick="togglePause()"></div>
         <!-- Play overlay -->
         <div class="vsl-overlay" id="vsl-overlay">
           <div class="play-btn" onclick="startVideo()"><div class="play-arrow"></div></div>
@@ -1044,7 +1045,7 @@ function animateResult(){
 }
 
 // ===== VSL A/B PLAYER =====
-var VSL={version:'a',isYT:false,_pendingPlay:false,started:false,paused:false,secs:0,fakeBarPct:0,timerId:null,barId:null,progressReported:{p25:false,p50:false,p75:false,p100:false},watchInterval:null};
+var VSL={version:'a',ytId:null,started:false,paused:false,secs:0,fakeBarPct:0,timerId:null,barId:null,progressReported:{p25:false,p50:false,p75:false,p100:false},watchInterval:null};
 
 function vslAssignVersion(){
   var stored=localStorage.getItem('gc_vsl_ver');
@@ -1058,52 +1059,33 @@ function vslAssignVersion(){
   });
 }
 
-// ── YouTube Player ──────────────────────────────────────────
-var _ytOk=false,_ytWait=null,_ytP=null;
-window.onYouTubeIframeAPIReady=function(){_ytOk=true;if(_ytWait){_ytWait();_ytWait=null;}};
-
+// ── VSL YouTube — iframe direto (sem JS API) ────────────────
 function _ytId(url){
   if(!url)return null;
   var m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|v\/))([A-Za-z0-9_-]{11})/);
   return m?m[1]:null;
 }
 
-function _ytCreate(vid){
-  var wrap=document.getElementById('vsl-yt-wrap');
-  var el=document.getElementById('vsl-yt-el');
-  if(!wrap||!el)return;
-  wrap.style.display='block';
-  el.innerHTML='';
-  _ytP=new YT.Player('vsl-yt-el',{
-    videoId:vid,width:'100%',height:'100%',
-    playerVars:{autoplay:0,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,iv_load_policy:3,playsinline:1,origin:location.origin},
-    events:{
-      onReady:function(e){if(VSL._pendingPlay){VSL._pendingPlay=false;e.target.playVideo();}},
-      onStateChange:function(e){
-        if(e.data===1&&!VSL.started){VSL.started=true;VSL.paused=false;vslTrack('play');startVSLTimer();startFakeBar();startWatchReporter();}
-        if(e.data===0)vslOnEnded();
-      }
-    }
+// Carrega URL do admin (sem alternância aleatória — todos veem o mesmo vídeo)
+function vslLoadVideo(){
+  fetch('/api/vsl?urls=1').then(function(r){return r.json();}).then(function(u){
+    var url=u.a||'https://youtu.be/wwsmxusUMvk'; // usa sempre VSL A por padrão
+    _vslSetIframe(url);
+  }).catch(function(){
+    _vslSetIframe('https://youtu.be/wwsmxusUMvk');
   });
 }
 
-function vslLoadVideo(){
-  fetch('/api/vsl?urls=1').then(function(r){return r.json();}).then(function(u){
-    var url=VSL.version==='b'?(u.b||'https://youtu.be/agyaFdDMZWI'):(u.a||'https://youtu.be/wwsmxusUMvk');
-    var ytId=_ytId(url);
-    if(ytId){
-      VSL.isYT=true;
-      if(_ytOk)_ytCreate(ytId);else _ytWait=function(){_ytCreate(ytId);};
-    }else{
-      VSL.isYT=false;
-      var v=document.getElementById('vsl-video');if(v){v.style.display='block';v.src=url;v.load();}
-    }
-  }).catch(function(){
-    // fallback YouTube padrão
-    var ytId=VSL.version==='b'?'agyaFdDMZWI':'wwsmxusUMvk';
-    VSL.isYT=true;
-    if(_ytOk)_ytCreate(ytId);else _ytWait=function(){_ytCreate(ytId);};
-  });
+function _vslSetIframe(url){
+  var id=_ytId(url);
+  var iframe=document.getElementById('vsl-yt-iframe');
+  if(!iframe)return;
+  if(id){
+    // Pré-carrega sem autoplay — src definido, iframe pronto
+    iframe.src='https://www.youtube-nocookie.com/embed/'+id+
+      '?autoplay=0&controls=0&rel=0&modestbranding=1&playsinline=1&disablekb=1&iv_load_policy=3&origin='+location.origin;
+    VSL.ytId=id;
+  }
 }
 
 function vslTrack(event,extra){
@@ -1113,13 +1095,14 @@ function vslTrack(event,extra){
 function startVideo(){
   var overlay=document.getElementById('vsl-overlay');if(overlay)overlay.classList.add('hidden');
   var controls=document.getElementById('vsl-controls');if(controls)controls.classList.add('show');
-  if(VSL.isYT){
-    if(_ytP&&_ytP.playVideo){_ytP.playVideo();}else{VSL._pendingPlay=true;}
-  }else{
-    var video=document.getElementById('vsl-video');
-    if(video){video.play().catch(function(){});video.addEventListener('ended',function(){vslOnEnded();},{once:true});}
-    if(!VSL.started){VSL.started=true;VSL.paused=false;vslTrack('play');startVSLTimer();startFakeBar();startWatchReporter();}
+  // Mostra iframe e ativa autoplay via URL
+  var iframe=document.getElementById('vsl-yt-iframe');
+  if(iframe&&VSL.ytId){
+    iframe.style.display='block';
+    iframe.src='https://www.youtube-nocookie.com/embed/'+VSL.ytId+
+      '?autoplay=1&controls=0&rel=0&modestbranding=1&playsinline=1&disablekb=1&iv_load_policy=3&mute=0&origin='+location.origin;
   }
+  if(!VSL.started){VSL.started=true;VSL.paused=false;vslTrack('play');startVSLTimer();startFakeBar();startWatchReporter();}
 }
 
 function vslSetPauseIcon(isPaused){
@@ -1137,18 +1120,16 @@ function vslSetPauseIcon(isPaused){
 }
 
 function togglePause(){
-  if(VSL.isYT){
-    if(!_ytP)return;
-    if(VSL.paused){_ytP.playVideo();VSL.paused=false;vslSetPauseIcon(false);if(VSL.timerId)clearInterval(VSL.timerId);startVSLTimer();startFakeBar();}
-    else{_ytP.pauseVideo();VSL.paused=true;vslSetPauseIcon(true);if(VSL.timerId)clearInterval(VSL.timerId);if(VSL.barId)clearInterval(VSL.barId);}
-    return;
-  }
-  var video=document.getElementById('vsl-video');if(!video)return;
+  if(!VSL.started)return;
+  var iframe=document.getElementById('vsl-yt-iframe');
   if(VSL.paused){
-    video.play().catch(function(){});VSL.paused=false;vslSetPauseIcon(false);
+    // Retoma — usa postMessage para YT iframe
+    if(iframe&&iframe.contentWindow)iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}','*');
+    VSL.paused=false;vslSetPauseIcon(false);
     if(VSL.timerId)clearInterval(VSL.timerId);startVSLTimer();startFakeBar();
   }else{
-    video.pause();VSL.paused=true;vslSetPauseIcon(true);
+    if(iframe&&iframe.contentWindow)iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}','*');
+    VSL.paused=true;vslSetPauseIcon(true);
     if(VSL.timerId)clearInterval(VSL.timerId);if(VSL.barId)clearInterval(VSL.barId);
   }
 }
