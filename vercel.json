@@ -3,6 +3,13 @@
   "functions": {
     "api/*.js": { "maxDuration": 30 }
   },
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/funil.html",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
