@@ -10,6 +10,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- TikTok Pixel -->
 <script>!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};ttq.load('D7HB5FRC77U8DEPHGQR0');ttq.page();}(window,document,'ttq');</script>
 <!-- End TikTok Pixel -->
+<!-- Meta Pixel Code -->
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','3456594494489673');fbq('track','PageView');</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=3456594494489673&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel Code -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
 <meta name="theme-color" content="#1a73e8">
@@ -143,17 +147,17 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .vsl-top .vsl-sub{font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.6}
 /* Neon glow container */
 .vsl-neon-wrap{margin:0 16px;position:relative}
-.vsl-neon-glow{position:absolute;inset:-6px;border-radius:22px;background:linear-gradient(135deg,#1a73e8,#4285f4,#34a853,#1a73e8);background-size:300% 300%;animation:neonCycle 4s ease infinite;opacity:.55;filter:blur(14px);z-index:0;pointer-events:none}
+.vsl-neon-glow{position:absolute;inset:-10px;border-radius:24px;background:linear-gradient(135deg,#1a73e8,#ea4335,#fbbc05,#34a853,#4285f4,#1a73e8);background-size:400% 400%;animation:neonCycle 3s ease infinite;opacity:.9;filter:blur(18px);z-index:0;pointer-events:none}
 @keyframes neonCycle{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 /* Player shell */
-.vsl-player-shell{position:relative;z-index:1;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9}
+.vsl-player-shell{position:relative;z-index:1;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;border:2px solid rgba(66,133,244,0.6)}
 .vsl-player-shell video{width:100%;height:100%;display:block;object-fit:cover}
 /* YouTube iframe fill */
 #vsl-yt-wrap{position:absolute;inset:0;display:none;border-radius:16px;overflow:hidden;}
 #vsl-yt-wrap iframe{width:100%!important;height:100%!important;border:none!important;display:block;}
 /* Máscaras anti-branding YouTube */
-.yt-mask-top{position:absolute;top:0;left:0;right:0;height:44px;background:#000;z-index:5;border-radius:16px 16px 0 0;pointer-events:none;}
-.yt-mask-bot{position:absolute;bottom:0;right:0;width:120px;height:38px;background:#000;z-index:5;border-radius:0 0 16px 0;pointer-events:none;}
+.yt-mask-top{position:absolute;top:0;left:0;right:0;height:56px;background:#000;z-index:5;border-radius:16px 16px 0 0;pointer-events:none;}
+.yt-mask-bot{position:absolute;bottom:0;right:0;width:150px;height:50px;background:#000;z-index:5;border-radius:0 0 16px 0;pointer-events:none;}
 .yt-click-block{position:absolute;inset:0;z-index:4;cursor:default;}
 /* Custom overlay (shown before play) */
 .vsl-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:4;transition:opacity .3s}
@@ -744,8 +748,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- Masks anti-branding -->
         <div class="yt-mask-top"></div>
         <div class="yt-mask-bot"></div>
-        <!-- Bloqueio de clique (só pause via nosso botão) -->
-        <div style="position:absolute;inset:0;z-index:6;cursor:default;" onclick="togglePause()"></div>
+        <!-- Bloqueio de clique — delega para startVideo ou togglePause conforme estado -->
+        <div style="position:absolute;inset:0;z-index:6;cursor:pointer;" onclick="VSL.started?togglePause():startVideo()"></div>
         <!-- Play overlay -->
         <div class="vsl-overlay" id="vsl-overlay">
           <div class="play-btn" onclick="startVideo()"><div class="play-arrow"></div></div>
@@ -1075,9 +1079,10 @@ function _vslSetIframe(url){
   var iframe=document.getElementById('vsl-yt-iframe');
   if(!iframe)return;
   VSL.ytId=id;
-  // Pré-carrega sem autoplay (mostra thumbnail do YT como fundo)
+  // Pré-carrega sem autoplay — mostra thumbnail do YT como fundo
   iframe.src='https://www.youtube.com/embed/'+id+
     '?autoplay=0&controls=0&rel=0&modestbranding=1&playsinline=1&disablekb=1&iv_load_policy=3&enablejsapi=1&origin='+location.origin;
+  iframe.style.display='block';
 }
 
 function vslTrack(event,extra){
