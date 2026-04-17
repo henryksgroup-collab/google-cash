@@ -7,6 +7,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-W72HZGKC');</script>
 <!-- End Google Tag Manager -->
+<!-- TikTok Pixel -->
+<script>!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};ttq.load('D7HB5FRC77U8DEPHGQR0');ttq.page();}(window,document,'ttq');</script>
+<!-- End TikTok Pixel -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
 <meta name="theme-color" content="#1a73e8">
@@ -960,7 +963,7 @@ function goTutorial(){SFX.success();track('QuizCompleted',quizAnswers);showScree
 function goSimulator(){if(!document.getElementById('consent-chk').checked)return;SFX.levelUp();track('SimulatorStarted');showScreen('s-simulator');document.getElementById('rev-bar').classList.add('visible');}
 function goResults(){SFX.levelUp();showScreen('s-results');animateResult();}
 function goVSL(){SFX.click();showScreen('s-vsl');vslAssignVersion();}
-function goOffer(){SFX.click();showScreen('s-offer');startCountdown();}
+function goOffer(){SFX.click();showScreen('s-offer');startCountdown();if(window.ttq)ttq.track('InitiateCheckout',{content_name:'Google Cash',value:117,currency:'BRL'});}
 
 // ===== QUIZ =====
 function selectQ(step,val,el){
@@ -1045,13 +1048,17 @@ function animateResult(){
 }
 
 // ===== VSL A/B PLAYER =====
-var VSL_DEFAULT_ID='wwsmxusUMvk';
+// VSL A/B — sorteio a cada carregamento de página, sem API, sem admin
+var VSL_IDS={a:'wwsmxusUMvk',b:'agyaFdDMZWI'};
+var VSL_DEFAULT_ID=VSL_IDS.a;
 var VSL={version:'a',ytId:VSL_DEFAULT_ID,started:false,paused:false,secs:0,fakeBarPct:0,timerId:null,barId:null,progressReported:{p25:false,p50:false,p75:false,p100:false},watchInterval:null};
 
 function vslAssignVersion(){
-  // Sempre exibe VSL A — sem alternância aleatória entre visitantes
-  VSL.version='a';
-  vslLoadVideo();
+  // Sorteia A ou B a cada visita — refresh = nova chance de ver o outro vídeo
+  VSL.version=Math.random()<0.5?'a':'b';
+  var id=VSL_IDS[VSL.version];
+  VSL.ytId=id;
+  _vslSetIframe('https://youtu.be/'+id);
   vslTrack('assign');
 }
 
@@ -1062,15 +1069,6 @@ function _ytId(url){
   return m?m[1]:null;
 }
 
-// Carrega URL do admin (sem alternância aleatória — todos veem o mesmo vídeo)
-function vslLoadVideo(){
-  fetch('/api/vsl?urls=1').then(function(r){return r.json();}).then(function(u){
-    var url=u.a||'https://youtu.be/wwsmxusUMvk'; // usa sempre VSL A por padrão
-    _vslSetIframe(url);
-  }).catch(function(){
-    _vslSetIframe('https://youtu.be/wwsmxusUMvk');
-  });
-}
 
 function _vslSetIframe(url){
   var id=_ytId(url)||VSL_DEFAULT_ID;
@@ -1096,7 +1094,7 @@ function startVideo(){
     iframe.src='https://www.youtube.com/embed/'+id+
       '?autoplay=1&controls=0&rel=0&modestbranding=1&playsinline=1&disablekb=1&iv_load_policy=3&enablejsapi=1&mute=0&origin='+location.origin;
   }
-  if(!VSL.started){VSL.started=true;VSL.paused=false;vslTrack('play');startVSLTimer();startFakeBar();startWatchReporter();}
+  if(!VSL.started){VSL.started=true;VSL.paused=false;vslTrack('play');startVSLTimer();startFakeBar();startWatchReporter();if(window.ttq)ttq.track('ViewContent',{content_name:'Google Cash VSL',content_id:VSL.version});}
 }
 
 function vslSetPauseIcon(isPaused){
