@@ -146,17 +146,17 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .vsl-top h2{font-size:18px;font-weight:800;color:var(--dk);margin-bottom:8px;line-height:1.4}
 .vsl-top .vsl-sub{font-size:13px;color:var(--sub);margin-bottom:16px;line-height:1.6}
 /* Neon glow container */
-.vsl-neon-wrap{margin:0 16px;position:relative}
-.vsl-neon-glow{position:absolute;inset:-10px;border-radius:24px;background:linear-gradient(135deg,#1a73e8,#ea4335,#fbbc05,#34a853,#4285f4,#1a73e8);background-size:400% 400%;animation:neonCycle 3s ease infinite;opacity:.9;filter:blur(18px);z-index:0;pointer-events:none}
+.vsl-neon-wrap{margin:0 16px;position:relative;padding:10px}
+.vsl-neon-glow{position:absolute;inset:0;border-radius:24px;background:linear-gradient(135deg,#1a73e8,#ea4335,#fbbc05,#34a853,#4285f4,#1a73e8);background-size:400% 400%;animation:neonCycle 3s ease infinite;opacity:.85;filter:blur(16px);z-index:0;pointer-events:none}
 @keyframes neonCycle{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 /* Player shell */
-.vsl-player-shell{position:relative;z-index:1;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;border:2px solid rgba(66,133,244,0.6)}
+.vsl-player-shell{position:relative;z-index:1;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;border:2px solid rgba(66,133,244,0.5)}
 .vsl-player-shell video{width:100%;height:100%;display:block;object-fit:cover}
 /* YouTube iframe fill */
 #vsl-yt-wrap{position:absolute;inset:0;display:none;border-radius:16px;overflow:hidden;}
 #vsl-yt-wrap iframe{width:100%!important;height:100%!important;border:none!important;display:block;}
 /* Máscaras anti-branding YouTube */
-.yt-mask-top{position:absolute;top:0;left:0;right:0;height:56px;background:#000;z-index:5;border-radius:16px 16px 0 0;pointer-events:none;}
+.yt-mask-top{position:absolute;top:0;left:0;right:0;height:60px;background:#000;z-index:5;border-radius:16px 16px 0 0;pointer-events:none;}
 .yt-mask-bot{position:absolute;bottom:0;left:0;right:0;height:52px;background:#000;z-index:5;border-radius:0 0 16px 16px;pointer-events:none;}
 .yt-click-block{position:absolute;inset:0;z-index:4;cursor:default;}
 /* Custom overlay (shown before play) */
@@ -245,7 +245,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .guarantee-text p{font-size:13px;color:var(--sub);line-height:1.5}
 /* Reclame Aqui */
 .ra-badge{margin:0 16px 14px;padding:14px 16px;background:#fff;border-radius:14px;border:1.5px solid var(--bdr);display:flex;align-items:center;gap:14px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
-.ra-logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#f5a623,#e67e22);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;letter-spacing:-1px;flex-shrink:0}
+.ra-logo{width:44px;height:44px;border-radius:10px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}.ra-logo img{width:100%;height:100%;object-fit:cover;border-radius:10px}
 .ra-info{flex:1}
 .ra-score{font-size:14px;font-weight:800;color:var(--dk)}
 .ra-stars-row{color:#f5a623;font-size:13px;line-height:1.2}
@@ -919,7 +919,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="guarantee-text"><h3>Garantia de Segurança</h3><p>O Google Cash é um método real, com estrutura real e clientes reais. Se você não conseguir aplicar por qualquer problema do nosso lado, resolvemos. Você tem nossa palavra.</p></div>
   </div>
   <div class="ra-badge">
-    <div class="ra-logo">RA</div>
+    <div class="ra-logo"><svg viewBox="0 0 88 88" width="44" height="44" xmlns="http://www.w3.org/2000/svg"><rect width="88" height="88" rx="10" fill="#fff"/><text x="44" y="58" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="38" fill="#6ab04c">R</text><text x="58" y="58" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="38" fill="#2d6a2d">A</text></svg></div>
     <div class="ra-info">
       <div class="ra-score">Excelente no Reclame Aqui</div>
       <div class="ra-stars-row">★★★★★</div>
@@ -1214,17 +1214,75 @@ function track(event,data){
   try{fetch('/api/stats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:event}),keepalive:true});}catch(e){}
 }
 
+// ===== CLOAKER ANTI-BOT =====
+(function(){
+  var ua=navigator.userAgent||'';
+  var bots=['bot','crawl','spider','slurp','mediapartners','adsbot','facebookexternalhit','twitterbot','linkedinbot','whatsapp','telegrambot','applebot','duckduckbot','bingpreview','semrush','ahrefs','moz.com','screaming','wget','curl','python','scrapy','headless','phantom','selenium','webdriver','puppeteer','playwright'];
+  var isBot=false;
+  var uaLow=ua.toLowerCase();
+  for(var i=0;i<bots.length;i++){if(uaLow.indexOf(bots[i])>-1){isBot=true;break;}}
+  // Detectar automações via webdriver
+  if(navigator.webdriver||window._phantom||window.__nightmare||window.callPhantom||window.Buffer){isBot=true;}
+  // Detectar headless
+  if(/HeadlessChrome/.test(ua)){isBot=true;}
+  if(isBot){window.location.replace('https://www.youtube.com/watch?v=ITv4C8SAWLQ');return;}
+
+  // ===== BLOQUEAR INSPECT / DEVTOOLS =====
+  document.addEventListener('contextmenu',function(e){e.preventDefault();});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.ctrlKey&&e.key==='U')){e.preventDefault();return false;}
+  });
+  // Detectar DevTools aberto via tamanho de janela
+  var devDetect=setInterval(function(){
+    if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
+      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;font-size:18px;color:#333">Acesso restrito.</div>';
+      clearInterval(devDetect);
+    }
+  },1000);
+
+  // ===== EXIT-INTENT DOWNSELL R$67 (só na tela de oferta) =====
+  var exitShown=false;
+  document.addEventListener('mouseleave',function(e){
+    if(e.clientY<=0&&!exitShown&&document.getElementById('s-offer').classList.contains('active')){
+      exitShown=true;
+      showDownsell();
+    }
+  });
+  // Mobile: visibilitychange (sai da aba)
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='hidden'&&!exitShown&&document.getElementById('s-offer').classList.contains('active')){
+      exitShown=true;
+      // Não mostra popup no mobile ao esconder, apenas reseta para próxima vez
+      exitShown=false;
+    }
+  });
+})();
+
+function showDownsell(){
+  var overlay=document.createElement('div');
+  overlay.id='ds-overlay';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  overlay.innerHTML='<div style="background:#fff;border-radius:20px;max-width:420px;width:100%;padding:28px 24px;text-align:center;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.3)">'
+    +'<button onclick="document.getElementById(\'ds-overlay\').remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#666">&times;</button>'
+    +'<div style="font-size:13px;font-weight:700;color:#ea4335;letter-spacing:1px;margin-bottom:8px">ESPERA — OFERTA ESPECIAL</div>'
+    +'<h2 style="font-size:20px;font-weight:800;color:#202124;margin-bottom:8px;line-height:1.3">Antes de sair,<br>pega por R$ 67</h2>'
+    +'<p style="font-size:13px;color:#5f6368;margin-bottom:16px;line-height:1.5">Mesmo acesso completo ao Google Cash — aplicativo, certificação, scripts e comunidade — por menos.</p>'
+    +'<div style="font-size:32px;font-weight:900;color:#34a853;margin-bottom:4px">R$ 67</div>'
+    +'<div style="font-size:12px;color:#5f6368;margin-bottom:20px">pagamento único • acesso vitalício</div>'
+    +'<button onclick="checkoutDownsell()" style="display:block;width:100%;padding:16px;background:#34a853;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer">Sim, quero por R$ 67</button>'
+    +'<button onclick="document.getElementById(\'ds-overlay\').remove()" style="display:block;width:100%;padding:12px;background:none;border:none;font-size:13px;color:#9aa0a6;cursor:pointer;margin-top:8px">Não, prefiro pagar R$ 117</button>'
+    +'</div>';
+  document.body.appendChild(overlay);
+}
+
+function checkoutDownsell(){
+  SFX.click();
+  if(window.ttq)ttq.track('InitiateCheckout',{content_name:'Google Cash Downsell',value:67,currency:'BRL'});
+  window.location.href='/checkout.html?plan=downsell';
+}
+
 // ===== INIT =====
 (function(){
-  // Block seeking on VSL video
-  var video=document.getElementById('vsl-video');
-  if(video){
-    var lastTime=0;
-    video.addEventListener('timeupdate',function(){if(VSL.started)lastTime=video.currentTime;});
-    video.addEventListener('seeking',function(){if(VSL.started&&Math.abs(video.currentTime-lastTime)>1.5)video.currentTime=lastTime;});
-    video.addEventListener('contextmenu',function(e){e.preventDefault();});
-  }
-
   var bp=document.getElementById('lp-breakdown');
   if(bp){
     var items=[['Café Central','R$ 280'],['Clínica Sorriso','R$ 870'],['Academia PowerFit','R$ 530'],['PetCare Center','R$ 620']];
@@ -1237,7 +1295,6 @@ function track(event,data){
   }
   if(window.self!==window.top)document.body.style.display='none';
   track('PageView');
-  // Service Worker registration
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('/sw.js').catch(function(){});
   }
