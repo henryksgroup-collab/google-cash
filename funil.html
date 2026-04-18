@@ -156,8 +156,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 #vsl-yt-wrap{position:absolute;inset:0;display:none;border-radius:16px;overflow:hidden;}
 #vsl-yt-wrap iframe{width:100%!important;height:100%!important;border:none!important;display:block;}
 /* Máscaras anti-branding YouTube */
-.yt-mask-top{position:absolute;top:0;left:0;right:0;height:60px;background:#000;z-index:5;border-radius:16px 16px 0 0;pointer-events:none;}
-.yt-mask-bot{position:absolute;bottom:0;left:0;right:0;height:52px;background:#000;z-index:5;border-radius:0 0 16px 16px;pointer-events:none;}
+.yt-mask-top{display:none;}
+.yt-mask-bot{position:absolute;bottom:0;right:0;width:90px;height:30px;background:#000;z-index:5;border-radius:0 0 16px 0;pointer-events:none;}
+.yt-mask-bot-left{position:absolute;bottom:0;left:0;width:50px;height:30px;background:#000;z-index:5;border-radius:0 0 0 16px;pointer-events:none;}
 .yt-click-block{position:absolute;inset:0;z-index:4;cursor:default;}
 /* Custom overlay (shown before play) */
 .vsl-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:4;transition:opacity .3s}
@@ -745,9 +746,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           allow="autoplay; encrypted-media"
           allowfullscreen
           playsinline></iframe>
-        <!-- Masks anti-branding -->
-        <div class="yt-mask-top"></div>
+        <!-- Masks anti-branding: só cantos inferiores -->
         <div class="yt-mask-bot"></div>
+        <div class="yt-mask-bot-left"></div>
         <!-- Bloqueio de clique — delega para startVideo ou togglePause conforme estado -->
         <div style="position:absolute;inset:0;z-index:6;cursor:pointer;" onclick="VSL.started?togglePause():startVideo()"></div>
         <!-- Play overlay -->
