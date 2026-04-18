@@ -1685,10 +1685,16 @@ function updatePushUI() {
   }
 }
 
-function checkPushState() {
-  if (!('Notification' in window)) return;
-  if (Notification.permission === 'granted') {
-    pushActive = true;
+async function checkPushState() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+    updatePushUI(); return;
+  }
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    pushActive = !!(sub && Notification.permission === 'granted');
+  } catch (e) {
+    pushActive = (Notification.permission === 'granted');
   }
   updatePushUI();
 }

@@ -10,12 +10,17 @@
       "permanent": false
     }
   ],
+  "rewrites": [
+    { "source": "/api/vapid-key",  "destination": "/api/notify?action=vapid-key" },
+    { "source": "/api/subscribe",  "destination": "/api/notify?action=subscribe" },
+    { "source": "/api/test-push",  "destination": "/api/notify?action=test" }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,OPTIONS" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,DELETE,OPTIONS" },
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type,Authorization,x-admin-token,x-user-token,x-api-key,x-ai-provider" }
       ]
     },
