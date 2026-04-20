@@ -10,8 +10,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- TikTok Pixel -->
 <script>!function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script");n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};ttq.load('D7HB5FRC77U8DEPHGQR0');ttq.page();}(window,document,'ttq');</script>
 <!-- End TikTok Pixel -->
-<!-- Meta Pixel Code -->
-<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','3456594494489673');fbq('track','PageView');</script>
+<!-- Meta Pixel Code — CONTA NOVA: substitua META_PIXEL_ID pelo ID do novo Pixel -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+// IMPORTANTE: Troque pelo ID do Pixel da nova conta Meta
+var META_PIXEL_ID = '3456594494489673'; // <- substitua aqui
+fbq('init', META_PIXEL_ID);
+fbq('track','PageView');
+</script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=3456594494489673&ev=PageView&noscript=1"/></noscript>
 <!-- End Meta Pixel Code -->
 <meta charset="UTF-8">
@@ -1299,6 +1305,82 @@ function checkoutDownsell(){
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('/sw.js').catch(function(){});
   }
+})();
+</script>
+
+<!-- ===== BEHAVIOR ANALYTICS + DATALAYER AVANÇADO ===== -->
+<script>
+(function(){
+  var API = '/api/track';
+  var sent = {};
+
+  function beh(evt, meta){
+    if(sent[evt]) return;
+    sent[evt] = true;
+    // DataLayer para GTM/GA4
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: 'gc_behavior', gc_event: evt, page: 'funil' });
+    // Endpoint próprio
+    try {
+      var body = JSON.stringify({ event: evt, page: 'funil', meta: meta || {} });
+      if(navigator.sendBeacon) { var b=new Blob([body],{type:'application/json'}); navigator.sendBeacon(API, b); }
+      else fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:body,keepalive:true}).catch(function(){});
+    } catch(_){}
+  }
+
+  // Session start
+  beh('session_start');
+
+  // Scroll depth
+  var scrollMarks = { 25:false, 50:false, 75:false, 100:false };
+  window.addEventListener('scroll', function(){
+    var pct = Math.round((window.scrollY + window.innerHeight) / document.body.scrollHeight * 100);
+    if(pct>=25 && !scrollMarks[25]){ scrollMarks[25]=true; beh('scroll_25'); }
+    if(pct>=50 && !scrollMarks[50]){ scrollMarks[50]=true; beh('scroll_50'); }
+    if(pct>=75 && !scrollMarks[75]){ scrollMarks[75]=true; beh('scroll_75'); }
+    if(pct>=100 && !scrollMarks[100]){ scrollMarks[100]=true; beh('scroll_100'); }
+  }, {passive:true});
+
+  // Tempo na página
+  setTimeout(function(){ beh('time_30s'); }, 30000);
+  setTimeout(function(){ beh('time_60s'); }, 60000);
+  setTimeout(function(){ beh('time_120s'); }, 120000);
+
+  // Exit intent (mouse saindo pelo topo)
+  document.addEventListener('mouseleave', function(e){
+    if(e.clientY < 10) beh('exit_intent');
+  });
+
+  // CTA click tracking — todos os botões de checkout
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('a[href*="checkout"], button[onclick*="checkout"], .btn-green, .btn-blue, .vsl-cta a, .vsl-cta button');
+    if(el){
+      // Não bloqueia o click — só registra
+      sent['cta_click'] = false; // permite múltiplos clicks
+      beh('cta_click');
+      // Meta Pixel — InitiateCheckout
+      if(window.fbq) fbq('track','InitiateCheckout',{value:117,currency:'BRL',content_name:'Google Cash'});
+      // TikTok
+      if(window.ttq) ttq.track('InitiateCheckout',{content_name:'Google Cash',value:117,currency:'BRL'});
+      // DataLayer GA4
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({ event:'begin_checkout', value:117, currency:'BRL', item_name:'Google Cash' });
+    }
+  });
+
+  // Meta Pixel — ViewContent na landing
+  if(window.fbq) fbq('track','ViewContent',{content_name:'Google Cash Landing',value:117,currency:'BRL'});
+
+  // DataLayer — dados da página para GA4
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: 'page_data',
+    page_type: 'landing',
+    product_name: 'Google Cash',
+    product_price: 117,
+    currency: 'BRL'
+  });
+
 })();
 </script>
 </body></html>

@@ -1,5 +1,6 @@
 /* hooks.js — webhook Duckfy (PIX) + InfinitePay/TriboPay (cartao)
    POST ?source=duckfy (default) ou ?source=infinitepay ou ?source=pending
+   SEGURANÇA: verifica assinatura HMAC do webhook antes de processar
 */
 const crypto = require('crypto');
 
@@ -25,6 +26,25 @@ function getWebpush() {
   return wp;
 }
 
+// Verifica assinatura HMAC do webhook — impede webhooks falsos
+function verifyDuckfySignature(req, secret) {
+  if (!secret) return true; // se não configurado, permite (modo legado)
+  const sig = req.headers['x-duckfy-signature'] || req.headers['x-webhook-signature'] || '';
+  if (!sig) return false;
+  const body = JSON.stringify(req.body);
+  const expected = crypto.createHmac('sha256', secret).update(body).digest('hex');
+  try { return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected)); } catch { return false; }
+}
+
+function verifyInfinitePaySignature(req, secret) {
+  if (!secret) return true; // modo legado
+  const sig = req.headers['x-infinitepay-signature'] || req.headers['x-webhook-signature'] || '';
+  if (!sig) return false;
+  const body = JSON.stringify(req.body);
+  const expected = crypto.createHmac('sha256', secret).update(body).digest('hex');
+  try { return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected)); } catch { return false; }
+}
+
 async function getOrCreateUserToken(db, email, phone) {
   if (!db) return null;
   const id = email ? email.toLowerCase().trim() : (phone ? phone.replace(/\D/g,'') : null);
@@ -39,7 +59,6 @@ async function getOrCreateUserToken(db, email, phone) {
     } else {
       await db.set(`gc:phone:${token}`, id);
     }
-    // Also store the id (email or phone) for login lookup
     if (phone && email) await db.set(`gc:token:phone:${phone.replace(/\D/g,'')}`, token);
   }
   return token;
@@ -52,7 +71,6 @@ async function grantStarterCredits(db, userToken) {
   if (!exists) {
     await db.set(credKey, 50);
     await db.set(`gc:plan:${userToken}`, 'starter');
-    console.log('[HOOKS] Creditos starter concedidos:', userToken.slice(0, 8) + '...');
   }
 }
 
@@ -76,18 +94,28 @@ async function sendPushNotification(db, buyer, amount, isPending) {
   } catch(e) { console.error('[HOOKS] Push error:', e); }
 }
 
+// Idempotência — evita processar o mesmo webhook duas vezes
+async function markProcessed(db, txId) {
+  if (!db || !txId) return false;
+  const key = `webhook:processed:${txId}`;
+  const already = await db.get(key);
+  if (already) return true; // já processado
+  await db.set(key, '1', { ex: 86400 * 7 }); // guarda por 7 dias
+  return false;
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).end();
 
   const source = req.query.source || 'duckfy';
 
-  // Responde rapido para webhooks
+  // Responde rápido para o gateway — processamento é async
   res.status(200).json({ received: true });
 
   const db = getRedis();
 
   try {
-    /* ── PENDING checkout start (chamado pelo pay.js ao criar PIX) ── */
+    /* ── PENDING checkout start ── */
     if (source === 'pending') {
       const { txId, name, email, phone, amount } = req.body || {};
       if (!txId || !db) return;
@@ -105,9 +133,19 @@ module.exports = async (req, res) => {
 
     /* ── INFINITEPAY / TRIBOPAY ── */
     if (source === 'infinitepay') {
+      // Verifica assinatura
+      const ipSecret = process.env.INFINITEPAY_WEBHOOK_SECRET;
+      if (!verifyInfinitePaySignature(req, ipSecret)) {
+        console.error('[HOOKS] InfinitePay: assinatura inválida');
+        return;
+      }
       const { invoice_slug, amount, paid_amount, installments, capture_method, transaction_nsu, order_nsu } = req.body || {};
-      console.log('[HOOKS] InfinitePay:', JSON.stringify(req.body));
       if (!order_nsu || !db) return;
+
+      // Idempotência
+      const alreadyDone = await markProcessed(db, `ip:${order_nsu}`);
+      if (alreadyDone) return;
+
       const orderKey = `order:${order_nsu}`;
       const orderData = await db.hgetall(orderKey) || {};
       await db.hset(orderKey, {
@@ -123,7 +161,6 @@ module.exports = async (req, res) => {
       const phone = orderData?.phone || null;
       if (!userToken) { userToken = await getOrCreateUserToken(db, email, phone); if (userToken) await db.hset(orderKey, { userToken }); }
       await grantStarterCredits(db, userToken);
-      // Also add to main tx:list for unified view
       await db.lpush('tx:list', order_nsu);
       await db.ltrim('tx:list', 0, 999);
       await db.incr('stats:totalSales');
@@ -134,11 +171,21 @@ module.exports = async (req, res) => {
     }
 
     /* ── DUCKFY (PIX) ── */
+    // Verifica assinatura Duckfy
+    const duckSecret = process.env.DUCK_WEBHOOK_SECRET;
+    if (!verifyDuckfySignature(req, duckSecret)) {
+      console.error('[HOOKS] Duckfy: assinatura inválida — possível webhook falso bloqueado');
+      return;
+    }
+
     const { event, transaction } = req.body || {};
     if (!transaction) return;
-    console.log(`[HOOKS] Duckfy ${event} | ${transaction.id} | ${transaction.status}`);
     const isPaid = event === 'TRANSACTION_PAID' || transaction.status === 'COMPLETED';
     if (!isPaid) return;
+
+    // Idempotência — bloqueia replay de webhook
+    const alreadyDone = await markProcessed(db, `duck:${transaction.id}`);
+    if (alreadyDone) return;
 
     const buyer = transaction.customer?.name || 'Novo cliente';
     const amount = transaction.amount || 117;
@@ -152,7 +199,6 @@ module.exports = async (req, res) => {
       await db.incr('stats:totalSales');
       await db.incrbyfloat('stats:totalRevenue', amount);
       await db.incr('funnel:CheckoutClicked');
-      // Mark pending as paid if exists
       await db.hset(`tx:pending:${transaction.id}`, { status: 'COMPLETED', paidAt: Date.now() }).catch(() => {});
 
       const txData = await db.hgetall(`tx:${transaction.id}`) || {};

@@ -454,6 +454,10 @@
       <span class="material-symbols-rounded">filter_alt</span>
       <span>Funil</span>
     </button>
+    <button class="bottom-nav-item" data-page="comportamento">
+      <span class="material-symbols-rounded">ads_click</span>
+      <span>Comportamento</span>
+    </button>
     <button class="bottom-nav-item" data-page="config">
       <span class="material-symbols-rounded">settings</span>
       <span>Config</span>
@@ -483,6 +487,9 @@
         </button>
         <button class="nav-item" data-page="funil">
           <span class="icon material-symbols-rounded">filter_alt</span><span>Funil</span>
+        </button>
+        <button class="nav-item" data-page="comportamento">
+          <span class="icon material-symbols-rounded">ads_click</span><span>Comportamento</span>
         </button>
         <button class="nav-item" data-page="config">
           <span class="icon material-symbols-rounded">settings</span><span>Configurações</span>
@@ -702,6 +709,78 @@
         <div class="card">
           <div class="card-title">Insights</div>
           <div id="funnel-insights" style="font-size:14px;line-height:1.8;color:var(--muted)"></div>
+        </div>
+      </section>
+
+      <!-- COMPORTAMENTO -->
+      <section class="page" id="page-comportamento">
+        <div class="page-header">
+          <h1>Comportamento do Visitante</h1>
+          <p>Onde as pessoas clicam, até onde rolam e quando saem</p>
+        </div>
+
+        <!-- KPIs de engajamento -->
+        <div class="kpi-grid">
+          <div class="kpi-card blue">
+            <div class="kpi-label">Sessões Totais</div>
+            <div class="kpi-value" id="beh-sessions">—</div>
+            <div class="kpi-sub">Visitantes únicos na LP</div>
+          </div>
+          <div class="kpi-card green">
+            <div class="kpi-label">Cliques no CTA</div>
+            <div class="kpi-value" id="beh-cta">—</div>
+            <div class="kpi-sub" id="beh-cta-rate">Taxa de clique</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Exit Intent</div>
+            <div class="kpi-value" id="beh-exit">—</div>
+            <div class="kpi-sub" id="beh-exit-rate">Tentaram sair</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Leram 50%+</div>
+            <div class="kpi-value" id="beh-scroll50">—</div>
+            <div class="kpi-sub" id="beh-scroll50-rate">Da página</div>
+          </div>
+        </div>
+
+        <!-- Scroll depth -->
+        <div class="card">
+          <div class="card-title">
+            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;color:var(--accent);margin-right:6px">swipe_down</span>
+            Profundidade de Rolagem
+          </div>
+          <div id="beh-scroll-bars"></div>
+        </div>
+
+        <!-- Tempo na página -->
+        <div class="card">
+          <div class="card-title">
+            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;color:var(--green);margin-right:6px">timer</span>
+            Tempo na Página
+          </div>
+          <div id="beh-time-bars"></div>
+        </div>
+
+        <!-- Sessões por dia -->
+        <div class="card">
+          <div class="card-title">Sessões por Dia — Últimos 7 dias</div>
+          <canvas id="chart-sessions" height="80"></canvas>
+        </div>
+
+        <!-- Recomendações automáticas IA -->
+        <div class="card" style="border-color:rgba(251,188,4,.35)">
+          <div class="card-title">
+            <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;color:var(--yellow);margin-right:6px">auto_awesome</span>
+            Recomendações Automáticas
+          </div>
+          <div id="beh-recommendations" style="font-size:14px;line-height:1.9;color:var(--muted)">Carregando dados…</div>
+        </div>
+
+        <div style="text-align:center;margin-bottom:20px">
+          <button onclick="loadBehavior()" style="padding:10px 24px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:13px;cursor:pointer;font-family:var(--font)">
+            <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle;margin-right:4px">refresh</span>
+            Atualizar dados
+          </button>
         </div>
       </section>
 
@@ -999,10 +1078,16 @@ function navigateTo(page) {
 }
 
 document.querySelectorAll('.nav-item[data-page]').forEach(btn => {
-  btn.addEventListener('click', () => navigateTo(btn.dataset.page));
+  btn.addEventListener('click', () => {
+    navigateTo(btn.dataset.page);
+    if (btn.dataset.page === 'comportamento') loadBehavior();
+  });
 });
 document.querySelectorAll('.bottom-nav-item[data-page]').forEach(btn => {
-  btn.addEventListener('click', () => navigateTo(btn.dataset.page));
+  btn.addEventListener('click', () => {
+    navigateTo(btn.dataset.page);
+    if (btn.dataset.page === 'comportamento') loadBehavior();
+  });
 });
 
 document.getElementById('logout-btn').addEventListener('click', () => {
@@ -1069,6 +1154,107 @@ function buildDailyChartFromSales(sales) {
 function startPolling() {
   clearInterval(pollTimer);
   pollTimer = setInterval(loadData, 30000);
+}
+
+/* ────────────────���────────────────────────────
+   BEHAVIOR ANALYTICS
+───────────────────��───────────────────────── */
+let sessionsChart = null;
+
+function makeBehBar(label, val, total, color) {
+  const p = total > 0 ? (val / total * 100).toFixed(1) : 0;
+  const row = document.createElement('div'); row.className = 'funnel-step';
+  const lbl = document.createElement('div'); lbl.className = 'funnel-label'; lbl.textContent = label;
+  const wrap = document.createElement('div'); wrap.className = 'funnel-bar-wrap';
+  const bar = document.createElement('div'); bar.className = 'funnel-bar';
+  bar.style.cssText = 'width:' + p + '%;background:' + color;
+  wrap.appendChild(bar);
+  const cnt = document.createElement('div'); cnt.className = 'funnel-count'; cnt.textContent = val.toLocaleString('pt-BR');
+  const pctEl = document.createElement('div'); pctEl.className = 'funnel-pct'; pctEl.textContent = p + '%';
+  row.appendChild(lbl); row.appendChild(wrap); row.appendChild(cnt); row.appendChild(pctEl);
+  return row;
+}
+
+function makeRecItem(text) {
+  const div = document.createElement('div');
+  div.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)';
+  const icon = document.createElement('span'); icon.className = 'material-symbols-rounded';
+  icon.style.cssText = 'color:var(--yellow);font-size:18px;flex-shrink:0;margin-top:1px';
+  icon.textContent = 'lightbulb';
+  const txt = document.createElement('span'); txt.textContent = text;
+  div.appendChild(icon); div.appendChild(txt);
+  return div;
+}
+
+async function loadBehavior() {
+  try {
+    const r = await fetch('/api/track', { headers: { 'x-admin-token': TOKEN } });
+    if (!r.ok) return;
+    const d = await r.json();
+    const sessions = d.totalSessions || 1;
+    const pct = (n) => sessions > 0 ? ((n / sessions) * 100).toFixed(1) + '%' : '—';
+    const s = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+
+    s('beh-sessions', sessions.toLocaleString('pt-BR'));
+    s('beh-cta', (d.ctaClicks || 0).toLocaleString('pt-BR'));
+    s('beh-cta-rate', pct(d.ctaClicks || 0) + ' das sessões');
+    s('beh-exit', (d.exitIntent || 0).toLocaleString('pt-BR'));
+    s('beh-exit-rate', pct(d.exitIntent || 0) + ' tentaram sair');
+    s('beh-scroll50', (d.scroll50 || 0).toLocaleString('pt-BR'));
+    s('beh-scroll50-rate', pct(d.scroll50 || 0) + ' chegaram aqui');
+
+    const scrollEl = document.getElementById('beh-scroll-bars');
+    if (scrollEl) {
+      scrollEl.textContent = '';
+      [['25% da página', d.scroll25 || 0, 'var(--accent)'],
+       ['50% da página', d.scroll50 || 0, '#34a853'],
+       ['75% da página', d.scroll75 || 0, '#fbbc04'],
+       ['100% (fim)',    d.scroll100 || 0, '#ea4335']]
+        .forEach(([lbl, val, clr]) => scrollEl.appendChild(makeBehBar(lbl, val, sessions, clr)));
+    }
+
+    const timeEl = document.getElementById('beh-time-bars');
+    if (timeEl) {
+      timeEl.textContent = '';
+      [['+ de 30 segundos', d.time30s || 0, 'var(--accent)'],
+       ['+ de 1 minuto',    d.time60s || 0, '#34a853'],
+       ['+ de 2 minutos',   d.time120s || 0, '#fbbc04']]
+        .forEach(([lbl, val, clr]) => timeEl.appendChild(makeBehBar(lbl, val, sessions, clr)));
+    }
+
+    if (d.sessionHistory && d.sessionHistory.length) {
+      const labels = d.sessionHistory.map(h => {
+        const dt = new Date(h.day);
+        return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+      });
+      const values = d.sessionHistory.map(h => h.sessions);
+      const canvas = document.getElementById('chart-sessions');
+      if (canvas) {
+        const ctx2 = canvas.getContext('2d');
+        if (sessionsChart) {
+          sessionsChart.data.labels = labels;
+          sessionsChart.data.datasets[0].data = values;
+          sessionsChart.update();
+        } else {
+          sessionsChart = new Chart(ctx2, {
+            type: 'line',
+            data: { labels, datasets: [{ label: 'Sessões', data: values,
+              borderColor: '#1a73e8', backgroundColor: 'rgba(26,115,232,.1)',
+              borderWidth: 2, tension: 0.4, fill: true, pointRadius: 4 }]},
+            options: { responsive: true, plugins: { legend: { display: false } },
+              scales: { x: { grid: { color: 'rgba(255,255,255,.06)' }, ticks: { color: '#888' } },
+                y: { grid: { color: 'rgba(255,255,255,.06)' }, ticks: { color: '#888' }, beginAtZero: true } }}
+          });
+        }
+      }
+    }
+
+    const recEl = document.getElementById('beh-recommendations');
+    if (recEl && d.recommendations && d.recommendations.length) {
+      recEl.textContent = '';
+      d.recommendations.forEach(rec => recEl.appendChild(makeRecItem(rec)));
+    }
+  } catch(e) { console.warn('[admin] loadBehavior error', e); }
 }
 
 /* ─────────────────────────────────────────────
