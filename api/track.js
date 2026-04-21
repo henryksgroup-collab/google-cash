@@ -34,6 +34,8 @@ const ALLOWED_EVENTS = [
   'quiz_start', 'quiz_complete', 'checkout_start',
   'whatsapp_click', 'share_click'
 ];
+// Nota: pause/resume e section_view detalhado são enviados via DataLayer (GTM/GA4)
+// O endpoint /api/track rastreia apenas os eventos de alto nível acima
 
 // Gera recomendações automáticas com base nos dados
 function generateRecommendations(data) {

@@ -7,6 +7,7 @@
   "rewrites": [
     { "source": "/",             "destination": "/api/guard" },
     { "source": "/funil",        "destination": "/api/guard" },
+    { "source": "/funil.html",   "destination": "/api/guard" },
     { "source": "/api/vapid-key",  "destination": "/api/notify?action=vapid-key" },
     { "source": "/api/subscribe",  "destination": "/api/notify?action=subscribe" },
     { "source": "/api/test-push",  "destination": "/api/notify?action=test" }

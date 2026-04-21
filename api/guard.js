@@ -182,5 +182,5 @@ module.exports = async (req, res) => {
 
   // Humano real — redireciona para página de vendas
   res.setHeader('Cache-Control', 'no-store, no-cache');
-  return res.redirect(302, '/funil.html');
+  return res.redirect(302, '/vaga');
 };
