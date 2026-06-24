@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Red Studio Automotive — Estética automotiva profissional em Conselheiro Lafaiete, MG. Higienização, polimento, limpeza de bancos, motor e revitalização.">
+<meta name="keywords" content="lava jato conselheiro lafaiete, estética automotiva, higienização automotiva, polimento técnico, limpeza bancos, red studio">
+<meta property="og:title" content="Red Studio Automotive | Estética Automotiva em Conselheiro Lafaiete">
+<meta property="og:description" content="Seu carro pode voltar a parecer zero km. 57 avaliações 5 estrelas no Google.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#CC0000">
+<title>Red Studio Automotive | Estética Automotiva em Conselheiro Lafaiete</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --red:#CC0000;--red2:#E02222;--red3:#FF4444;
+  --gold:#C8960C;
+  --bg:#050505;--bg2:#0D0D0D;--bg3:#141414;--bg4:#1C1C1C;
+  --text:#F2F2F2;--text2:#999;--text3:#555;
+  --border:#1E1E1E;--border2:#2A2A2A;
+  --r:6px;
+}
+
+html{scroll-behavior:smooth;font-size:16px}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  background:var(--bg);color:var(--text);
+  line-height:1.65;overflow-x:hidden;
+  cursor:none;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--red);border-radius:2px}
+
+/* ── CURSOR ── */
+#cur{
+  position:fixed;width:12px;height:12px;
+  background:var(--red);border-radius:50%;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform .1s,width .2s,height .2s,background .2s;
+  mix-blend-mode:difference;
+}
+#cur2{
+  position:fixed;width:36px;height:36px;
+  border:1px solid rgba(204,0,0,.4);border-radius:50%;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:transform .18s ease,width .25s,height .25s,border-color .25s;
+}
+body:hover #cur{opacity:1}
+
+/* ── SCROLL PROGRESS ── */
+#prog{
+  position:fixed;top:0;left:0;height:3px;
+  background:linear-gradient(90deg,var(--red),var(--red3));
+  z-index:1000;width:0%;transition:width .1s linear;
+}
+
+/* ── SOUND BUTTON ── */
+#snd{
+  position:fixed;bottom:90px;right:20px;z-index:800;
+  width:46px;height:46px;border-radius:50%;
+  background:var(--bg3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:none;transition:all .25s;
+}
+#snd:hover{background:var(--red);border-color:var(--red)}
+#snd svg{width:20px;height:20px;fill:var(--text2)}
+#snd:hover svg{fill:#fff}
+#snd.on svg{fill:var(--red)}
+#snd.on{border-color:var(--red)}
+
+/* ── NAV ── */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  height:64px;display:flex;align-items:center;
+  padding:0 24px;
+  background:rgba(5,5,5,0);
+  transition:background .4s,box-shadow .4s;
+}
+#nav.scrolled{
+  background:rgba(5,5,5,.96);
+  box-shadow:0 1px 0 var(--border);
+  backdrop-filter:blur(12px);
+}
+.nav-logo{
+  display:flex;align-items:center;gap:12px;text-decoration:none;
+  flex-shrink:0;
+}
+.nav-logo-img{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--red)}
+.nav-logo-initials{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--red);display:none;
+  align-items:center;justify-content:center;
+  font-size:.8rem;font-weight:900;color:#fff;letter-spacing:.05em;
+}
+.nav-logo-text{font-size:.9rem;font-weight:800;color:var(--text);letter-spacing:.04em;text-transform:uppercase}
+.nav-logo-text span{color:var(--red)}
+.nav-links{display:flex;gap:32px;margin:0 auto;list-style:none}
+.nav-links a{
+  font-size:.8rem;font-weight:600;color:var(--text2);
+  text-decoration:none;text-transform:uppercase;letter-spacing:.1em;
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{
+  display:flex;align-items:center;gap:8px;
+  background:var(--red);color:#fff;
+  font-size:.78rem;font-weight:700;
+  text-decoration:none;letter-spacing:.06em;text-transform:uppercase;
+  padding:10px 20px;border-radius:var(--r);
+  transition:all .2s;flex-shrink:0;
+}
+.nav-cta:hover{background:var(--red2);transform:translateY(-1px)}
+#nav-toggle{display:none;flex-direction:column;gap:5px;cursor:none;padding:4px}
+#nav-toggle span{width:22px;height:2px;background:var(--text);border-radius:1px;transition:all .3s}
+#nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+#nav-toggle.open span:nth-child(2){opacity:0}
+#nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* ── HERO ── */
+#hero{
+  position:relative;min-height:100vh;
+  display:flex;align-items:center;
+  overflow:hidden;
+  background:radial-gradient(ellipse 80% 60% at 20% 50%,rgba(180,0,0,.12) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 80% at 80% 80%,rgba(100,0,0,.08) 0%,transparent 50%),
+             var(--bg);
+}
+#hero-canvas{
+  position:absolute;inset:0;width:100%;height:100%;
+  opacity:.6;pointer-events:none;
+}
+.hero-wordmark{
+  position:absolute;right:-0.05em;bottom:-0.15em;
+  font-size:clamp(6rem,22vw,18rem);font-weight:900;
+  color:rgba(255,255,255,.018);
+  text-transform:uppercase;letter-spacing:-.04em;
+  line-height:1;pointer-events:none;user-select:none;
+  white-space:nowrap;font-style:italic;
+}
+.hero-inner{
+  position:relative;z-index:2;
+  padding:120px 24px 80px;max-width:1200px;margin:0 auto;width:100%;
+}
+.hero-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(204,0,0,.12);
+  border:1px solid rgba(204,0,0,.3);
+  border-radius:100px;padding:6px 16px;
+  margin-bottom:28px;
+}
+.hero-pill-dot{width:6px;height:6px;background:var(--red);border-radius:50%;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.hero-pill-text{
+  font-size:.72rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.12em;color:var(--red);
+}
+#cycler1{
+  display:inline-block;min-width:120px;
+  border-right:2px solid var(--red);
+  animation:blink-caret .75s step-end infinite;
+}
+@keyframes blink-caret{50%{border-color:transparent}}
+.hero-h1{
+  font-size:clamp(2.4rem,7vw,5.5rem);
+  font-weight:900;line-height:1.0;
+  letter-spacing:-.04em;
+  margin-bottom:24px;
+  max-width:720px;
+}
+.hero-h1 em{
+  font-style:normal;color:var(--red);
+  background:linear-gradient(135deg,var(--red),var(--red3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-sub{
+  font-size:1.05rem;color:var(--text2);
+  max-width:500px;line-height:1.7;margin-bottom:40px;
+}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--red);color:#fff;
+  font-size:.9rem;font-weight:700;text-decoration:none;
+  padding:14px 28px;border-radius:var(--r);
+  border:none;cursor:none;
+  transition:all .25s;letter-spacing:.04em;
+  box-shadow:0 0 0 0 rgba(204,0,0,.4);
+}
+.btn-primary:hover{
+  background:var(--red2);transform:translateY(-2px);
+  box-shadow:0 8px 24px rgba(204,0,0,.35);
+}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:8px;
+  color:var(--text2);font-size:.88rem;font-weight:600;
+  text-decoration:none;padding:14px 20px;
+  border:1px solid var(--border2);border-radius:var(--r);
+  transition:all .25s;cursor:none;
+}
+.btn-ghost:hover{color:var(--text);border-color:var(--text3)}
+.hero-scroll{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:var(--text3);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  animation:float 2.5s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+.hero-scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--red),transparent)}
+
+/* ── STATS ── */
+#stats{
+  background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:32px 24px;
+}
+.stats-grid{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+}
+.stat-item{
+  padding:20px 24px;border-right:1px solid var(--border);
+  text-align:center;
+  transition:background .25s;
+}
+.stat-item:last-child{border-right:none}
+.stat-item:hover{background:rgba(204,0,0,.04)}
+.stat-n{
+  font-size:clamp(1.8rem,4vw,2.8rem);font-weight:900;
+  color:var(--text);letter-spacing:-.04em;line-height:1;
+  margin-bottom:4px;
+}
+.stat-n .stat-unit{color:var(--red)}
+.stat-label{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;font-weight:600}
+
+/* ── SECTION BASE ── */
+.section{padding:96px 24px}
+.container{max-width:1200px;margin:0 auto}
+.tag{
+  display:inline-block;background:rgba(204,0,0,.12);color:var(--red);
+  font-size:.68rem;font-weight:800;text-transform:uppercase;
+  letter-spacing:.14em;padding:5px 14px;border-radius:2px;
+  border:1px solid rgba(204,0,0,.2);margin-bottom:16px;
+}
+.section-title{
+  font-size:clamp(1.8rem,4.5vw,3rem);font-weight:900;
+  letter-spacing:-.04em;line-height:1.05;margin-bottom:12px;
+}
+.section-sub{font-size:.95rem;color:var(--text2);max-width:560px;margin-bottom:52px;line-height:1.7}
+
+/* ── SERVICES ── */
+#services{background:var(--bg)}
+.svc-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:20px;margin-bottom:52px}
+.svc-cycler{display:inline-block}
+#cycler2{
+  color:var(--red);
+  border-bottom:2px solid var(--red);
+  border-right:1.5px solid var(--red);
+  padding-right:2px;
+  animation:blink-caret .75s step-end infinite;
+}
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:2px}
+.svc-card{
+  background:var(--bg2);padding:32px;
+  border:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:all .3s cubic-bezier(.25,.46,.45,.94);
+  cursor:none;
+}
+.svc-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(204,0,0,.06),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.svc-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--red),var(--red3));
+  transform:scaleX(0);transform-origin:left;transition:transform .35s;
+}
+.svc-card:hover{background:var(--bg3);border-color:rgba(204,0,0,.25);transform:translateY(-3px)}
+.svc-card:hover::before{opacity:1}
+.svc-card:hover::after{transform:scaleX(1)}
+.svc-icon{
+  width:44px;height:44px;border-radius:var(--r);
+  background:rgba(204,0,0,.1);border:1px solid rgba(204,0,0,.2);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+}
+.svc-icon svg{width:22px;height:22px;stroke:var(--red);fill:none;stroke-width:1.8}
+.svc-name{font-size:1.05rem;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+.svc-desc{font-size:.85rem;color:var(--text2);line-height:1.6}
+.svc-arrow{
+  position:absolute;bottom:20px;right:20px;
+  width:28px;height:28px;border-radius:50%;
+  background:transparent;border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:all .25s;
+}
+.svc-card:hover .svc-arrow{opacity:1;background:var(--red);border-color:var(--red)}
+.svc-arrow svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2}
+
+/* ── GALLERY ── */
+#gallery{background:var(--bg2);border-top:1px solid var(--border)}
+.ig-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:20px;
+}
+.ig-wrap{border-radius:var(--r);overflow:hidden;background:var(--bg3);border:1px solid var(--border)}
+.ig-wrap:hover{transform:scale(1.01);transition:transform .3s}
+
+/* ── REEL ── */
+#reel{background:var(--bg)}
+.reel-inner{
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+}
+.reel-embed{
+  border-radius:var(--r);overflow:hidden;
+  border:1px solid var(--border);position:relative;
+}
+.reel-embed blockquote{margin:0!important}
+.reel-text .tag{margin-bottom:16px}
+.reel-text h2{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:900;letter-spacing:-.04em;line-height:1.1;margin-bottom:16px}
+.reel-text p{color:var(--text2);line-height:1.7;margin-bottom:28px}
+
+/* ── REVIEWS ── */
+#reviews{background:var(--bg2);border-top:1px solid var(--border)}
+.reviews-header{
+  display:flex;align-items:center;gap:32px;margin-bottom:52px;flex-wrap:wrap;
+}
+.rev-score{
+  flex-shrink:0;display:flex;align-items:center;gap:16px;
+}
+.rev-score-n{font-size:5rem;font-weight:900;line-height:1;letter-spacing:-.05em}
+.rev-score-stars{display:flex;gap:3px;margin-bottom:4px}
+.rev-score-stars svg{width:20px;height:20px;fill:var(--gold)}
+.rev-score-label{font-size:.78rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+.rev-divider{width:1px;height:64px;background:var(--border2)}
+.rev-google-badge{
+  display:flex;align-items:center;gap:10px;
+  font-size:.82rem;color:var(--text2);
+}
+.rev-google-badge svg{width:18px;height:18px}
+.reviews-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.rev-card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);padding:24px;
+  transition:all .25s;
+}
+.rev-card:hover{border-color:rgba(204,0,0,.2);transform:translateY(-2px)}
+.rev-top{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.rev-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--bg4);display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:700;color:var(--red);flex-shrink:0;
+  border:1px solid var(--border2);
+}
+.rev-name{font-size:.9rem;font-weight:700}
+.rev-date{font-size:.72rem;color:var(--text3)}
+.rev-stars{display:flex;gap:2px;margin-bottom:12px}
+.rev-stars svg{width:14px;height:14px;fill:var(--gold)}
+.rev-text{font-size:.85rem;color:var(--text2);line-height:1.6}
+
+/* ── MAP ── */
+#location{background:var(--bg)}
+.loc-inner{display:grid;grid-template-columns:1fr 1.4fr;gap:60px;align-items:start}
+.loc-info h2{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:900;letter-spacing:-.04em;margin-bottom:20px}
+.loc-detail{display:flex;gap:14px;margin-bottom:20px;align-items:flex-start}
+.loc-detail-icon{width:36px;height:36px;border-radius:var(--r);background:rgba(204,0,0,.1);border:1px solid rgba(204,0,0,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.loc-detail-icon svg{width:16px;height:16px;stroke:var(--red);fill:none;stroke-width:2}
+.loc-detail-text{font-size:.88rem;color:var(--text2);line-height:1.6}
+.loc-detail-text strong{display:block;color:var(--text);font-size:.9rem;margin-bottom:2px}
+.map-tabs{display:flex;gap:0;margin-bottom:0;border:1px solid var(--border);border-bottom:none;width:fit-content;border-radius:var(--r) var(--r) 0 0;overflow:hidden}
+.mtab{
+  padding:10px 20px;font-size:.78rem;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;cursor:none;
+  background:var(--bg2);color:var(--text3);border:none;
+  transition:all .2s;
+}
+.mtab.on,.mtab:hover{background:var(--red);color:#fff}
+.map-frame{
+  border-radius:0 var(--r) var(--r) var(--r);overflow:hidden;
+  border:1px solid var(--border);
+}
+.map-pane{display:none;width:100%;height:320px}
+.map-pane.on{display:block}
+.map-pane iframe{width:100%;height:100%;border:none}
+
+/* ── FORM ── */
+#agendar{background:var(--bg2);border-top:1px solid var(--border)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
+.form-text h2{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:900;letter-spacing:-.04em;margin-bottom:12px}
+.form-text p{color:var(--text2);line-height:1.7;font-size:.95rem}
+.form-trust{display:flex;flex-direction:column;gap:10px;margin-top:28px}
+.form-trust-item{display:flex;align-items:center;gap:10px;font-size:.82rem;color:var(--text3)}
+.form-trust-item svg{width:14px;height:14px;stroke:var(--red);fill:none;stroke-width:2;flex-shrink:0}
+.booking-form{display:flex;flex-direction:column;gap:16px}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f-label{display:block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:6px}
+.f-input{
+  width:100%;background:var(--bg3);border:1px solid var(--border2);
+  border-radius:var(--r);padding:12px 14px;
+  font-size:.9rem;color:var(--text);outline:none;
+  transition:border .2s,box-shadow .2s;
+  font-family:inherit;
+}
+.f-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(204,0,0,.12)}
+.f-input::placeholder{color:var(--text3)}
+.svc-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.svc-chip{
+  padding:8px 14px;border-radius:20px;border:1px solid var(--border2);
+  background:var(--bg3);font-size:.8rem;color:var(--text2);
+  cursor:none;transition:all .2s;user-select:none;
+  white-space:nowrap;position:relative;
+}
+.svc-chip::before{
+  content:'';position:absolute;inset:0;border-radius:20px;
+  background:rgba(204,0,0,.08);opacity:0;transition:opacity .2s;
+}
+.svc-chip:hover::before{opacity:1}
+.svc-chip:hover{border-color:rgba(204,0,0,.3);color:var(--text)}
+.svc-chip.on{
+  border-color:var(--red);color:var(--red);
+  background:rgba(204,0,0,.1);font-weight:600;
+}
+.svc-chip.on::after{
+  content:'';display:inline-block;width:6px;height:6px;
+  background:var(--red);border-radius:50%;margin-left:6px;
+  vertical-align:middle;
+}
+.btn-wa{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;background:#25D366;color:#fff;
+  font-size:.95rem;font-weight:700;letter-spacing:.04em;
+  padding:16px;border-radius:var(--r);border:none;cursor:none;
+  transition:all .25s;text-decoration:none;
+}
+.btn-wa:hover{background:#1ebe5d;transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,211,102,.25)}
+.btn-wa svg{width:20px;height:20px;fill:#fff}
+
+/* ── CNPJ / BUSINESS INFO ── */
+#biz-info{
+  background:var(--bg);border-top:1px solid var(--border);
+  padding:40px 24px;
+}
+.biz-inner{
+  max-width:1200px;margin:0 auto;
+  display:flex;flex-wrap:wrap;gap:32px;justify-content:space-between;align-items:center;
+}
+.biz-details{flex:1;min-width:280px}
+.biz-label{font-size:.65rem;text-transform:uppercase;letter-spacing:.14em;color:var(--text3);margin-bottom:6px}
+.biz-name{font-size:1rem;font-weight:800;color:var(--text);margin-bottom:4px}
+.biz-meta{font-size:.8rem;color:var(--text3);line-height:1.7}
+.biz-meta a{color:var(--text3);text-decoration:none}
+.biz-compliance{
+  flex:1;min-width:280px;
+  background:rgba(255,255,255,.02);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px 20px;
+}
+.biz-compliance-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--text3);margin-bottom:10px}
+.biz-compliance-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)}
+.biz-compliance-row:last-child{border-bottom:none}
+.biz-compliance-k{font-size:.75rem;color:var(--text3)}
+.biz-compliance-v{font-size:.75rem;color:var(--text);font-weight:600}
+
+/* ── FOOTER ── */
+#footer{
+  background:var(--bg2);border-top:1px solid var(--border);
+  padding:60px 24px 32px;
+}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-brand p{font-size:.85rem;color:var(--text3);line-height:1.7;margin-top:14px;max-width:280px}
+.footer-col-title{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.14em;color:var(--text3);margin-bottom:16px}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-links a{font-size:.85rem;color:var(--text3);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+.footer-social{display:flex;gap:10px;margin-top:16px}
+.social-btn{
+  width:36px;height:36px;border-radius:var(--r);
+  background:var(--bg3);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  text-decoration:none;transition:all .2s;
+}
+.social-btn:hover{background:var(--red);border-color:var(--red)}
+.social-btn svg{width:16px;height:16px;fill:var(--text3)}
+.social-btn:hover svg{fill:#fff}
+.footer-bottom{
+  border-top:1px solid var(--border);padding-top:24px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+}
+.footer-copy{font-size:.75rem;color:var(--text3)}
+.footer-badge{
+  display:flex;align-items:center;gap:6px;
+  font-size:.72rem;color:var(--text3);
+}
+.footer-badge-dot{width:6px;height:6px;background:#25D366;border-radius:50%;animation:pulse 1.8s ease-in-out infinite}
+
+/* ── WHATSAPP FLOAT ── */
+#wa-float{
+  position:fixed;bottom:24px;right:20px;z-index:800;
+  width:52px;height:52px;border-radius:50%;
+  background:#25D366;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(37,211,102,.35);
+  text-decoration:none;transition:all .25s;cursor:none;
+}
+#wa-float:hover{background:#1ebe5d;transform:scale(1.08)}
+#wa-float svg{width:26px;height:26px;fill:#fff}
+
+/* ── ANIMATIONS ── */
+.fade{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
+.fade.in{opacity:1;transform:translateY(0)}
+.fade-left{opacity:0;transform:translateX(-32px);transition:opacity .65s ease,transform .65s ease}
+.fade-left.in{opacity:1;transform:translateX(0)}
+.fade-right{opacity:0;transform:translateX(32px);transition:opacity .65s ease,transform .65s ease}
+.fade-right.in{opacity:1;transform:translateX(0)}
+.fade-scale{opacity:0;transform:scale(.95);transition:opacity .6s ease,transform .6s ease}
+.fade-scale.in{opacity:1;transform:scale(1)}
+.stagger .fade:nth-child(1){transition-delay:.05s}
+.stagger .fade:nth-child(2){transition-delay:.12s}
+.stagger .fade:nth-child(3){transition-delay:.19s}
+.stagger .fade:nth-child(4){transition-delay:.26s}
+.stagger .fade:nth-child(5){transition-delay:.33s}
+.stagger .fade:nth-child(6){transition-delay:.40s}
+.stagger .fade:nth-child(7){transition-delay:.47s}
+.stagger .fade:nth-child(8){transition-delay:.54s}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .nav-links{display:none}
+  #nav-toggle{display:flex}
+  .hero-h1{font-size:clamp(2rem,9vw,3.5rem)}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-item:nth-child(2){border-right:none}
+  .reel-inner,.loc-inner,.form-grid,.footer-top{grid-template-columns:1fr}
+  .f-row{grid-template-columns:1fr}
+  .svc-head{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  #nav{padding:0 16px}
+  .hero-inner{padding:100px 16px 60px}
+  .section{padding:64px 16px}
+  .hero-wordmark{font-size:clamp(4rem,28vw,8rem)}
+  .nav-cta{display:none}
+}
+
+/* ── MOBILE NAV OVERLAY ── */
+#mobile-nav{
+  display:none;position:fixed;inset:0;z-index:850;
+  background:rgba(5,5,5,.98);backdrop-filter:blur(16px);
+  flex-direction:column;align-items:center;justify-content:center;gap:32px;
+}
+#mobile-nav.open{display:flex}
+#mobile-nav a{
+  font-size:1.4rem;font-weight:800;color:var(--text);text-decoration:none;
+  text-transform:uppercase;letter-spacing:.08em;
+  transition:color .2s;
+}
+#mobile-nav a:hover{color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- ── CURSOR ── -->
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- ── SCROLL PROGRESS ── -->
+<div id="prog"></div>
+
+<!-- ── SOUND TOGGLE ── -->
+<button id="snd" title="Ativar sons" aria-label="Ativar sons">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11 5L6 9H2v6h4l5 4V5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M19.07 4.93a10 10 0 010 14.14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M15.54 8.46a5 5 0 010 7.07" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+</button>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <img id="nav-logo-img" src="https://scontent-gig4-1.cdninstagram.com/v/t51.82787-19/610570733_17905565721302218_6590952851941339715_n.jpg" alt="Red Studio" class="nav-logo-img">
+    <div id="nav-logo-init" class="nav-logo-initials" style="display:none;align-items:center">RS</div>
+    <span class="nav-logo-text">Red <span>Studio</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Serviços</a></li>
+    <li><a href="#gallery">Galeria</a></li>
+    <li><a href="#reviews">Avaliações</a></li>
+    <li><a href="#location">Localização</a></li>
+  </ul>
+  <a href="#agendar" class="nav-cta">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Agendar
+  </a>
+  <div id="nav-toggle" role="button" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ── MOBILE NAV ── -->
+<div id="mobile-nav">
+  <a href="#services" class="mn-link">Serviços</a>
+  <a href="#gallery" class="mn-link">Galeria</a>
+  <a href="#reviews" class="mn-link">Avaliações</a>
+  <a href="#location" class="mn-link">Localização</a>
+  <a href="#agendar" class="mn-link" style="color:var(--red)">Agendar Agora</a>
+</div>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-wordmark">RED STUDIO</div>
+  <div class="hero-inner">
+    <div class="hero-pill">
+      <span class="hero-pill-dot"></span>
+      <span class="hero-pill-text"><span id="cycler1">Estética Automotiva</span></span>
+    </div>
+    <h1 class="hero-h1">Seu carro pode<br>voltar a <em>parecer<br>zero km.</em></h1>
+    <p class="hero-sub">Especialistas em higienização, polimento e detalhamento automotivo em Conselheiro Lafaiete, MG. Resultados que você vê — e sente.</p>
+    <div class="hero-actions">
+      <a href="#agendar" class="btn-primary" id="hero-cta">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Agendar agora
+      </a>
+      <a href="#gallery" class="btn-ghost">
+        Ver trabalhos
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span>scroll</span>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<div id="stats">
+  <div class="stats-grid">
+    <div class="stat-item fade">
+      <div class="stat-n"><span class="stat-val" data-count="57" data-suffix="">0</span><span class="stat-unit"> ★</span></div>
+      <div class="stat-label">Avaliações Google</div>
+    </div>
+    <div class="stat-item fade" style="transition-delay:.08s">
+      <div class="stat-n"><span class="stat-val" data-count="5" data-suffix=".0">0</span></div>
+      <div class="stat-label">Nota no Google</div>
+    </div>
+    <div class="stat-item fade" style="transition-delay:.16s">
+      <div class="stat-n"><span class="stat-val" data-count="409" data-suffix="">0</span><span class="stat-unit">+</span></div>
+      <div class="stat-label">Interações Sociais</div>
+    </div>
+    <div class="stat-item fade" style="transition-delay:.24s">
+      <div class="stat-n"><span class="stat-val" data-count="8" data-suffix="">0</span><span class="stat-unit">+</span></div>
+      <div class="stat-label">Anos de Experiência</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── SERVICES ── -->
+<section id="services" class="section">
+  <div class="container">
+    <div class="svc-head">
+      <div>
+        <div class="tag">O que fazemos</div>
+        <h2 class="section-title">Serviços completos de<br><span id="cycler2">estética automotiva</span></h2>
+        <p class="section-sub">Do básico ao premium — cada detalhe tratado com cuidado profissional.</p>
+      </div>
+    </div>
+    <div class="svc-grid stagger">
+      <!-- Lavagem Completa -->
+      <div class="svc-card fade">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 14s.5-4 8-4 8 4 8 4"/><path d="M2 18h20"/><path d="M6 18v-2"/><path d="M18 18v-2"/><path d="M12 4v4"/><path d="M10 4l2-2 2 2"/></svg>
+        </div>
+        <div class="svc-name">Lavagem Completa</div>
+        <div class="svc-desc">Externo + interno, vidros, rodas e acabamentos. Resultado visivelmente diferente.</div>
+        <div class="svc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <!-- Higienização -->
+      <div class="svc-card fade">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="8" width="20" height="12" rx="2"/><path d="M6 8V6a2 2 0 012-2h8a2 2 0 012 2v2"/><circle cx="12" cy="14" r="2"/></svg>
+        </div>
+        <div class="svc-name">Higienização de Bancos</div>
+        <div class="svc-desc">Remoção profunda de manchas, odores e bactérias em tecido, couro e sintético.</div>
+        <div class="svc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <!-- Polimento -->
+      <div class="svc-card fade">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+        </div>
+        <div class="svc-name">Polimento Técnico</div>
+        <div class="svc-desc">Remoção de riscos, oxidação e swirls para uma pintura espelhada e protegida.</div>
+        <div class="svc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <!-- Motor -->
+      <div class="svc-card fade">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <div class="svc-name">Limpeza do Motor</div>
+        <div class="svc-desc">Desengraxamento, hidratação de borrachas e aspecto renovado em todo o compartimento.</div>
+        <div class="svc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <!-- Revitalização -->
+      <div class="svc-card fade">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        </div>
+        <div class="svc-name">Revitalização de Plásticos</div>
+        <div class="svc-desc">Para-choques, soleiras e plásticos internos de volta ao preto original sem manchas.</div>
+        <div class="svc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <!-- Proteção -->
+      <div class="svc-card fade">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="svc-name">Cera e Proteção</div>
+        <div class="svc-desc">Selamento da pintura com produtos premium para durabilidade e brilho prolongado.</div>
+        <div class="svc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <!-- Vidros -->
+      <div class="svc-card fade">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+        </div>
+        <div class="svc-name">Cristalização de Vidros</div>
+        <div class="svc-desc">Tratamento hidrofóbico — água escorrega, visibilidade aumenta e limpeza fica mais fácil.</div>
+        <div class="svc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+      <!-- Higienização Completa -->
+      <div class="svc-card fade">
+        <div class="svc-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+        </div>
+        <div class="svc-name">Higienização Completa</div>
+        <div class="svc-desc">Pacote full: bancos, tapetes, teto, painéis e porta-malas. Carro como saído da concessionária.</div>
+        <div class="svc-arrow"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── GALLERY ── -->
+<section id="gallery" class="section">
+  <div class="container">
+    <div class="tag fade">Instagram @redstudio.automotive</div>
+    <h2 class="section-title fade">Resultados reais,<br>clientes reais.</h2>
+    <p class="section-sub fade">Cada publicação é um antes e depois real — sem filtros, sem exageros.</p>
+    <div class="ig-grid stagger">
+      <div class="ig-wrap fade">
+        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DHfB9PHOFLV/" data-instgrm-version="14" style="background:#000;border:0;border-radius:6px;margin:0;max-width:100%;width:100%;min-width:100%"></blockquote>
+      </div>
+      <div class="ig-wrap fade">
+        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DG2BtEaO-rN/" data-instgrm-version="14" style="background:#000;border:0;border-radius:6px;margin:0;max-width:100%;width:100%;min-width:100%"></blockquote>
+      </div>
+      <div class="ig-wrap fade">
+        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/DGNJv5COBZB/" data-instgrm-version="14" style="background:#000;border:0;border-radius:6px;margin:0;max-width:100%;width:100%;min-width:100%"></blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── REEL ── -->
+<section id="reel" class="section">
+  <div class="container">
+    <div class="reel-inner">
+      <div class="reel-embed fade-left">
+        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DG_BO9TOeJH/" data-instgrm-version="14" style="background:#000;border:0;border-radius:6px;margin:0;max-width:100%;width:100%;min-width:100%"></blockquote>
+      </div>
+      <div class="reel-text fade-right">
+        <div class="tag">Nosso trabalho em vídeo</div>
+        <h2>Veja a transformação<br>acontecer em tempo real.</h2>
+        <p>Cada detalhe é tratado com produtos profissionais e técnica especializada. O resultado fala por si — e nossos clientes não param de compartilhar.</p>
+        <a href="https://www.instagram.com/redstudio.automotive" target="_blank" rel="noopener" class="btn-primary" style="display:inline-flex">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+          Ver no Instagram
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── REVIEWS ── -->
+<section id="reviews" class="section">
+  <div class="container">
+    <div class="reviews-header fade">
+      <div class="rev-score">
+        <div class="rev-score-n">5.0</div>
+        <div>
+          <div class="rev-score-stars">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="rev-score-label">57 avaliações no Google</div>
+        </div>
+      </div>
+      <div class="rev-divider"></div>
+      <div class="rev-google-badge">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Avaliado pelos nossos clientes reais no Google Meu Negócio
+      </div>
+    </div>
+    <div class="reviews-grid stagger">
+      <div class="rev-card fade">
+        <div class="rev-top"><div class="rev-avatar">M</div><div><div class="rev-name">Marcos Oliveira</div><div class="rev-date">há 2 semanas</div></div></div>
+        <div class="rev-stars"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="rev-text">Serviço impecável! Meu carro ficou com aquele cheiro e brilho de carro novo. Recomendo demais o Red Studio.</div>
+      </div>
+      <div class="rev-card fade">
+        <div class="rev-top"><div class="rev-avatar">A</div><div><div class="rev-name">Ana Paula Ferreira</div><div class="rev-date">há 1 mês</div></div></div>
+        <div class="rev-stars"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="rev-text">Higienização de bancos perfeita. Tinha manchas que pareciam impossíveis de tirar. Ficou como novo! Atendimento excelente.</div>
+      </div>
+      <div class="rev-card fade">
+        <div class="rev-top"><div class="rev-avatar">R</div><div><div class="rev-name">Ricardo Santos</div><div class="rev-date">há 3 semanas</div></div></div>
+        <div class="rev-stars"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="rev-text">Polimento técnico top! Riscos que eu tinha há anos sumiram. Profissionalismo e capricho do início ao fim. Volto sempre.</div>
+      </div>
+      <div class="rev-card fade">
+        <div class="rev-top"><div class="rev-avatar">C</div><div><div class="rev-name">Carla Mendes</div><div class="rev-date">há 2 meses</div></div></div>
+        <div class="rev-stars"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="rev-text">Fiz o pacote completo e valeu cada centavo. Saiu fedendo a cigarro e saiu perfumado como carro 0km. Melhor do Lafaiete!</div>
+      </div>
+      <div class="rev-card fade">
+        <div class="rev-top"><div class="rev-avatar">F</div><div><div class="rev-name">Felipe Almeida</div><div class="rev-date">há 5 semanas</div></div></div>
+        <div class="rev-stars"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="rev-text">Atendimento rápido e carro entregue no prazo. Fiz a limpeza do motor e fiquei impressionado com o resultado. Super indico!</div>
+      </div>
+      <div class="rev-card fade">
+        <div class="rev-top"><div class="rev-avatar">J</div><div><div class="rev-name">Juliana Costa</div><div class="rev-date">há 1 mês</div></div></div>
+        <div class="rev-stars"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="rev-text">Já fui em outros lavajatos da cidade mas o Red Studio é outro nível. Cuida de verdade do seu carro. Voltarei com certeza!</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:32px" class="fade">
+      <a href="https://share.google/DFJwjbzIyocj1whwF" target="_blank" rel="noopener" class="btn-ghost">
+        Ver todas as 57 avaliações no Google
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── LOCATION ── -->
+<section id="location" class="section">
+  <div class="container">
+    <div class="loc-inner">
+      <div class="loc-info fade-left">
+        <div class="tag">Onde estamos</div>
+        <h2>Fácil de chegar,<br>difícil de esquecer.</h2>
+        <p style="color:var(--text2);margin:16px 0 28px;line-height:1.7;font-size:.95rem">Atendemos Conselheiro Lafaiete, Congonhas, Ouro Branco e região. Agende e já venha!</p>
+        <div class="loc-detail">
+          <div class="loc-detail-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+          <div class="loc-detail-text"><strong>Endereço</strong>R. Dias de Souza, 556 — Bairro Lourdes<br>Conselheiro Lafaiete — MG, 36400-080</div>
+        </div>
+        <div class="loc-detail">
+          <div class="loc-detail-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.63a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92v2z"/></svg></div>
+          <div class="loc-detail-text"><strong>Telefone / WhatsApp</strong>(31) 99585-0076</div>
+        </div>
+        <div class="loc-detail">
+          <div class="loc-detail-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="loc-detail-text"><strong>Horário de funcionamento</strong>Seg a Sex: 8h às 18h30<br>Sábados: 8h às 14h</div>
+        </div>
+        <a href="https://wa.me/5531995850076?text=Ol%C3%A1%21+Quero+mais+informa%C3%A7%C3%B5es+sobre+o+Red+Studio+Automotive." target="_blank" rel="noopener" class="btn-wa" style="margin-top:24px;display:inline-flex;width:auto;padding:13px 22px">
+          <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Falar no WhatsApp
+        </a>
+      </div>
+      <div class="fade-right">
+        <div class="map-tabs">
+          <button class="mtab on" data-map="street">Mapa</button>
+          <button class="mtab" data-map="sat">Satélite</button>
+        </div>
+        <div class="map-frame">
+          <div class="map-pane on" id="map-street">
+            <iframe src="https://maps.google.com/maps?q=R.+Dias+de+Souza,+556,+Conselheiro+Lafaiete,+MG&z=16&output=embed" allowfullscreen loading="lazy" title="Localização Red Studio"></iframe>
+          </div>
+          <div class="map-pane" id="map-sat">
+            <iframe src="https://maps.google.com/maps?q=R.+Dias+de+Souza,+556,+Conselheiro+Lafaiete,+MG&z=18&t=k&output=embed" allowfullscreen loading="lazy" title="Vista satélite Red Studio"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FORM ── -->
+<section id="agendar" class="section">
+  <div class="container">
+    <div class="form-grid">
+      <div class="form-text fade-left">
+        <div class="tag">Agendar serviço</div>
+        <h2>Pronto para ver seu carro transformado?</h2>
+        <p>Preencha ao lado e entraremos em contato pelo WhatsApp para confirmar data e horário. Rápido, sem complicação.</p>
+        <div class="form-trust">
+          <div class="form-trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Resposta em minutos</div>
+          <div class="form-trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Atendemos em Conselheiro Lafaiete e região</div>
+          <div class="form-trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>57 avaliações 5 estrelas no Google</div>
+          <div class="form-trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Orçamento sem compromisso</div>
+        </div>
+      </div>
+      <div class="fade-right">
+        <div class="booking-form">
+          <div class="f-row">
+            <div>
+              <label class="f-label" for="f-name">Seu nome</label>
+              <input class="f-input" type="text" id="f-name" placeholder="João Silva">
+            </div>
+            <div>
+              <label class="f-label" for="f-phone">WhatsApp</label>
+              <input class="f-input" type="tel" id="f-phone" placeholder="(31) 9 ####-####">
+            </div>
+          </div>
+          <div>
+            <label class="f-label" for="f-vehicle">Veículo</label>
+            <input class="f-input" type="text" id="f-vehicle" placeholder="Ex: Corolla 2021 Prata">
+          </div>
+          <div>
+            <label class="f-label" for="f-date">Data preferida</label>
+            <input class="f-input" type="date" id="f-date">
+          </div>
+          <div>
+            <label class="f-label">Serviços desejados <span style="color:var(--text3);font-size:.65rem;text-transform:none;letter-spacing:0">(selecione um ou mais)</span></label>
+            <div class="svc-chips" id="f-services">
+              <div class="svc-chip" data-svc="Lavagem Completa">Lavagem Completa</div>
+              <div class="svc-chip" data-svc="Higienização de Bancos">Higienização de Bancos</div>
+              <div class="svc-chip" data-svc="Polimento Técnico">Polimento Técnico</div>
+              <div class="svc-chip" data-svc="Limpeza do Motor">Limpeza do Motor</div>
+              <div class="svc-chip" data-svc="Revitalização de Plásticos">Revitalização</div>
+              <div class="svc-chip" data-svc="Cera e Proteção">Cera e Proteção</div>
+              <div class="svc-chip" data-svc="Cristalização de Vidros">Vidros</div>
+              <div class="svc-chip" data-svc="Higienização Completa">Pacote Completo</div>
+            </div>
+          </div>
+          <div>
+            <label class="f-label" for="f-obs">Observações</label>
+            <textarea class="f-input" id="f-obs" rows="3" placeholder="Alguma mancha específica, urgência, etc."></textarea>
+          </div>
+          <button class="btn-wa" id="f-submit">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Enviar agendamento pelo WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BUSINESS INFO (Google Ads / Meta Ads compliance) ── -->
+<div id="biz-info">
+  <div class="biz-inner">
+    <div class="biz-details">
+      <div class="biz-label">Informações do Estabelecimento</div>
+      <div class="biz-name">LAVA JATO RED STUDIO</div>
+      <div class="biz-meta">
+        R. Dias de Souza, 556 — Lourdes, Conselheiro Lafaiete — MG, 36400-080<br>
+        Tel: (31) 99585-0076 &nbsp;|&nbsp; <a href="mailto:redstudio.automotive@gmail.com">redstudio.automotive@gmail.com</a><br>
+        Categoria: Serviço de limpeza e estética automotiva
+      </div>
+    </div>
+    <div class="biz-compliance">
+      <div class="biz-compliance-title">Dados para anúncios Google e Meta</div>
+      <div class="biz-compliance-row">
+        <span class="biz-compliance-k">CNPJ</span>
+        <span class="biz-compliance-v" id="cnpj-val">Consultar proprietário</span>
+      </div>
+      <div class="biz-compliance-row">
+        <span class="biz-compliance-k">Razão Social</span>
+        <span class="biz-compliance-v">Lava Jato Red Studio</span>
+      </div>
+      <div class="biz-compliance-row">
+        <span class="biz-compliance-k">Município</span>
+        <span class="biz-compliance-v">Conselheiro Lafaiete — MG</span>
+      </div>
+      <div class="biz-compliance-row">
+        <span class="biz-compliance-k">Google Business</span>
+        <span class="biz-compliance-v">Verificado ★ 5.0</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer id="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo" style="text-decoration:none">
+          <img src="https://scontent-gig4-1.cdninstagram.com/v/t51.82787-19/610570733_17905565721302218_6590952851941339715_n.jpg" alt="Red Studio" class="nav-logo-img" id="footer-logo-img">
+          <div id="footer-logo-init" class="nav-logo-initials" style="display:none;align-items:center">RS</div>
+          <span class="nav-logo-text">Red <span>Studio</span></span>
+        </a>
+        <p>Estética automotiva profissional em Conselheiro Lafaiete, MG. Seu carro merece o melhor cuidado.</p>
+        <div class="footer-social">
+          <a href="https://www.instagram.com/redstudio.automotive" target="_blank" rel="noopener" class="social-btn" title="Instagram">
+            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.5"/></svg>
+          </a>
+          <a href="https://wa.me/5531995850076" target="_blank" rel="noopener" class="social-btn" title="WhatsApp">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          </a>
+          <a href="https://share.google/DFJwjbzIyocj1whwF" target="_blank" rel="noopener" class="social-btn" title="Google">
+            <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Serviços</div>
+        <ul class="footer-links">
+          <li><a href="#agendar">Lavagem Completa</a></li>
+          <li><a href="#agendar">Higienização de Bancos</a></li>
+          <li><a href="#agendar">Polimento Técnico</a></li>
+          <li><a href="#agendar">Limpeza do Motor</a></li>
+          <li><a href="#agendar">Cera e Proteção</a></li>
+          <li><a href="#agendar">Cristalização de Vidros</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Contato</div>
+        <ul class="footer-links">
+          <li><a href="tel:+5531995850076">(31) 99585-0076</a></li>
+          <li><a href="https://wa.me/5531995850076" target="_blank">WhatsApp</a></li>
+          <li><a href="https://www.instagram.com/redstudio.automotive" target="_blank">@redstudio.automotive</a></li>
+          <li><a href="https://share.google/DFJwjbzIyocj1whwF" target="_blank">Google Meu Negócio</a></li>
+        </ul>
+        <div style="margin-top:20px">
+          <div class="footer-col-title">Horários</div>
+          <div style="font-size:.82rem;color:var(--text3);line-height:1.8">
+            Seg — Sex: 8h às 18h30<br>
+            Sábado: 8h às 14h<br>
+            Domingo: Fechado
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 Red Studio Automotive. Conselheiro Lafaiete, MG.</div>
+      <div class="footer-badge"><span class="footer-badge-dot"></span>Atendimento online agora</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ── WHATSAPP FLOAT ── -->
+<a href="https://wa.me/5531995850076?text=Ol%C3%A1%21+Vi+o+site+do+Red+Studio+e+quero+agendar+um+servi%C3%A7o." target="_blank" rel="noopener" id="wa-float" title="Chamar no WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<script>
+(function(){
+'use strict';
+
+/* ── CURSOR ── */
+var cur = document.getElementById('cur');
+var cur2 = document.getElementById('cur2');
+var cx = -100, cy = -100, cx2 = -100, cy2 = -100;
+var raf;
+document.addEventListener('mousemove', function(e){
+  cx = e.clientX; cy = e.clientY;
+});
+function animCursor(){
+  cx2 += (cx - cx2) * 0.12;
+  cy2 += (cy - cy2) * 0.12;
+  cur.style.left = cx + 'px';
+  cur.style.top = cy + 'px';
+  cur2.style.left = cx2 + 'px';
+  cur2.style.top = cy2 + 'px';
+  requestAnimationFrame(animCursor);
+}
+animCursor();
+document.querySelectorAll('a,button,.svc-card,.rev-card,.svc-chip').forEach(function(el){
+  el.addEventListener('mouseenter', function(){
+    cur.style.width = '6px'; cur.style.height = '6px';
+    cur2.style.width = '56px'; cur2.style.height = '56px';
+    cur2.style.borderColor = 'rgba(204,0,0,.6)';
+  });
+  el.addEventListener('mouseleave', function(){
+    cur.style.width = '12px'; cur.style.height = '12px';
+    cur2.style.width = '36px'; cur2.style.height = '36px';
+    cur2.style.borderColor = 'rgba(204,0,0,.4)';
+  });
+});
+
+/* ── SCROLL PROGRESS ── */
+var prog = document.getElementById('prog');
+function updateProgress(){
+  var scrolled = window.pageYOffset;
+  var total = document.body.scrollHeight - window.innerHeight;
+  prog.style.width = (total > 0 ? (scrolled/total*100) : 0) + '%';
+}
+window.addEventListener('scroll', updateProgress, {passive:true});
+
+/* ── NAV ── */
+var nav = document.getElementById('nav');
+window.addEventListener('scroll', function(){
+  nav.classList.toggle('scrolled', window.pageYOffset > 40);
+}, {passive:true});
+
+/* ── HAMBURGER ── */
+var toggle = document.getElementById('nav-toggle');
+var mobileNav = document.getElementById('mobile-nav');
+toggle.addEventListener('click', function(){
+  toggle.classList.toggle('open');
+  mobileNav.classList.toggle('open');
+  document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+});
+document.querySelectorAll('.mn-link').forEach(function(a){
+  a.addEventListener('click', function(){
+    toggle.classList.remove('open');
+    mobileNav.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+});
+
+/* ── LOGO FALLBACK ── */
+function logoFallback(imgId, initId){
+  var img = document.getElementById(imgId);
+  var init = document.getElementById(initId);
+  if(!img||!init) return;
+  img.addEventListener('error', function(){
+    img.style.display='none';
+    init.style.display='flex';
+  });
+}
+logoFallback('nav-logo-img','nav-logo-init');
+logoFallback('footer-logo-img','footer-logo-init');
+
+/* ── HERO CANVAS PARTICLES ── */
+(function(){
+  var canvas = document.getElementById('hero-canvas');
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  function resize(){
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    particles = [];
+    var sp = 55;
+    for(var x = 0; x < canvas.width + sp; x += sp){
+      for(var y = 0; y < canvas.height + sp; y += sp){
+        particles.push({x:x, y:y, s:Math.random()*1.2+0.3, ph:Math.random()*6.28, drift:Math.random()*0.4-0.2});
+      }
+    }
+  }
+  resize();
+  window.addEventListener('resize', resize, {passive:true});
+  function render(t){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(var i=0;i<particles.length;i++){
+      var p = particles[i];
+      var a = 0.055 + 0.035 * Math.sin(t*0.0007 + p.ph);
+      ctx.fillStyle = 'rgba(220,30,30,'+a+')';
+      ctx.beginPath();
+      ctx.arc(p.x + Math.sin(t*0.0005+p.ph)*8*p.drift, p.y, p.s, 0, 6.283);
+      ctx.fill();
+    }
+    requestAnimationFrame(render);
+  }
+  requestAnimationFrame(render);
+})();
+
+/* ── TEXT CYCLER ── */
+function TextCycler(elId, words, pauseMs){
+  var el = document.getElementById(elId);
+  if(!el) return;
+  var idx = 0;
+  var running = true;
+  var pause = pauseMs || 2600;
+  function delay(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+  function typeIn(txt){
+    return new Promise(function(resolve){
+      el.textContent='';
+      var i=0;
+      function step(){
+        if(i<txt.length){ el.textContent+=txt[i]; i++; setTimeout(step,58); }
+        else resolve();
+      }
+      step();
+    });
+  }
+  function eraseOut(){
+    return new Promise(function(resolve){
+      function step(){
+        if(el.textContent.length>0){ el.textContent=el.textContent.slice(0,-1); setTimeout(step,32); }
+        else resolve();
+      }
+      step();
+    });
+  }
+  async function run(){
+    while(running){
+      await typeIn(words[idx]);
+      await delay(pause);
+      await eraseOut();
+      await delay(180);
+      idx=(idx+1)%words.length;
+    }
+  }
+  run();
+}
+TextCycler('cycler1', ['Estética Automotiva','Lava Jato Premium','Polimento Técnico','Higienização Completa'], 2800);
+TextCycler('cycler2', ['estética automotiva','lava jato','polimento técnico','higienização'], 2600);
+
+/* ── COUNTER ANIMATION ── */
+var countersAnimated = false;
+function animateCounters(){
+  if(countersAnimated) return;
+  countersAnimated = true;
+  document.querySelectorAll('.stat-val').forEach(function(el){
+    var target = parseFloat(el.dataset.count);
+    var suffix = el.dataset.suffix||'';
+    var dur = 1800;
+    var start = performance.now();
+    var isFloat = target !== Math.floor(target);
+    function tick(now){
+      var p = Math.min((now-start)/dur,1);
+      var eased = 1-Math.pow(1-p,3);
+      var val = eased*target;
+      el.textContent = (isFloat ? val.toFixed(1) : Math.round(val)) + suffix;
+      if(p<1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+/* ── INTERSECTION OBSERVER ── */
+var obsOpts = {threshold:0.1};
+var fadeObs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.classList.add('in');
+      fadeObs.unobserve(e.target);
+    }
+  });
+}, obsOpts);
+document.querySelectorAll('.fade,.fade-left,.fade-right,.fade-scale').forEach(function(el){
+  fadeObs.observe(el);
+});
+var statsObs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ animateCounters(); statsObs.disconnect(); }});
+},{threshold:0.3});
+var statsEl = document.getElementById('stats');
+if(statsEl) statsObs.observe(statsEl);
+
+/* ── PARALLAX HERO ── */
+var heroEl = document.getElementById('hero');
+window.addEventListener('scroll', function(){
+  var s = window.pageYOffset;
+  if(heroEl && s < window.innerHeight * 1.2){
+    heroEl.style.backgroundPositionY = (s * 0.4) + 'px';
+    var wordmark = heroEl.querySelector('.hero-wordmark');
+    if(wordmark) wordmark.style.transform = 'translateY(' + (s*0.25) + 'px)';
+  }
+},{passive:true});
+
+/* ── MAP TABS ── */
+document.querySelectorAll('.mtab').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var key = btn.dataset.map;
+    document.querySelectorAll('.mtab').forEach(function(b){ b.classList.remove('on'); });
+    document.querySelectorAll('.map-pane').forEach(function(p){ p.classList.remove('on'); });
+    btn.classList.add('on');
+    var pane = document.getElementById('map-'+key);
+    if(pane) pane.classList.add('on');
+    playClick();
+  });
+});
+
+/* ── CHIP SELECTION ── */
+document.getElementById('f-services').addEventListener('click', function(e){
+  var chip = e.target.closest('.svc-chip');
+  if(!chip) return;
+  chip.classList.toggle('on');
+  playTick();
+});
+
+/* ── DATE MIN ── */
+var dateInput = document.getElementById('f-date');
+if(dateInput){
+  var today = new Date();
+  var y = today.getFullYear();
+  var m = String(today.getMonth()+1).padStart(2,'0');
+  var d = String(today.getDate()).padStart(2,'0');
+  dateInput.min = y+'-'+m+'-'+d;
+}
+
+/* ── FORM → WHATSAPP ── */
+document.getElementById('f-submit').addEventListener('click', function(){
+  var name    = document.getElementById('f-name').value.trim();
+  var phone   = document.getElementById('f-phone').value.trim();
+  var vehicle = document.getElementById('f-vehicle').value.trim();
+  var date    = document.getElementById('f-date').value;
+  var obs     = document.getElementById('f-obs').value.trim();
+  var chips   = Array.from(document.querySelectorAll('.svc-chip.on')).map(function(c){ return c.dataset.svc; });
+  if(!name){ alert('Informe seu nome.'); return; }
+  var msg = 'Olá! Quero agendar um serviço no Red Studio.\n\n';
+  msg += 'Nome: ' + name + '\n';
+  if(phone) msg += 'WhatsApp: ' + phone + '\n';
+  if(vehicle) msg += 'Veículo: ' + vehicle + '\n';
+  if(date) msg += 'Data preferida: ' + date.split('-').reverse().join('/') + '\n';
+  if(chips.length > 0){
+    if(chips.length === 1) msg += 'Serviço: ' + chips[0] + '\n';
+    else msg += 'Serviços:\n' + chips.map(function(s){ return '  • '+s; }).join('\n') + '\n';
+  }
+  if(obs) msg += 'Obs: ' + obs + '\n';
+  window.open('https://wa.me/5531995850076?text=' + encodeURIComponent(msg), '_blank');
+  playClick();
+});
+
+/* ── HOVER SOUND ── */
+document.querySelectorAll('.btn-primary,.btn-ghost,.nav-cta,.nav-cta,.svc-card').forEach(function(el){
+  el.addEventListener('mouseenter', function(){ playHover(); });
+});
+document.querySelectorAll('.btn-wa,#f-submit').forEach(function(el){
+  el.addEventListener('mouseenter', function(){ playHover(); });
+  el.addEventListener('click', function(){ playClick(); });
+});
+
+/* ── AUDIO ENGINE ── */
+var AC = null;
+var soundEnabled = false;
+var sndBtn = document.getElementById('snd');
+var musicNodes = [];
+var musicPlaying = false;
+
+function getAC(){
+  if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==='suspended') AC.resume();
+  return AC;
+}
+
+function playHover(){
+  if(!soundEnabled) return;
+  try{
+    var ac = getAC();
+    var o = ac.createOscillator();
+    var g = ac.createGain();
+    o.frequency.value = 900;
+    o.type = 'sine';
+    g.gain.setValueAtTime(0.06,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.05);
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime+0.06);
+  } catch(e){}
+}
+
+function playClick(){
+  if(!soundEnabled) return;
+  try{
+    var ac = getAC();
+    var o = ac.createOscillator();
+    var g = ac.createGain();
+    o.frequency.value = 440;
+    o.type = 'triangle';
+    g.gain.setValueAtTime(0.18,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.1);
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime+0.12);
+  } catch(e){}
+}
+
+function playTick(){
+  if(!soundEnabled) return;
+  try{
+    var ac = getAC();
+    var o = ac.createOscillator();
+    var g = ac.createGain();
+    o.frequency.value = 1200;
+    o.type = 'sine';
+    g.gain.setValueAtTime(0.1,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.06);
+    o.connect(g); g.connect(ac.destination);
+    o.start(); o.stop(ac.currentTime+0.07);
+  } catch(e){}
+}
+
+function startMusic(){
+  if(musicPlaying) return;
+  musicPlaying = true;
+  try{
+    var ac = getAC();
+    var master = ac.createGain();
+    master.gain.value = 0.08;
+    master.connect(ac.destination);
+
+    // Bass drone A1
+    var bass = ac.createOscillator();
+    var bassG = ac.createGain();
+    var bassF = ac.createBiquadFilter();
+    bass.frequency.value = 55;
+    bass.type = 'sawtooth';
+    bassF.type = 'lowpass'; bassF.frequency.value = 100;
+    bassG.gain.value = 0.5;
+    bass.connect(bassF); bassF.connect(bassG); bassG.connect(master);
+    bass.start();
+    musicNodes.push(bass);
+
+    // Pad A3 with tremolo
+    var pad = ac.createOscillator();
+    var lfo = ac.createOscillator();
+    var lfoG = ac.createGain();
+    var padG = ac.createGain();
+    pad.frequency.value = 220; pad.type = 'sine';
+    lfo.frequency.value = 0.12; lfo.type = 'sine';
+    lfoG.gain.value = 15;
+    lfo.connect(lfoG); lfoG.connect(pad.frequency);
+    padG.gain.value = 0.2;
+    pad.connect(padG); padG.connect(master);
+    pad.start(); lfo.start();
+    musicNodes.push(pad, lfo);
+
+    // Atmosphere noise
+    var bufLen = 2 * ac.sampleRate;
+    var buf = ac.createBuffer(1, bufLen, ac.sampleRate);
+    var data = buf.getChannelData(0);
+    for(var i=0;i<bufLen;i++) data[i]=Math.random()*2-1;
+    var noise = ac.createBufferSource();
+    noise.buffer = buf; noise.loop = true;
+    var nF = ac.createBiquadFilter();
+    nF.type = 'bandpass'; nF.frequency.value = 180; nF.Q.value = 0.4;
+    var nG = ac.createGain(); nG.gain.value = 0.04;
+    noise.connect(nF); nF.connect(nG); nG.connect(master);
+    noise.start();
+    musicNodes.push(noise);
+
+    // Melodic pulse — A minor arpeggio every ~2s
+    var melFreqs = [220,261.63,329.63,392,440];
+    var melIdx = 0;
+    function schedMel(){
+      if(!musicPlaying) return;
+      try{
+        var ac2 = getAC();
+        var mo = ac2.createOscillator();
+        var mg = ac2.createGain();
+        mo.frequency.value = melFreqs[melIdx%melFreqs.length];
+        mo.type = 'triangle';
+        mg.gain.setValueAtTime(0.12,ac2.currentTime);
+        mg.gain.exponentialRampToValueAtTime(0.001,ac2.currentTime+0.6);
+        mo.connect(mg); mg.connect(master);
+        mo.start(); mo.stop(ac2.currentTime+0.7);
+        melIdx++;
+        musicNodes.push(mo);
+      } catch(e){}
+      setTimeout(schedMel, 500 + melIdx * 200 % 800);
+    }
+    schedMel();
+  } catch(e){}
+}
+
+function stopMusic(){
+  musicPlaying = false;
+  musicNodes.forEach(function(n){ try{ n.stop(); } catch(e){} });
+  musicNodes = [];
+}
+
+sndBtn.addEventListener('click', function(){
+  soundEnabled = !soundEnabled;
+  sndBtn.classList.toggle('on', soundEnabled);
+  if(soundEnabled){ startMusic(); playClick(); }
+  else { stopMusic(); }
+});
+
+/* ── SCROLL REVEAL SOUND ── */
+var revealObs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      if(soundEnabled){
+        try{
+          var ac = getAC();
+          var o = ac.createOscillator();
+          var g = ac.createGain();
+          o.frequency.value = 600;
+          o.frequency.exponentialRampToValueAtTime(1200, ac.currentTime+0.15);
+          g.gain.setValueAtTime(0.05,ac.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+0.18);
+          o.connect(g); g.connect(ac.destination);
+          o.start(); o.stop(ac.currentTime+0.2);
+        }catch(ex){}
+      }
+      revealObs.unobserve(e.target);
+    }
+  });
+},{threshold:0.2});
+document.querySelectorAll('.svc-card,.rev-card').forEach(function(el){ revealObs.observe(el); });
+
+/* ── HERO CTA PULSE ── */
+var heroCta = document.getElementById('hero-cta');
+if(heroCta){
+  setInterval(function(){
+    heroCta.style.boxShadow = '0 0 0 0 rgba(204,0,0,.5)';
+    heroCta.style.transition = 'box-shadow 0s';
+    setTimeout(function(){
+      heroCta.style.transition = 'box-shadow 1s ease-out';
+      heroCta.style.boxShadow = '0 0 0 14px rgba(204,0,0,0)';
+    },10);
+  }, 2500);
+}
+
+})();
+</script>
+<script async src="//www.instagram.com/embed.js"></script>
+</body>
+</html>
