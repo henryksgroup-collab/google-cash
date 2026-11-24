@@ -126,6 +126,67 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .sim-submit{margin:14px 0 0;padding:14px;background:var(--gn);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;width:100%;transition:opacity .3s,transform .15s}
 .sim-submit:active{transform:scale(.97)}
 .sim-submit:disabled{opacity:.35;cursor:not-allowed}
+/* TUTORIAL OVERLAY */
+.tut-ov{position:fixed;inset:0;z-index:998;pointer-events:none;display:none}
+.tut-ov.active{display:block}
+.tut-ov-bg{position:absolute;inset:0;background:rgba(0,0,0,.45);pointer-events:none}
+.tut-cursor{position:absolute;width:40px;height:40px;pointer-events:none;animation:tut-bounce .85s ease-in-out infinite;transition:left .35s ease,top .35s ease}
+@keyframes tut-bounce{0%,100%{transform:translateY(0) rotate(-15deg)}50%{transform:translateY(-7px) rotate(-15deg)}}
+.tut-pulse{position:absolute;width:52px;height:52px;border-radius:50%;background:rgba(26,115,232,.25);pointer-events:none;animation:tut-pulse 1.1s ease-out infinite;transition:left .35s ease,top .35s ease}
+@keyframes tut-pulse{0%{transform:scale(.7);opacity:.8}100%{transform:scale(2.2);opacity:0}}
+.tut-tip{position:absolute;background:#fff;border-radius:14px;padding:12px 14px;width:220px;box-shadow:0 6px 24px rgba(0,0,0,.22);font-size:13px;font-weight:600;color:#202124;line-height:1.4;pointer-events:all;transition:left .35s ease,top .35s ease;z-index:999}
+.tut-tip::after{content:'';position:absolute;width:10px;height:10px;background:#fff;transform:rotate(45deg)}
+.tut-tip.tip-below::after{top:-5px;left:50%;margin-left:-5px}
+.tut-tip.tip-above::after{bottom:-5px;left:50%;margin-left:-5px}
+.tut-skip{display:block;margin-top:8px;font-size:11px;color:#9aa0a6;text-align:center;cursor:pointer;border:none;background:none;padding:0;width:100%;text-decoration:underline}
+.tut-active-el{outline:3px solid #1a73e8!important;outline-offset:3px;animation:tut-glow 1s ease-in-out infinite alternate}
+@keyframes tut-glow{from{box-shadow:0 0 0 2px rgba(26,115,232,.2)}to{box-shadow:0 0 10px 4px rgba(26,115,232,.4)}}
+/* AI SIMULATOR */
+.ai-card{background:#fff;border-radius:20px;box-shadow:var(--sh);margin:10px 16px;overflow:hidden;border:2px solid transparent;transition:border-color .3s}
+.ai-card.done{border-color:var(--gn)}
+.ai-card-hd{display:flex;align-items:center;gap:12px;padding:16px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ai-card-body{padding:0 16px 16px;display:none}
+.ai-card-body.open{display:block}
+.client-label{font-size:10px;font-weight:700;color:var(--sub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.6px}
+.client-bubble{background:#f0f9eb;border-radius:4px 14px 14px 14px;padding:12px 14px;font-size:13px;color:var(--dk);line-height:1.6;font-style:italic;border-left:3px solid var(--gn);margin-bottom:16px}
+.client-name{font-size:11px;font-weight:700;color:#1b5e20;margin-bottom:4px;font-style:normal}
+.ai-sec-label{font-size:10px;font-weight:700;color:var(--sub);margin-bottom:8px;text-transform:uppercase;letter-spacing:.6px}
+.ai-chips{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.ai-chip{background:#f8f9fa;border:1.5px solid var(--bdr);border-radius:12px;padding:11px 13px;font-size:12.5px;color:var(--text);cursor:pointer;transition:all .2s;line-height:1.5;-webkit-tap-highlight-color:transparent;display:flex;align-items:flex-start;gap:9px}
+.ai-chip:active{transform:scale(.98)}
+.ai-chip.selected{border-color:var(--bl);background:#e8f0fe;color:var(--dk);font-weight:600}
+.chip-icon{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,#1a73e8,#0d47a1);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.ai-input-row{display:flex;gap:8px;align-items:center;background:#f8f9fa;border-radius:12px;border:1.5px solid var(--bdr);padding:10px 12px;transition:border-color .3s;margin-bottom:4px}
+.ai-input-row.ready{border-color:var(--bl);background:#fff}
+.ai-input-box{flex:1;font-size:12px;color:var(--sub);line-height:1.4}
+.ai-input-box.has-text{color:var(--dk);font-weight:500}
+.ai-send-btn{width:36px;height:36px;border-radius:10px;border:none;background:#e0e0e0;cursor:not-allowed;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
+.ai-send-btn.ready{background:var(--bl);cursor:pointer}
+.ai-send-btn.ready:active{transform:scale(.9)}
+.ai-loading{padding:18px 0;text-align:center}
+.ai-loading-row{display:inline-flex;align-items:center;gap:10px;background:#e8f0fe;border-radius:14px;padding:12px 18px}
+.ai-loading-icon{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#1a73e8,#0d47a1);display:flex;align-items:center;justify-content:center;animation:ai-pulse 1.4s ease-in-out infinite}
+@keyframes ai-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.ai-loading-text{font-size:13px;font-weight:600;color:var(--bl)}
+.ai-dots span{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--bl);margin:0 2px;animation:ai-dot 1.2s ease-in-out infinite}
+.ai-dots span:nth-child(2){animation-delay:.2s}.ai-dots span:nth-child(3){animation-delay:.4s}
+@keyframes ai-dot{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+.site-preview{margin:12px 0}
+.sp-label{font-size:11px;font-weight:700;color:var(--gn);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.mock-site{border-radius:14px;overflow:hidden;border:1.5px solid var(--bdr);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.ms-topbar{background:#f1f3f4;padding:7px 10px;display:flex;align-items:center;gap:5px}
+.ms-dot{width:8px;height:8px;border-radius:50%}
+.ms-url{flex:1;background:#fff;border-radius:4px;padding:3px 8px;font-size:9px;color:var(--sub);margin:0 6px}
+.ms-hero{padding:18px 14px;color:#fff;text-align:center}
+.ms-hero h4{font-size:15px;font-weight:800;margin-bottom:4px}
+.ms-hero p{font-size:11px;opacity:.85}
+.ms-body{background:#fff;padding:12px 14px}
+.ms-row{display:flex;gap:8px;margin-bottom:8px}
+.ms-block{background:#f1f3f4;border-radius:6px;height:28px;flex:1}
+.ms-cta-btn{background:var(--gn);color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:12px;font-weight:700;width:100%;margin-top:4px}
+.deliver-btn{margin:14px 0 0;padding:14px;background:var(--gn);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;width:100%;transition:opacity .3s,transform .15s;display:none}
+.deliver-btn.show{display:block}
+.deliver-btn:active{transform:scale(.97)}
 /* RESULTS */
 #s-results{background:linear-gradient(180deg,#e8f0fe 0%,#f0f7f0 100%)}
 .result-hero{text-align:center;padding:40px 20px 20px}
@@ -153,15 +214,12 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .vsl-neon-glow{position:absolute;inset:0;border-radius:24px;background:linear-gradient(135deg,#1a73e8,#ea4335,#fbbc05,#34a853,#4285f4,#1a73e8);background-size:400% 400%;animation:neonCycle 3s ease infinite;opacity:.85;filter:blur(16px);z-index:0;pointer-events:none}
 @keyframes neonCycle{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 /* Player shell */
-.vsl-player-shell{position:relative;z-index:1;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;border:2px solid rgba(66,133,244,0.5)}
+.vsl-player-shell{position:relative;z-index:1;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#0a0a0a 0%,#111 50%,#0d0d0d 100%);aspect-ratio:16/9;border:2px solid rgba(66,133,244,0.5)}
 .vsl-player-shell video{width:100%;height:100%;display:block;object-fit:cover}
-/* YouTube iframe fill */
-#vsl-yt-wrap{position:absolute;inset:0;display:none;border-radius:16px;overflow:hidden;}
-#vsl-yt-wrap iframe{width:100%!important;height:100%!important;border:none!important;display:block;}
-/* Máscaras anti-branding YouTube */
-.yt-mask-top{display:none;}
-.yt-mask-bot{position:absolute;bottom:0;right:0;width:90px;height:30px;background:#000;z-index:5;border-radius:0 0 16px 0;pointer-events:none;}
-.yt-mask-bot-left{position:absolute;bottom:0;left:0;width:50px;height:30px;background:#000;z-index:5;border-radius:0 0 0 16px;pointer-events:none;}
+/* YouTube iframe — escalado para cortar branding nas bordas */
+#vsl-yt-iframe{position:absolute;top:50%;left:50%;width:118%;height:118%;transform:translate(-50%,-50%);border:none;display:none;}
+/* Thumbnail antes do play */
+#vsl-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:2;}
 .yt-click-block{position:absolute;inset:0;z-index:4;cursor:default;}
 /* Custom overlay (shown before play) */
 .vsl-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:4;transition:opacity .3s}
@@ -397,304 +455,146 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <button class="btn btn-blue" id="tut-btn" onclick="goSimulator()" disabled style="opacity:.5">Ver Minha Simulação</button>
 </div>
 
+<!-- ===== TUTORIAL OVERLAY ===== -->
+<div id="tut-ov" class="tut-ov">
+  <div class="tut-ov-bg"></div>
+  <div class="tut-pulse" id="tut-pulse"></div>
+  <div class="tut-cursor" id="tut-cursor">
+    <svg width="36" height="40" viewBox="0 0 36 40" fill="none"><path d="M6 2L6 26L12 20L15 30L19 29L16 19L23 19Z" fill="white" stroke="#1a73e8" stroke-width="1.5" stroke-linejoin="round"/></svg>
+  </div>
+  <div class="tut-tip tip-below" id="tut-tip" style="left:50%;margin-left:-110px;top:60px">
+    <div id="tut-tip-txt">Toque aqui para abrir seu primeiro cliente</div>
+    <button class="tut-skip" onclick="skipTutorial()">Pular tutorial</button>
+  </div>
+</div>
+
 <!-- ===== SCREEN 4: SIMULATOR ===== -->
 <div id="s-simulator" class="screen" style="padding-top:70px">
   <div class="revenue-bar" id="rev-bar">
-    <div><div class="rev-label">Renda Mensal</div><div class="rev-amount" id="rev-display">R$ 0</div></div>
+    <div><div class="rev-label">Renda Simulada</div><div class="rev-amount" id="rev-display">R$ 0</div></div>
     <div class="progress-wrap"><div class="progress-fill" id="sim-progress" style="width:0%"></div></div>
-    <div style="font-size:12px;color:var(--sub)" id="comp-counter">0/4</div>
+    <div style="font-size:12px;color:var(--sub)" id="comp-counter">0/3</div>
   </div>
   <div style="text-align:center;padding:18px 16px 8px">
     <div class="logo" style="font-size:22px;margin-bottom:8px"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span> <span class="cash">Cash</span></div>
-    <h2 style="font-size:18px;font-weight:800;color:var(--dk);margin-bottom:4px">Simulação de Clientes</h2>
-    <p style="font-size:13px;color:var(--sub)">Selecione as opções corretas para otimizar cada perfil</p>
+    <h2 style="font-size:18px;font-weight:800;color:var(--dk);margin-bottom:4px">Use IA para criar sites e receber</h2>
+    <p style="font-size:13px;color:var(--sub)">Atenda clientes com IA — rápido e profissional</p>
   </div>
 
   <!-- COMPANY 1: CAFÉ CENTRAL -->
-  <div class="company-card" id="cc1" data-tasks="3">
-    <div class="company-header" onclick="toggleCompany(1)">
+  <div class="ai-card" id="cc1">
+    <div class="ai-card-hd" id="cch1" onclick="openAICard(1)">
       <div class="clogo" id="cl1">
         <img src="/assets/logos/cafe-central.jpg" alt="Café Central" onerror="document.getElementById('cl1').classList.add('no-img')">
         <div class="clogo-fb" style="background:linear-gradient(135deg,#6d4c41,#4e342e)">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg>
         </div>
       </div>
-      <div class="company-info"><h3>Café Central</h3><p>Cafeteria • R$ 280/mês</p></div>
+      <div class="company-info"><h3>Café Central</h3><p>Cafeteria • R$ 350/mês</p></div>
       <div class="company-status status-pending" id="cs1">Pendente</div>
     </div>
-    <div class="company-body" id="ct1">
-      <div class="owner-msg">
-        <div class="owner-msg-head">
-          <div class="om-av" style="background:#fff3e0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#795548" stroke-width="2"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg></div>
-          <div><div class="om-name">João — Café Central</div><div class="om-role">Proprietário</div></div>
-        </div>
-        <p>"Olá! Sou dono do Café Central, uma cafeteria tradicional desde 1985. Nunca configurei direito o Google Meu Negócio. Precisamos de ajuda urgente — o horário e a localização estão errados!"</p>
+    <div class="ai-card-body" id="ctb1">
+      <div class="client-label">Mensagem do cliente</div>
+      <div class="client-bubble">
+        <div class="client-name">João — Café Central</div>
+        "Oi! Preciso de um site profissional para meu café. Quero mostrar o cardápio e receber pedidos pelo WhatsApp. Pode criar pra mim?"
       </div>
-
-      <!-- TASK 1: LOCALIZAÇÃO -->
-      <div class="sim-task" id="tr1_1">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">1</div>
-          <div class="sim-task-label">Onde fica o Café Central?</div>
-          <div class="tr-ck"></div>
+      <div id="ai-sec1">
+        <div class="ai-sec-label">Escolha o comando de IA:</div>
+        <div class="ai-chips" id="chips1">
+          <div class="ai-chip" id="chip1_1" onclick="selectChip(1,1,this)"><div class="chip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><span>Crie um site profissional para o Café Central com cardápio e botão de WhatsApp</span></div>
+          <div class="ai-chip" id="chip1_2" onclick="selectChip(1,2,this)"><div class="chip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></div><span>Monte um anúncio no Google Ads para o Café Central</span></div>
+          <div class="ai-chip" id="chip1_3" onclick="selectChip(1,3,this)"><div class="chip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><span>Escreva uma descrição para o Google Meu Negócio do café</span></div>
         </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(1,1,this)">Savassi, Belo Horizonte – MG</div>
-          <div class="sc" onclick="pick(1,1,this)">Centro, São Paulo – SP</div>
-          <div class="sc" onclick="pick(1,1,this)">Congonhas, São Paulo – SP</div>
+        <div class="ai-input-row" id="ai-inp-row1">
+          <div class="ai-input-box" id="ai-inp-txt1">Selecione um comando acima...</div>
+          <button class="ai-send-btn" id="ai-send1" onclick="sendToAI(1)" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg></button>
         </div>
       </div>
-
-      <!-- TASK 2: HORÁRIO -->
-      <div class="sim-task" id="tr1_2">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">2</div>
-          <div class="sim-task-label">Qual o horário correto de funcionamento?</div>
-          <div class="tr-ck"></div>
-        </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(1,2,this)">Seg–Sex: 08h–17h (fechado no sábado)</div>
-          <div class="sc" onclick="pick(1,2,this)">Seg–Sáb: 07h–20h | Dom: 08h–14h</div>
-          <div class="sc" onclick="pick(1,2,this)">Todos os dias: 24 horas</div>
-        </div>
+      <div class="ai-loading" id="ai-load1" style="display:none"><div class="ai-loading-row"><div class="ai-loading-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div><div class="ai-loading-text">IA criando o site<span class="ai-dots"><span></span><span></span><span></span></span></div><div style="font-size:11px;color:var(--sub)">Aguarde alguns segundos...</div></div></div></div>
+      <div class="site-preview" id="site-prev1" style="display:none">
+        <div class="sp-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Site gerado com sucesso:</div>
+        <div class="mock-site"><div class="ms-topbar"><div class="ms-dot" style="background:#ea4335"></div><div class="ms-dot" style="background:#fbbc05"></div><div class="ms-dot" style="background:#34a853"></div><div class="ms-url">cafecentral.com.br</div></div><div class="ms-hero" style="background:linear-gradient(135deg,#6d4c41,#4e342e)"><h4>Café Central</h4><p>Cardápio fresquinho desde 1985</p></div><div class="ms-body"><div class="ms-row"><div class="ms-block"></div><div class="ms-block"></div><div class="ms-block"></div></div><div class="ms-row"><div class="ms-block" style="flex:2"></div><div class="ms-block"></div></div><button class="ms-cta-btn">Falar no WhatsApp</button></div></div>
       </div>
-
-      <!-- TASK 3: RESPOSTA DE AVALIAÇÃO -->
-      <div class="sim-task" id="tr1_3">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">3</div>
-          <div class="sim-task-label">Qual a melhor resposta para esta avaliação?</div>
-          <div class="tr-ck"></div>
-        </div>
-        <div class="review-mini">
-          <div class="rm-user">Maria C.</div>
-          <div class="rm-stars">★★★★★</div>
-          <div class="rm-text">"Melhor café do centro! Atendimento nota 10, sempre fresquinho."</div>
-        </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(1,3,this)">Obrigado!</div>
-          <div class="sc" onclick="pick(1,3,this)">Agradecemos o feedback, volte sempre.</div>
-          <div class="sc" onclick="pick(1,3,this)">Muito obrigado, Maria! É uma honra receber seu elogio. Estamos sempre renovando o cardápio para surpreender. Te esperamos amanhã!</div>
-        </div>
-      </div>
-
-      <button class="sim-submit" id="sub1" onclick="submitCompany(1,280)" disabled>Enviar e Receber R$ 280</button>
+      <button class="deliver-btn" id="sub1" onclick="deliverSite(1,350)">Enviar site ao cliente e receber R$ 350</button>
     </div>
   </div>
 
-  <!-- COMPANY 2: CLÍNICA SORRISO -->
-  <div class="company-card" id="cc2" data-tasks="3">
-    <div class="company-header" onclick="toggleCompany(2)">
+  <!-- COMPANY 2: ACADEMIA POWERFIT -->
+  <div class="ai-card" id="cc2">
+    <div class="ai-card-hd" id="cch2" onclick="openAICard(2)">
       <div class="clogo" id="cl2">
-        <img src="/assets/logos/clinica-sorriso.jpg" alt="Clínica Sorriso" onerror="document.getElementById('cl2').classList.add('no-img')">
-        <div class="clogo-fb" style="background:linear-gradient(135deg,#26c6da,#1565c0)">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M12 2a7 7 0 00-7 7c0 3.5 2.5 6.5 5.5 7.5V19h3v-2.5C16.5 15.5 19 12.5 19 9a7 7 0 00-7-7z"/><circle cx="9" cy="9" r="1" fill="#fff"/><circle cx="15" cy="9" r="1" fill="#fff"/></svg>
-        </div>
-      </div>
-      <div class="company-info"><h3>Clínica Sorriso</h3><p>Odontologia • R$ 870/mês</p></div>
-      <div class="company-status status-pending" id="cs2">Pendente</div>
-    </div>
-    <div class="company-body" id="ct2">
-      <div class="owner-msg">
-        <div class="owner-msg-head">
-          <div class="om-av" style="background:#e3f2fd"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1565c0" stroke-width="2"><path d="M12 2a7 7 0 00-7 7c0 3.5 2.5 6.5 5.5 7.5V19h3v-2.5C16.5 15.5 19 12.5 19 9a7 7 0 00-7-7z"/></svg></div>
-          <div><div class="om-name">Dra. Carla — Clínica Sorriso</div><div class="om-role">Proprietária</div></div>
-        </div>
-        <p>"Olá! Minha clínica está crescendo mas o perfil no Google está desatualizado. O horário está errado e tenho perguntas de pacientes sem resposta. Precisamos corrigir urgente!"</p>
-      </div>
-
-      <!-- TASK 1: LOCALIZAÇÃO -->
-      <div class="sim-task" id="tr2_1">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">1</div>
-          <div class="sim-task-label">Em qual bairro fica a Clínica Sorriso?</div>
-          <div class="tr-ck"></div>
-        </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(2,1,this)">Campinas, SP</div>
-          <div class="sc" onclick="pick(2,1,this)">Consolação, São Paulo – SP</div>
-          <div class="sc" onclick="pick(2,1,this)">Santo André, SP</div>
-        </div>
-      </div>
-
-      <!-- TASK 2: HORÁRIO -->
-      <div class="sim-task" id="tr2_2">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">2</div>
-          <div class="sim-task-label">Qual o horário correto da clínica?</div>
-          <div class="tr-ck"></div>
-        </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(2,2,this)">Todos os dias: 09h–21h</div>
-          <div class="sc" onclick="pick(2,2,this)">Seg–Sex: 08h–18h | Sáb: 08h–12h</div>
-          <div class="sc" onclick="pick(2,2,this)">Seg–Dom: 07h–19h (plantão 24h)</div>
-        </div>
-      </div>
-
-      <!-- TASK 3: RESPOSTA FAQ -->
-      <div class="sim-task" id="tr2_3">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">3</div>
-          <div class="sim-task-label">Paciente perguntou sobre convênio. Qual a melhor resposta?</div>
-          <div class="tr-ck"></div>
-        </div>
-        <div class="review-mini">
-          <div class="rm-user">Pedro A.</div>
-          <div class="rm-stars">★★★★★</div>
-          <div class="rm-text">"Vocês aceitam convênio? Qual o valor da consulta de avaliação?"</div>
-        </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(2,3,this)">Sim, aceitamos convênio.</div>
-          <div class="sc" onclick="pick(2,3,this)">Aceitamos convênio. Ligue para mais informações.</div>
-          <div class="sc" onclick="pick(2,3,this)">Olá Pedro! Consulta de avaliação gratuita. Aceitamos Unimed, Bradesco e Amil. Mande mensagem no WhatsApp para agendar. Aguardamos você!</div>
-        </div>
-      </div>
-
-      <button class="sim-submit" id="sub2" onclick="submitCompany(2,870)" disabled>Enviar e Receber R$ 870</button>
-    </div>
-  </div>
-
-  <!-- COMPANY 3: ACADEMIA POWERFIT -->
-  <div class="company-card" id="cc3" data-tasks="3">
-    <div class="company-header" onclick="toggleCompany(3)">
-      <div class="clogo" id="cl3">
-        <img src="/assets/logos/academia-powerfit.jpg" alt="Academia PowerFit" onerror="document.getElementById('cl3').classList.add('no-img')">
+        <img src="/assets/logos/academia-powerfit.jpg" alt="Academia PowerFit" onerror="document.getElementById('cl2').classList.add('no-img')">
         <div class="clogo-fb" style="background:linear-gradient(135deg,#e64a19,#1a237e)">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M6 4v16M18 4v16M6 12h12M2 7h4M18 7h4M2 17h4M18 17h4"/></svg>
         </div>
       </div>
       <div class="company-info"><h3>Academia PowerFit</h3><p>Academia • R$ 530/mês</p></div>
-      <div class="company-status status-pending" id="cs3">Pendente</div>
+      <div class="company-status status-pending" id="cs2">Pendente</div>
     </div>
-    <div class="company-body" id="ct3">
-      <div class="owner-msg">
-        <div class="owner-msg-head">
-          <div class="om-av" style="background:#fff3e0"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e65100" stroke-width="2"><path d="M6 4v16M18 4v16M6 12h12M2 7h4M18 7h4"/></svg></div>
-          <div><div class="om-name">Roberto — Academia PowerFit</div><div class="om-role">Proprietário</div></div>
-        </div>
-        <p>"Salve! Nossa academia tem musculação, spinning e funcional. Tem uma avaliação negativa sem resposta que está prejudicando muito. Preciso de ajuda para responder e configurar o perfil!"</p>
+    <div class="ai-card-body" id="ctb2">
+      <div class="client-label">Mensagem do cliente</div>
+      <div class="client-bubble">
+        <div class="client-name">Roberto — Academia PowerFit</div>
+        "Oi! Quero uma página para captar novos alunos. Precisaria mostrar os planos e um botão pra fazer matrícula pelo WhatsApp."
       </div>
-
-      <!-- TASK 1: CATEGORIA -->
-      <div class="sim-task" id="tr3_1">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">1</div>
-          <div class="sim-task-label">Qual a categoria correta da PowerFit?</div>
-          <div class="tr-ck"></div>
+      <div id="ai-sec2">
+        <div class="ai-sec-label">Escolha o comando de IA:</div>
+        <div class="ai-chips" id="chips2">
+          <div class="ai-chip" id="chip2_1" onclick="selectChip(2,1,this)"><div class="chip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><span>Crie uma landing page de captação de alunos para a Academia PowerFit com planos e matrícula pelo WhatsApp</span></div>
+          <div class="ai-chip" id="chip2_2" onclick="selectChip(2,2,this)"><div class="chip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div><span>Monte um post para o Instagram da Academia PowerFit</span></div>
+          <div class="ai-chip" id="chip2_3" onclick="selectChip(2,3,this)"><div class="chip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><span>Escreva um script de vendas para prospectar academias</span></div>
         </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(3,1,this)">Estúdio de Yoga</div>
-          <div class="sc" onclick="pick(3,1,this)">Academia de Ginástica</div>
-          <div class="sc" onclick="pick(3,1,this)">Centro de Pilates</div>
+        <div class="ai-input-row" id="ai-inp-row2">
+          <div class="ai-input-box" id="ai-inp-txt2">Selecione um comando acima...</div>
+          <button class="ai-send-btn" id="ai-send2" onclick="sendToAI(2)" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg></button>
         </div>
       </div>
-
-      <!-- TASK 2: HORÁRIO -->
-      <div class="sim-task" id="tr3_2">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">2</div>
-          <div class="sim-task-label">Qual o horário de funcionamento?</div>
-          <div class="tr-ck"></div>
-        </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(3,2,this)">Seg–Sex: 09h–18h</div>
-          <div class="sc" onclick="pick(3,2,this)">Somente fins de semana: 08h–16h</div>
-          <div class="sc" onclick="pick(3,2,this)">Seg–Sex: 06h–22h | Sáb: 07h–16h | Dom: 08h–12h</div>
-        </div>
+      <div class="ai-loading" id="ai-load2" style="display:none"><div class="ai-loading-row"><div class="ai-loading-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div><div class="ai-loading-text">IA criando a landing page<span class="ai-dots"><span></span><span></span><span></span></span></div><div style="font-size:11px;color:var(--sub)">Aguarde alguns segundos...</div></div></div></div>
+      <div class="site-preview" id="site-prev2" style="display:none">
+        <div class="sp-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Página gerada com sucesso:</div>
+        <div class="mock-site"><div class="ms-topbar"><div class="ms-dot" style="background:#ea4335"></div><div class="ms-dot" style="background:#fbbc05"></div><div class="ms-dot" style="background:#34a853"></div><div class="ms-url">academiapowerfit.com.br</div></div><div class="ms-hero" style="background:linear-gradient(135deg,#e64a19,#1a237e)"><h4>Academia PowerFit</h4><p>Comece hoje — 1ª semana grátis</p></div><div class="ms-body"><div class="ms-row"><div class="ms-block"></div><div class="ms-block"></div><div class="ms-block"></div></div><div class="ms-row"><div class="ms-block" style="flex:2"></div><div class="ms-block"></div></div><button class="ms-cta-btn">Fazer Matrícula pelo WhatsApp</button></div></div>
       </div>
-
-      <!-- TASK 3: RESPOSTA AVALIAÇÃO NEGATIVA -->
-      <div class="sim-task" id="tr3_3">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">3</div>
-          <div class="sim-task-label">Como responder esta avaliação negativa?</div>
-          <div class="tr-ck"></div>
-        </div>
-        <div class="review-mini">
-          <div class="rm-user">Márcia S.</div>
-          <div class="rm-stars" style="color:#ea4335">★★★☆☆</div>
-          <div class="rm-text">"Equipamentos antigos e academia muito cheia no horário nobre. Falta manutenção."</div>
-        </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(3,3,this)">Pedimos desculpas pelo ocorrido.</div>
-          <div class="sc" onclick="pick(3,3,this)">Lamentamos o inconveniente. Estamos melhorando.</div>
-          <div class="sc" onclick="pick(3,3,this)">Olá Márcia! Obrigado pelo feedback. Investimos em novos equipamentos recentemente e ampliamos o espaço. Venha conhecer as melhorias — tenho certeza que vai surpreender!</div>
-        </div>
-      </div>
-
-      <button class="sim-submit" id="sub3" onclick="submitCompany(3,530)" disabled>Enviar e Receber R$ 530</button>
+      <button class="deliver-btn" id="sub2" onclick="deliverSite(2,530)">Enviar página ao cliente e receber R$ 530</button>
     </div>
   </div>
 
-  <!-- COMPANY 4: PETCARE CENTER -->
-  <div class="company-card" id="cc4" data-tasks="3">
-    <div class="company-header" onclick="toggleCompany(4)">
-      <div class="clogo" id="cl4">
-        <img src="/assets/logos/petcare.jpg" alt="PetCare Center" onerror="document.getElementById('cl4').classList.add('no-img')">
-        <div class="clogo-fb" style="background:linear-gradient(135deg,#00897b,#f4a261)">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+  <!-- COMPANY 3: RESTAURANTE BELLA VISTA -->
+  <div class="ai-card" id="cc3">
+    <div class="ai-card-hd" id="cch3" onclick="openAICard(3)">
+      <div class="clogo" id="cl3">
+        <img src="/assets/logos/bella-vista.jpg" alt="Bella Vista" onerror="document.getElementById('cl3').classList.add('no-img')">
+        <div class="clogo-fb" style="background:linear-gradient(135deg,#c62828,#f57c00)">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"/><path d="M7 2v20"/><path d="M21 15V2l-3 4-3-4v13"/><path d="M18 22a3 3 0 100-6 3 3 0 000 6z"/></svg>
         </div>
       </div>
-      <div class="company-info"><h3>PetCare Center</h3><p>Pet Shop • R$ 620/mês</p></div>
-      <div class="company-status status-pending" id="cs4">Pendente</div>
+      <div class="company-info"><h3>Restaurante Bella Vista</h3><p>Restaurante • R$ 480/mês</p></div>
+      <div class="company-status status-pending" id="cs3">Pendente</div>
     </div>
-    <div class="company-body" id="ct4">
-      <div class="owner-msg">
-        <div class="owner-msg-head">
-          <div class="om-av" style="background:#e0f2f1"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00695c" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
-          <div><div class="om-name">Ana — PetCare Center</div><div class="om-role">Proprietária</div></div>
-        </div>
-        <p>"Olá! Temos pet shop com banho, tosa e veterinário. Recebo avaliações mas nunca respondo. Meu perfil está quase vazio. Precisaria muito de ajuda!"</p>
+    <div class="ai-card-body" id="ctb3">
+      <div class="client-label">Mensagem do cliente</div>
+      <div class="client-bubble">
+        <div class="client-name">Carlos — Restaurante Bella Vista</div>
+        "Olá! Meu restaurante não aparece direito no Google e não tenho site. Precisaria de uma presença online com cardápio e reservas pelo WhatsApp."
       </div>
-
-      <!-- TASK 1: LOCALIZAÇÃO -->
-      <div class="sim-task" id="tr4_1">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">1</div>
-          <div class="sim-task-label">Onde fica o PetCare Center?</div>
-          <div class="tr-ck"></div>
+      <div id="ai-sec3">
+        <div class="ai-sec-label">Escolha o comando de IA:</div>
+        <div class="ai-chips" id="chips3">
+          <div class="ai-chip" id="chip3_1" onclick="selectChip(3,1,this)"><div class="chip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><span>Crie um site com cardápio online e reservas pelo WhatsApp para o Restaurante Bella Vista</span></div>
+          <div class="ai-chip" id="chip3_2" onclick="selectChip(3,2,this)"><div class="chip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div><span>Monte um anúncio de captação no Google Ads para o restaurante</span></div>
+          <div class="ai-chip" id="chip3_3" onclick="selectChip(3,3,this)"><div class="chip-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><span>Otimize o perfil do Google Meu Negócio do Restaurante Bella Vista</span></div>
         </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(4,1,this)">Pinheiros, São Paulo – SP</div>
-          <div class="sc" onclick="pick(4,1,this)">Itaquera, São Paulo – SP</div>
-          <div class="sc" onclick="pick(4,1,this)">Bela Vista, São Paulo – SP</div>
+        <div class="ai-input-row" id="ai-inp-row3">
+          <div class="ai-input-box" id="ai-inp-txt3">Selecione um comando acima...</div>
+          <button class="ai-send-btn" id="ai-send3" onclick="sendToAI(3)" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg></button>
         </div>
       </div>
-
-      <!-- TASK 2: SERVIÇO PRINCIPAL -->
-      <div class="sim-task" id="tr4_2">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">2</div>
-          <div class="sim-task-label">Qual o serviço principal do PetCare?</div>
-          <div class="tr-ck"></div>
-        </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(4,2,this)">Venda de rações online</div>
-          <div class="sc" onclick="pick(4,2,this)">Passeio e adestramento de pets</div>
-          <div class="sc" onclick="pick(4,2,this)">Banho, Tosa e Consultório Veterinário</div>
-        </div>
+      <div class="ai-loading" id="ai-load3" style="display:none"><div class="ai-loading-row"><div class="ai-loading-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div><div class="ai-loading-text">IA criando o site<span class="ai-dots"><span></span><span></span><span></span></span></div><div style="font-size:11px;color:var(--sub)">Aguarde alguns segundos...</div></div></div></div>
+      <div class="site-preview" id="site-prev3" style="display:none">
+        <div class="sp-label"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34a853" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>Site gerado com sucesso:</div>
+        <div class="mock-site"><div class="ms-topbar"><div class="ms-dot" style="background:#ea4335"></div><div class="ms-dot" style="background:#fbbc05"></div><div class="ms-dot" style="background:#34a853"></div><div class="ms-url">bellavista.com.br</div></div><div class="ms-hero" style="background:linear-gradient(135deg,#c62828,#f57c00)"><h4>Restaurante Bella Vista</h4><p>Culinária italiana desde 1998</p></div><div class="ms-body"><div class="ms-row"><div class="ms-block"></div><div class="ms-block"></div><div class="ms-block"></div></div><div class="ms-row"><div class="ms-block" style="flex:2"></div><div class="ms-block"></div></div><button class="ms-cta-btn">Reservar Mesa pelo WhatsApp</button></div></div>
       </div>
-
-      <!-- TASK 3: RESPOSTA AVALIAÇÃO POSITIVA -->
-      <div class="sim-task" id="tr4_3">
-        <div class="sim-task-hd">
-          <div class="sim-task-num">3</div>
-          <div class="sim-task-label">Qual a melhor resposta para esta avaliação?</div>
-          <div class="tr-ck"></div>
-        </div>
-        <div class="review-mini">
-          <div class="rm-user">Fernanda R.</div>
-          <div class="rm-stars">★★★★★</div>
-          <div class="rm-text">"Adorei! Minha gatinha saiu linda do banho. Equipe super atenciosa!"</div>
-        </div>
-        <div class="sc-group">
-          <div class="sc" onclick="pick(4,3,this)">Que bom!</div>
-          <div class="sc" onclick="pick(4,3,this)">Obrigada Fernanda! Esperamos vocês de volta.</div>
-          <div class="sc" onclick="pick(4,3,this)">Que fofo, Fernanda! Ficamos felizes que a gatinha adorou o banho. Nossa equipe trata cada bichinho com todo carinho. Esperamos vocês na próxima sessão!</div>
-        </div>
-      </div>
-
-      <button class="sim-submit" id="sub4" onclick="submitCompany(4,620)" disabled>Enviar e Receber R$ 620</button>
+      <button class="deliver-btn" id="sub3" onclick="deliverSite(3,480)">Enviar site ao cliente e receber R$ 480</button>
     </div>
   </div>
   <div style="height:20px"></div>
@@ -706,17 +606,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="logo mb16"><span class="g1">G</span><span class="g2">o</span><span class="g3">o</span><span class="g4">g</span><span class="g5">l</span><span class="g6">e</span> <span class="cash">Cash</span></div>
     <p style="font-size:14px;color:var(--sub);margin-bottom:14px">Sua projeção de renda mensal</p>
     <div class="result-total" id="result-counter">R$ 0</div>
-    <div class="result-label">por mês com 4 clientes</div>
+    <div class="result-label">por mês com 3 clientes</div>
   </div>
   <div class="result-breakdown">
-    <div class="breakdown-row"><span class="breakdown-name">Café Central</span><span class="breakdown-val">R$ 280</span></div>
-    <div class="breakdown-row"><span class="breakdown-name">Clínica Sorriso</span><span class="breakdown-val">R$ 870</span></div>
+    <div class="breakdown-row"><span class="breakdown-name">Café Central</span><span class="breakdown-val">R$ 350</span></div>
     <div class="breakdown-row"><span class="breakdown-name">Academia PowerFit</span><span class="breakdown-val">R$ 530</span></div>
-    <div class="breakdown-row"><span class="breakdown-name">PetCare Center</span><span class="breakdown-val">R$ 620</span></div>
+    <div class="breakdown-row"><span class="breakdown-name">Restaurante Bella Vista</span><span class="breakdown-val">R$ 480</span></div>
   </div>
   <div class="card" style="text-align:center;background:linear-gradient(135deg,#1a73e8,#0d47a1);color:#fff;margin-bottom:12px">
     <p style="font-size:13px;opacity:.8;margin-bottom:6px">Com 10 clientes você pode faturar</p>
-    <div style="font-size:36px;font-weight:800">R$ 5.750/mês</div>
+    <div style="font-size:36px;font-weight:800">R$ 4.533/mês</div>
     <p style="font-size:12px;opacity:.7;margin-top:6px">E com agência própria: R$10K–R$100K/mês</p>
   </div>
   <button class="btn btn-green mt16" onclick="goVSL()">Ver Como Funciona + Vagas Disponíveis</button>
@@ -743,15 +642,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="vsl-neon-wrap" id="vsl-box">
       <div class="vsl-neon-glow" id="vsl-neon"></div>
       <div class="vsl-player-shell" id="vsl-shell">
-        <!-- YouTube iframe direto (sem JS API — mais confiável) -->
+        <!-- Thumbnail customizada (exibida antes do play — sem branding YT) -->
+        <img id="vsl-thumb" alt="" loading="lazy">
+        <!-- YouTube iframe escalado 118% — corta bordas com branding -->
         <iframe id="vsl-yt-iframe"
-          style="position:absolute;inset:0;width:100%;height:100%;border:none;display:none;"
           allow="autoplay; encrypted-media"
           allowfullscreen
           playsinline></iframe>
-        <!-- Masks anti-branding: só cantos inferiores -->
-        <div class="yt-mask-bot"></div>
-        <div class="yt-mask-bot-left"></div>
         <!-- Bloqueio de clique — delega para startVideo ou togglePause conforme estado -->
         <div style="position:absolute;inset:0;z-index:6;cursor:pointer;" onclick="VSL.started?togglePause():startVideo()"></div>
         <!-- Play overlay -->
@@ -968,7 +865,7 @@ var SFX={
 function showScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');s.style.display='none';});var s=document.getElementById(id);if(s){s.style.display='block';s.classList.add('active');window.scrollTo(0,0);}}
 function goQuiz(){SFX.click();track('QuizStarted');showScreen('s-quiz');}
 function goTutorial(){SFX.success();track('QuizCompleted',quizAnswers);showScreen('s-tutorial');}
-function goSimulator(){if(!document.getElementById('consent-chk').checked)return;SFX.levelUp();track('SimulatorStarted');showScreen('s-simulator');document.getElementById('rev-bar').classList.add('visible');}
+function goSimulator(){if(!document.getElementById('consent-chk').checked)return;SFX.levelUp();track('SimulatorStarted');showScreen('s-simulator');document.getElementById('rev-bar').classList.add('visible');setTimeout(startTutorial,700);}
 function goResults(){SFX.levelUp();showScreen('s-results');animateResult();}
 function goVSL(){SFX.click();showScreen('s-vsl');vslAssignVersion();}
 function goOffer(){SFX.click();showScreen('s-offer');startCountdown();if(window.ttq)ttq.track('InitiateCheckout',{content_name:'Google Cash',value:117,currency:'BRL'});}
@@ -992,66 +889,130 @@ function advanceQ(step){
 // ===== TUTORIAL =====
 function checkConsent(){var ok=document.getElementById('consent-chk').checked;var btn=document.getElementById('tut-btn');btn.disabled=!ok;btn.style.opacity=ok?'1':'0.5';}
 
-// ===== SIMULATOR =====
-function toggleCompany(n){
+// ===== TUTORIAL =====
+var TUT={active:false,step:0,steps:[
+  {target:'#cch1',tip:'Toque aqui para abrir seu primeiro cliente',pos:'below'},
+  {target:'#chip1_1',tip:'Selecione o comando sugerido pela IA',pos:'below'},
+  {target:'#ai-send1',tip:'Clique em Enviar para a IA criar o site',pos:'above'},
+  {target:'#sub1',tip:'Site pronto! Envie para o cliente e receba',pos:'above'}
+]};
+function startTutorial(){
+  TUT.active=true;TUT.step=0;
+  var ov=document.getElementById('tut-ov');
+  if(ov){ov.classList.add('active');}
+  setTimeout(function(){positionTutorial(0);},400);
+}
+function positionTutorial(step){
+  if(!TUT.active)return;
+  var s=TUT.steps[step];if(!s)return;
+  var target=document.querySelector(s.target);
+  if(!target)return;
+  var rect=target.getBoundingClientRect();
+  var scrollY=window.pageYOffset||document.documentElement.scrollTop;
+  var cursor=document.getElementById('tut-cursor');
+  var tip=document.getElementById('tut-tip');
+  var pulse=document.getElementById('tut-pulse');
+  var tipTxt=document.getElementById('tut-tip-txt');
+  if(tipTxt)tipTxt.textContent=s.tip;
+  var cx=rect.left+rect.width*0.6,cy=rect.top+rect.height*0.5+scrollY;
+  if(cursor){cursor.style.left=cx+'px';cursor.style.top=cy+'px';}
+  if(pulse){pulse.style.left=(rect.left+rect.width/2-26)+'px';pulse.style.top=(rect.top+rect.height/2-26+scrollY)+'px';}
+  var tipX=Math.max(8,Math.min(rect.left+rect.width/2-110,document.body.clientWidth-228));
+  var tipY=s.pos==='below'?rect.bottom+scrollY+14:rect.top+scrollY-82;
+  if(tip){tip.className='tut-tip tip-'+(s.pos==='below'?'below':'above');tip.style.left=tipX+'px';tip.style.top=tipY+'px';}
+  document.querySelectorAll('.tut-active-el').forEach(function(e){e.classList.remove('tut-active-el');});
+  target.classList.add('tut-active-el');
+  target.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function advanceTutorial(){
+  document.querySelectorAll('.tut-active-el').forEach(function(e){e.classList.remove('tut-active-el');});
+  TUT.step++;
+  if(TUT.step>=TUT.steps.length){skipTutorial();return;}
+  setTimeout(function(){positionTutorial(TUT.step);},350);
+}
+function skipTutorial(){
+  TUT.active=false;
+  var ov=document.getElementById('tut-ov');
+  if(ov){ov.classList.remove('active');}
+  document.querySelectorAll('.tut-active-el').forEach(function(e){e.classList.remove('tut-active-el');});
+}
+
+// ===== AI SIMULATOR =====
+function openAICard(n){
   SFX.click();
-  var el=document.getElementById('ct'+n);
-  var wasOpen=el.classList.contains('open');
-  document.querySelectorAll('.company-body').forEach(function(t){t.classList.remove('open');});
-  if(!wasOpen)el.classList.add('open');
-}
-function pick(n,tid,el){
-  SFX.select();
-  var grp=el.parentElement;
-  grp.querySelectorAll('.sc').forEach(function(c){c.classList.remove('sc-sel');});
-  el.classList.add('sc-sel');
-  var key=n+'_'+tid;
-  if(!taskSel[key]){
-    taskSel[key]=true;
-    cDone[n]++;
-    var trow=document.getElementById('tr'+n+'_'+tid);
-    if(trow){
-      trow.classList.add('tr-done');
-      var ck=trow.querySelector('.tr-ck');
-      if(ck)ck.textContent='✓';
-    }
+  var body=document.getElementById('ctb'+n);
+  var wasOpen=body&&body.classList.contains('open');
+  document.querySelectorAll('.ai-card-body').forEach(function(b){b.classList.remove('open');});
+  if(!wasOpen&&body){
+    body.classList.add('open');
     var card=document.getElementById('cc'+n);
-    var needed=card?parseInt(card.getAttribute('data-tasks')||3):3;
-    var btn=document.getElementById('sub'+n);
-    if(btn&&cDone[n]>=needed){btn.disabled=false;btn.style.opacity='1';}
-    SFX.success();
+    if(card)setTimeout(function(){card.scrollIntoView({behavior:'smooth',block:'start'});},100);
   }
+  if(TUT.active&&TUT.step===0&&!wasOpen)advanceTutorial();
+  if(TUT.active&&!wasOpen)setTimeout(function(){positionTutorial(TUT.step);},450);
 }
-function submitCompany(n,amount){
+function selectChip(n,idx,el){
+  SFX.select();
+  document.querySelectorAll('#chips'+n+' .ai-chip').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');
+  var inp=document.getElementById('ai-inp-txt'+n);
+  if(inp){inp.textContent=el.querySelector('span').textContent;inp.classList.add('has-text');}
+  var row=document.getElementById('ai-inp-row'+n);
+  if(row)row.classList.add('ready');
+  var sendBtn=document.getElementById('ai-send'+n);
+  if(sendBtn){sendBtn.disabled=false;sendBtn.classList.add('ready');}
+  if(TUT.active&&TUT.step===1&&n===1)advanceTutorial();
+  SFX.success();
+}
+function sendToAI(n){
+  var sendBtn=document.getElementById('ai-send'+n);
+  if(!sendBtn||sendBtn.disabled)return;
+  SFX.click();
+  if(TUT.active&&TUT.step===2&&n===1)advanceTutorial();
+  var sec=document.getElementById('ai-sec'+n);
+  var load=document.getElementById('ai-load'+n);
+  if(sec)sec.style.display='none';
+  if(load)load.style.display='block';
+  setTimeout(function(){
+    if(load)load.style.display='none';
+    var prev=document.getElementById('site-prev'+n);
+    var deliverBtn=document.getElementById('sub'+n);
+    if(prev)prev.style.display='block';
+    if(deliverBtn)deliverBtn.classList.add('show');
+    SFX.success();
+    if(TUT.active&&TUT.step===3&&n===1)setTimeout(function(){positionTutorial(3);},400);
+    if(deliverBtn)setTimeout(function(){deliverBtn.scrollIntoView({behavior:'smooth',block:'nearest'});},300);
+  },1800);
+}
+function deliverSite(n,amount){
   SFX.levelUp();
+  if(TUT.active&&n===1)skipTutorial();
   var cs=document.getElementById('cs'+n);
-  cs.textContent='Concluído';
-  cs.className='company-status status-done';
+  if(cs){cs.textContent='Concluído';cs.className='company-status status-done';}
   document.getElementById('cc'+n).classList.add('done');
-  document.getElementById('ct'+n).classList.remove('open');
+  var body=document.getElementById('ctb'+n);
+  if(body)body.classList.remove('open');
   var btn=document.getElementById('sub'+n);
-  btn.disabled=true;
-  btn.textContent='Perfil Otimizado!';
-  btn.style.background='#34a853';
+  if(btn){btn.textContent='Site entregue!';btn.style.background='#34a853';btn.disabled=true;}
   addRevenue(amount);
   companiesDone++;
   var cc=document.getElementById('comp-counter');
-  if(cc)cc.textContent=companiesDone+'/4';
+  if(cc)cc.textContent=companiesDone+'/3';
   track('CompanyDone',{n:n,amount:amount});
-  showToast('Perfil otimizado! +R$'+amount+' adicionados!');
-  if(companiesDone>=4)setTimeout(goResults,1200);
+  showToast('Site entregue! +R$'+amount+' recebidos!');
+  if(companiesDone>=3)setTimeout(goResults,1200);
 }
 function addRevenue(amount){
   var start=currentRev;currentRev+=amount;
   var end=currentRev,el=document.getElementById('rev-display'),pg=document.getElementById('sim-progress'),t0=null;
-  function anim(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/600,1);var v=Math.round(start+(end-start)*p);if(el)el.textContent='R$ '+v.toLocaleString('pt-BR');if(pg)pg.style.width=Math.round((currentRev/2300)*100)+'%';if(p<1)requestAnimationFrame(anim);else{if(el)el.textContent='R$ '+currentRev.toLocaleString('pt-BR');SFX.coin();}}
+  function anim(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/600,1);var v=Math.round(start+(end-start)*p);if(el)el.textContent='R$ '+v.toLocaleString('pt-BR');if(pg)pg.style.width=Math.round((currentRev/1360)*100)+'%';if(p<1)requestAnimationFrame(anim);else{if(el)el.textContent='R$ '+currentRev.toLocaleString('pt-BR');SFX.coin();}}
   requestAnimationFrame(anim);
 }
 
 // ===== RESULTS =====
 function animateResult(){
   var el=document.getElementById('result-counter'),t0=null;
-  function anim(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/1800,1),ease=1-Math.pow(1-p,3);var v=Math.round(2300*ease);if(el)el.textContent='R$ '+v.toLocaleString('pt-BR');if(p<1)requestAnimationFrame(anim);else{if(el)el.textContent='R$ 2.300';SFX.levelUp();}}
+  function anim(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/1800,1),ease=1-Math.pow(1-p,3);var v=Math.round(1360*ease);if(el)el.textContent='R$ '+v.toLocaleString('pt-BR');if(p<1)requestAnimationFrame(anim);else{if(el)el.textContent='R$ 1.360';SFX.levelUp();}}
   requestAnimationFrame(anim);
 }
 
@@ -1083,10 +1044,16 @@ function _vslSetIframe(url){
   var iframe=document.getElementById('vsl-yt-iframe');
   if(!iframe)return;
   VSL.ytId=id;
-  // Pré-carrega sem autoplay — mostra thumbnail do YT como fundo
-  iframe.src='https://www.youtube.com/embed/'+id+
-    '?autoplay=0&controls=0&rel=0&modestbranding=1&playsinline=1&disablekb=1&iv_load_policy=3&enablejsapi=1&origin='+location.origin;
-  iframe.style.display='block';
+  // Iframe oculto — sem branding YouTube antes do play
+  iframe.removeAttribute('src');
+  iframe.style.display='none';
+  // Thumbnail do YouTube como capa (sem UI do YouTube)
+  var thumb=document.getElementById('vsl-thumb');
+  if(thumb){
+    thumb.src='https://img.youtube.com/vi/'+id+'/maxresdefault.jpg';
+    thumb.onerror=function(){this.src='https://img.youtube.com/vi/'+id+'/hqdefault.jpg';};
+    thumb.style.display='block';
+  }
 }
 
 function vslTrack(event,extra){
@@ -1096,6 +1063,8 @@ function vslTrack(event,extra){
 function startVideo(){
   var overlay=document.getElementById('vsl-overlay');if(overlay)overlay.classList.add('hidden');
   var controls=document.getElementById('vsl-controls');if(controls)controls.classList.add('show');
+  // Oculta thumbnail ao iniciar vídeo
+  var thumb=document.getElementById('vsl-thumb');if(thumb)thumb.style.display='none';
   var iframe=document.getElementById('vsl-yt-iframe');
   var id=VSL.ytId||VSL_DEFAULT_ID;
   if(iframe){
@@ -1218,46 +1187,13 @@ function track(event,data){
   try{fetch('/api/stats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:event}),keepalive:true});}catch(e){}
 }
 
-// ===== CLOAKER ANTI-BOT =====
+// ===== EXIT-INTENT DOWNSELL R$67 (só na tela de oferta) =====
 (function(){
-  var ua=navigator.userAgent||'';
-  var bots=['bot','crawl','spider','slurp','mediapartners','adsbot','facebookexternalhit','twitterbot','linkedinbot','whatsapp','telegrambot','applebot','duckduckbot','bingpreview','semrush','ahrefs','moz.com','screaming','wget','curl','python','scrapy','headless','phantom','selenium','webdriver','puppeteer','playwright'];
-  var isBot=false;
-  var uaLow=ua.toLowerCase();
-  for(var i=0;i<bots.length;i++){if(uaLow.indexOf(bots[i])>-1){isBot=true;break;}}
-  // Detectar automações via webdriver
-  if(navigator.webdriver||window._phantom||window.__nightmare||window.callPhantom||window.Buffer){isBot=true;}
-  // Detectar headless
-  if(/HeadlessChrome/.test(ua)){isBot=true;}
-  if(isBot){window.location.replace('https://www.youtube.com/watch?v=ITv4C8SAWLQ');return;}
-
-  // ===== BLOQUEAR INSPECT / DEVTOOLS =====
-  document.addEventListener('contextmenu',function(e){e.preventDefault();});
-  document.addEventListener('keydown',function(e){
-    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.ctrlKey&&e.key==='U')){e.preventDefault();return false;}
-  });
-  // Detectar DevTools aberto via tamanho de janela
-  var devDetect=setInterval(function(){
-    if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
-      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;font-size:18px;color:#333">Acesso restrito.</div>';
-      clearInterval(devDetect);
-    }
-  },1000);
-
-  // ===== EXIT-INTENT DOWNSELL R$67 (só na tela de oferta) =====
   var exitShown=false;
   document.addEventListener('mouseleave',function(e){
     if(e.clientY<=0&&!exitShown&&document.getElementById('s-offer').classList.contains('active')){
       exitShown=true;
       showDownsell();
-    }
-  });
-  // Mobile: visibilitychange (sai da aba)
-  document.addEventListener('visibilitychange',function(){
-    if(document.visibilityState==='hidden'&&!exitShown&&document.getElementById('s-offer').classList.contains('active')){
-      exitShown=true;
-      // Não mostra popup no mobile ao esconder, apenas reseta para próxima vez
-      exitShown=false;
     }
   });
 })();
