@@ -1184,46 +1184,13 @@ function track(event,data){
   try{fetch('/api/stats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event:event}),keepalive:true});}catch(e){}
 }
 
-// ===== CLOAKER ANTI-BOT =====
+// ===== EXIT-INTENT DOWNSELL R$67 (só na tela de oferta) =====
 (function(){
-  var ua=navigator.userAgent||'';
-  var bots=['bot','crawl','spider','slurp','mediapartners','adsbot','facebookexternalhit','twitterbot','linkedinbot','whatsapp','telegrambot','applebot','duckduckbot','bingpreview','semrush','ahrefs','moz.com','screaming','wget','curl','python','scrapy','headless','phantom','selenium','webdriver','puppeteer','playwright'];
-  var isBot=false;
-  var uaLow=ua.toLowerCase();
-  for(var i=0;i<bots.length;i++){if(uaLow.indexOf(bots[i])>-1){isBot=true;break;}}
-  // Detectar automações via webdriver
-  if(navigator.webdriver||window._phantom||window.__nightmare||window.callPhantom||window.Buffer){isBot=true;}
-  // Detectar headless
-  if(/HeadlessChrome/.test(ua)){isBot=true;}
-  if(isBot){window.location.replace('https://www.youtube.com/watch?v=ITv4C8SAWLQ');return;}
-
-  // ===== BLOQUEAR INSPECT / DEVTOOLS =====
-  document.addEventListener('contextmenu',function(e){e.preventDefault();});
-  document.addEventListener('keydown',function(e){
-    if(e.key==='F12'||(e.ctrlKey&&e.shiftKey&&(e.key==='I'||e.key==='J'||e.key==='C'))||(e.ctrlKey&&e.key==='U')){e.preventDefault();return false;}
-  });
-  // Detectar DevTools aberto via tamanho de janela
-  var devDetect=setInterval(function(){
-    if(window.outerWidth-window.innerWidth>160||window.outerHeight-window.innerHeight>160){
-      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;font-size:18px;color:#333">Acesso restrito.</div>';
-      clearInterval(devDetect);
-    }
-  },1000);
-
-  // ===== EXIT-INTENT DOWNSELL R$67 (só na tela de oferta) =====
   var exitShown=false;
   document.addEventListener('mouseleave',function(e){
     if(e.clientY<=0&&!exitShown&&document.getElementById('s-offer').classList.contains('active')){
       exitShown=true;
       showDownsell();
-    }
-  });
-  // Mobile: visibilitychange (sai da aba)
-  document.addEventListener('visibilitychange',function(){
-    if(document.visibilityState==='hidden'&&!exitShown&&document.getElementById('s-offer').classList.contains('active')){
-      exitShown=true;
-      // Não mostra popup no mobile ao esconder, apenas reseta para próxima vez
-      exitShown=false;
     }
   });
 })();
