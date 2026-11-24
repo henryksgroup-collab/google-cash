@@ -214,15 +214,15 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .vsl-neon-glow{position:absolute;inset:0;border-radius:24px;background:linear-gradient(135deg,#1a73e8,#ea4335,#fbbc05,#34a853,#4285f4,#1a73e8);background-size:400% 400%;animation:neonCycle 3s ease infinite;opacity:.85;filter:blur(16px);z-index:0;pointer-events:none}
 @keyframes neonCycle{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 /* Player shell */
-.vsl-player-shell{position:relative;z-index:1;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9;border:2px solid rgba(66,133,244,0.5)}
+.vsl-player-shell{position:relative;z-index:1;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#0a0a0a 0%,#111 50%,#0d0d0d 100%);aspect-ratio:16/9;border:2px solid rgba(66,133,244,0.5)}
 .vsl-player-shell video{width:100%;height:100%;display:block;object-fit:cover}
 /* YouTube iframe fill */
 #vsl-yt-wrap{position:absolute;inset:0;display:none;border-radius:16px;overflow:hidden;}
 #vsl-yt-wrap iframe{width:100%!important;height:100%!important;border:none!important;display:block;}
 /* Máscaras anti-branding YouTube */
-.yt-mask-top{display:none;}
-.yt-mask-bot{position:absolute;bottom:0;right:0;width:90px;height:30px;background:#000;z-index:5;border-radius:0 0 16px 0;pointer-events:none;}
-.yt-mask-bot-left{position:absolute;bottom:0;left:0;width:50px;height:30px;background:#000;z-index:5;border-radius:0 0 0 16px;pointer-events:none;}
+.yt-mask-top{position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(180deg,rgba(0,0,0,.95) 60%,transparent 100%);z-index:7;pointer-events:none;}
+.yt-mask-bot{position:absolute;bottom:0;right:0;width:140px;height:44px;background:#000;z-index:7;border-radius:0 0 16px 0;pointer-events:none;}
+.yt-mask-bot-left{position:absolute;bottom:0;left:0;width:60px;height:44px;background:#000;z-index:7;border-radius:0 0 0 16px;pointer-events:none;}
 .yt-click-block{position:absolute;inset:0;z-index:4;cursor:default;}
 /* Custom overlay (shown before play) */
 .vsl-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:4;transition:opacity .3s}
@@ -645,13 +645,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="vsl-neon-wrap" id="vsl-box">
       <div class="vsl-neon-glow" id="vsl-neon"></div>
       <div class="vsl-player-shell" id="vsl-shell">
-        <!-- YouTube iframe direto (sem JS API — mais confiável) -->
+        <!-- YouTube iframe — oculto até clicar em play -->
         <iframe id="vsl-yt-iframe"
           style="position:absolute;inset:0;width:100%;height:100%;border:none;display:none;"
           allow="autoplay; encrypted-media"
           allowfullscreen
           playsinline></iframe>
-        <!-- Masks anti-branding: só cantos inferiores -->
+        <!-- Máscaras anti-branding (topo = título/canal, rodapé = logo YT) -->
+        <div class="yt-mask-top"></div>
         <div class="yt-mask-bot"></div>
         <div class="yt-mask-bot-left"></div>
         <!-- Bloqueio de clique — delega para startVideo ou togglePause conforme estado -->
@@ -1049,10 +1050,10 @@ function _vslSetIframe(url){
   var iframe=document.getElementById('vsl-yt-iframe');
   if(!iframe)return;
   VSL.ytId=id;
-  // Pré-carrega sem autoplay — mostra thumbnail do YT como fundo
-  iframe.src='https://www.youtube.com/embed/'+id+
-    '?autoplay=0&controls=0&rel=0&modestbranding=1&playsinline=1&disablekb=1&iv_load_policy=3&enablejsapi=1&origin='+location.origin;
-  iframe.style.display='block';
+  // Apenas armazena o ID — iframe permanece oculto até o usuário clicar em play
+  // (evita exibir branding do YouTube antes do vídeo iniciar)
+  iframe.removeAttribute('src');
+  iframe.style.display='none';
 }
 
 function vslTrack(event,extra){
